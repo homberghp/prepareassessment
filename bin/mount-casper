@@ -1,0 +1,19 @@
+#!/bin/bash
+me=hom
+debug=
+# chown sandbox stuff to exam uid:gid
+if [ "root"  != "$USER" ]; then
+    echo must be root or sudo
+    exit 1
+fi
+
+for i in /media/hom/EXAM* /media/hom/SEBI* ; do 
+    stick=$(basename $i)
+    if [ -d $i ] ; then
+	mountpoint=/media/${me}/casper-rw-${stick}
+	${debug} mkdir -p ${mountpoint}
+	${debug} mount -o loop ${i}/casper-rw  ${mountpoint}
+	echo mounted  ${mountpoint}
+    fi
+done
+

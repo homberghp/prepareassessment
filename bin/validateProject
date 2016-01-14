@@ -1,0 +1,114 @@
+#!/usr/bin/perl -w
+# check consistency of examproject for grading purposes.
+# checks  precence  of 'editor-fold' and uniqueness of question ids.
+# Walks through the directory './examproject'
+# returns : some stats via stderr
+# exit code 0 if constitent
+# 1 otherwise.
+use Config::Properties;
+use File::Path qw(make_path);
+use Cwd;
+use vars qw(%questionHash %doubleHash @fileNames $validRegex);
+my $workdir= getcwd;
+
+$workdir =~ m/.*(\d{4})(\d{2})(\d{2})$/;
+my $defexam_date ="$1-$2-$3";
+
+open PROPS, "<../default.properties" or die "unable to open setup file";
+
+my $properties = new Config::Properties();
+$properties->load(*PROPS);
+my $module_name =$properties->getProperty('module_name','SEN1');
+my $exam_date = $properties->getProperty('exam_date',$defexam_date);
+my $exam_year = substr($exam_date,0,4);
+my $exam_id = $module_name.'-'.$exam_date;
+my $exam_web_dir="/home/examdoc/public_html/${exam_year}/${exam_id}";
+my $extension= $properties->getProperty('extension','c');
+
+my $validRegex='.+?\<editor-fold\s+defaultstate=\"expanded\"\s+desc=\"(\w+);\s+MAX\s+(\d+)';
+my $isNetbeansProject = $properties->getProperty('is_netbeans_project',0);
+if ($extension eq 'java' || $extension eq 'sql' || $extension eq 'R' ) {
+    $validRegex='.+?\<editor-fold\s+defaultstate=\"expanded\"\s+desc=\"(\w+);.+?WEIGHT\s+(\d+)';
+#    $validRegex='.+?\<editor-fold\s+defaultstate=\"expanded\"\s+desc=\"(\w+);\s+MAX\s+(\d+)';
+} else {
+    die "do not yet understand extension $extension\n";
+}
+# if ( $isNetbeansProject != 0  && !-f 'project.xml_template' ) {
+#   die "Need project.xml_template with examproject dir to populate project in repos\n";
+# }
+
+# my %questionHash;
+# my %doubleHash;
+my (@names,$file);
+my $lineCounter=0;
+my @stack;
+sub walk($){
+  my ($workdir) = shift;
+  my ($startdir) = &cwd;	# keep track of where we began
+ # print STDERR "visiting $workdir\n";
+  push(@stack,$workdir);
+  #chdir($workdir) or die "Unable to enter dir $workdir:$!\n";
+  opendir(DIR,$workdir) or die "Can't open the directory: $workdir\n";
+  my @names= readdir(DIR) or die "Unable to read current dir:$workdir\n";
+  close(DIR);
+  foreach $name (@names) {
+    next if ($name eq ".");	 # skip the current directory entry;
+    next if ($name eq "..");	 # skip the parent directory entry;
+    my $path= $workdir.'/'.$name;
+    if ( -d $workdir.'/'.$name ) { # is this a directory?
+      &walk($path);
+      next;
+    } 
+    if ( -f $path && $path =~ m/${extension}$/) { # is this a file named "*.extension"?
+#      print STDERR "found one: $path\n";
+      open(FILE,"<$path") or die "cannot open file $path\n";
+      my $lineCounter=0;
+      push(@fileNames,$path);
+      while (<FILE>) {
+	$lineCounter++;
+	if (m/${validRegex}/) {
+	  my $question=$1;
+	  my $maxPoints=$2;
+	  my $line = "$path:$lineCounter: question $question weight $maxPoints";
+#	  print STDERR "$line\n";
+	  if (defined $questionHash{$question}){
+	    $doubleHash{$line} = "\n\talso found in\n\t" .$questionHash{$question};
+	  }
+	  $questionHash{$question} = $line;
+	}
+      }
+      close(FILE);
+      next;
+    }
+  }
+}
+&walk("examproject");
+
+# now check.
+my @keys = keys %doubleHash;
+my $size = @keys;
+if ($size > 0) {
+  print STDERR "doubles found\n";
+  foreach my $line (sort keys %doubleHash) {
+    print "\t$line $doubleHash{$line}\n";
+  }
+  exit 1;
+} 
+@keys = keys %questionHash;
+$size = @keys;
+if ( $size == 0) {
+  my $fcount = @fileNames;
+  print STDERR "no questions  found in $fcount files: \n";
+  foreach (@fileNames){
+    print STDERR "\t$_\n";
+  }
+  exit 2;
+
+}
+print STDERR "Question(s) found:\n";
+foreach my $question (sort keys %questionHash) {
+  print STDERR "\t$question => \033[32m $questionHash{$question}\033[m\n";
+}
+
+# all is well.
+exit 0;

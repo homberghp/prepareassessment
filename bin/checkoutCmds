@@ -1,0 +1,61 @@
+#!/usr/bin/perl -w
+# @author p.vandenhombergh@fontys.nl
+use strict;
+use diagnostics;
+use warnings;
+use  Config::Properties;
+use File::Path qw(make_path remove_tree);
+use File::Basename;
+use POSIX qw(floor);
+use POSIX qw(locale_h);
+use Cwd;
+setlocale(LC_ALL,'en_US.UTF-8');
+my $workdir= getcwd;
+if ($workdir !~ m/.*(\d{4})(\d{2})(\d{2})$/) {
+    die qq(The current directory name does not conform the convention (ISO 8601 8 digit date format).\nPlease correct\n);
+}
+my    $defexam_date ="$1-$2-$3";
+
+# read properties from parent dir , if available.
+my $defproperties = new Config::Properties();
+
+if ( -f '../default.properties') {
+
+    open PROPS, "<../default.properties" or die "unable to open ../default.properties file\n";
+    $defproperties->load(*PROPS);
+    close(PROPS);
+}
+my $properties = new Config::Properties(defaults=>$defproperties);
+
+## debug: show loaded properties
+my %props=$properties->properties;
+
+my $module_name =$properties->getProperty('module_name','SEN1');
+
+my $exam_date = $properties->getProperty('exam_date',$defexam_date);
+my $exam_year = substr($exam_date,0,4);
+my $svn_location= $properties->getProperty('svn_location','/home/svn').'/'.$exam_year;
+my $exam_name = "Performance assessment ${module_name} ${exam_date}";
+my $exam_id = $module_name.'-'.$exam_date;
+my $app_name = $properties->getProperty('app_name','xxx slot machine');
+my $local_repos_path=$svn_location.'/'.$exam_id;
+my ($uname,$pw,$uid,$guid,$lname,$fname,$infix,$sclass,$cohort,$email,$pcn,$cls,$homedir,$shell,$project,$year,$grp,$grpnum,$stick,$lang);
+my $sandbox='sandbox';
+my $svnroot='file://'.$local_repos_path;
+open(CANDIDATES,"<records.csv") or die "cannot open candidates file 'records.csv',"
+    ." please provide before running this script\n";
+print qq(#remove old stuff
+rm -fr $sandbox
+);
+while(<CANDIDATES>){
+  chomp;
+  ($uname,$pw,$uid,$guid,$lname,$fname,$infix,$sclass,$cohort,$email,$pcn,$cls,$homedir,$shell,$project,$year,$grp,$grpnum,$stick,$lang) = split/:/;
+  $sandbox =  qq($workdir/sandbox/$stick/exam/exam/Desktop);
+  print qq(\# for student  $lname stick $stick
+  ( mkdir -p $sandbox ;svn checkout --force --quiet $svnroot/$uname $sandbox/$uname )&
+);
+}
+print qq(# join all childs and exit
+wait
+echo "       all repos checked out."
+)

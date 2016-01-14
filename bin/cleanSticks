@@ -1,0 +1,22 @@
+#!/bin/bash
+me=hom
+debug=
+for i in /media/hom/EXAM*; do 
+    mountpoint=/media/${me}/casper-rw-$(basename ${i}) 
+    ${debug} mkdir ${mountpoint}
+    ${debug} mount -o loop ${i}/casper-rw  ${mountpoint}
+    ( ${debug} rm -fr  ${mountpoint}/exam/exam
+	${debug} tar -C ${mountpoint}/exam/ -xzf skel.tgz &)
+done
+wait
+sync
+# unmount all
+for i in /media/hom/EXAM*; do 
+    mountpoint=/media/${me}/casper-rw-$(basename ${i}) 
+    ${debug} umount ${mountpoint}
+    ${debug} rmdir ${mountpoint}
+done
+sync
+for i in /media/hom/EXAM*; do 
+    umount ${i}
+done

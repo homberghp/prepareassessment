@@ -1,0 +1,15 @@
+#!/bin/bash
+echo \# Do not forget to fill the database with:
+echo cat paconfig/filldb.sql \| psql -X assessment
+echo 
+echo \# copy the config file apache and activate it:
+echo sudo cp paconfig/$exam_id.conf /etc/apache2/sslsites-available
+echo sudo ln -sf ../sslsites-available/$exam_id.conf /etc/apache2/sslsites-enabled
+echo sudo service apache2 reload
+echo 
+echo \# Once an exam site is visible under /etc/apache2/sites-available
+echo \# it is automatically picked up by the index.php file.
+echo \# so there is no need to edit the exam index file
+echo \# with the your_Editor_Of_Choice /home/examdoc/public_html/index.html
+echo 
+echo \# when all stick data hase been setup, run the connectsticks.sh.

@@ -1,0 +1,3 @@
+#!/bin/bash
+# prints Tickets
+lp -d HP4015-W1-181 -o sides=one-sided tickets.pdf

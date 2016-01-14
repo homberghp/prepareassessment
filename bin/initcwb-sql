@@ -1,0 +1,51 @@
+#!/bin/bash
+if [ -e ../default.properties ] ; then
+    source ../default.properties
+else 
+    echo "cannot find settings '../default.properties', please got to proper dir."
+    exit 1
+fi
+exam_date=$(d=$(pwd);d=${d: -8}; d1=${d:0:4}; d2=${d:4:2}; d3=${d:6:2}; echo ${d1}-${d2}-${d3})
+event_name=${module_name}-${exam_date}
+year=${exam_date:0:4}
+
+webdir=${index_file_grand_parent}/${year}/${module_name}-${exam_date}
+svnroot=${svn_location}/${year}/${event_name}
+#hvd 20131101 store filename of question as well
+#grep -rh  STUDENT_ID  examproject | filldbquestions.pl > paconfig/filldbquestions.sql 
+#grep -r  STUDENT_ID  examproject | filldbquestions-sql.pl > paconfig/filldbquestions.sql
+rm -fr ${webdir}/harvest/sandbox
+harvester ${svnroot} 
+# echo continue work in ${webdir}
+# cd ${webdir}
+flag='editor-fold'
+echo snipping exam
+for f in $(grep -rl ${flag} ${webdir}/harvest/sandbox/); do
+    echo ${f} 
+    cat $f | snipper ${f##*.}
+done
+
+echo snipping solution
+for f in $(grep -rl __STUDENT_ID__ examsolution); do
+    cat $f | snipper-sol  ${f##*.}
+done
+ 
+for i in $(find ${webdir}/harvest -name "*.snippet"); do 
+    ( enscript --line-numbers -whtml -E${extension} -q  --color -p -  $i | stripsnip.pl > $i.html &); 
+done
+
+if [ $extension == 'sql' ] ; then
+    for i in $(find ${webdir}/harvest -name "*.snippet"); do 
+	echo appending sql run to student solution ${i}.html
+	 (echo 'begin work;' ;cat  $i; echo ';rollback;') | psql  --pset format=html ${database} >> ${i}.html ; 
+    done
+fi
+
+for i in $(find ${webdir}/harvest -name "*.${extension}"); do
+    ( enscript --line-numbers -whtml -E${extension} -q  --color -p -  $i | stripsnip.pl > $i.html &); 
+done
+
+# link to resources
+ln -sf /usr/local/prepareassessment/resources/*.php ${webdir}
+ln -sf /usr/local/prepareassessment/resources/*.css ${webdir}
+ln -sf /usr/local/prepareassessment/resources/{images,js,css} ${webdir}

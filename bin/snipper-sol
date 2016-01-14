@@ -1,0 +1,70 @@
+#!/usr/bin/perl -w
+# this file chops up the file into snippets per student.
+# @author Pieter van den Hombergh
+use Config::Properties;
+use File::Path qw(make_path);
+use Cwd;
+# arg is extension
+my $fext=$ARGV[0];
+# eat it.
+shift;
+my $workdir= getcwd;
+$workdir =~ m/.*(\d{4})(\d{2})(\d{2})$/;
+my $defexam_date ="$1-$2-$3";
+
+open PROPS, "../default.properties" or die "unable to open setup file";
+
+my $properties = new Config::Properties();
+$properties->load(*PROPS);
+my $module_name =$properties->getProperty('module_name','SEN1');
+my $exam_date = $properties->getProperty('exam_date', $defexam_date);
+my $extension= $properties->getProperty('extension','c');
+my $exam_year = substr($exam_date,0,4);
+my $exam_id = $module_name.'-'.$exam_date;
+my $exam_web_dir="/home/examdoc/public_html/${exam_year}/${exam_id}";
+
+my $resources_dir='/usr/local/prepareassessment/resources';
+
+my ($quest,$max,$cand,$snipfile,$qdir,$filepath);
+my $on = 0;
+my $FILE;
+my $writing=0;
+my $validRegexOn;
+if ($fext eq 'java' ) {
+    $validRegexOn='.*?\/\/\<editor-fold\s+defaultstate=\"expanded\"\s+desc=\"(\w+);.+?WEIGHT\s+(\d+)';
+    $validRegexOff='.*?\/\/\<\/editor-fold.*';
+} elsif ($fext eq 'xhtml' ) {
+    $validRegexOn='.*?\<\!--editor-fold\s+defaultstate=\"expanded\"\s+desc=\"(\w+);.+?WEIGHT\s+(\d+)';
+    $validRegexOff='.*?\<\!--\/editor-fold.*';
+} elsif ($fext eq 'sql' ) {
+    $validRegexOn='.*?--\s\<editor-fold\s+defaultstate=\"expanded\"\s+desc=\"(\w+);.+?WEIGHT\s+(\d+)';
+    $validRegexOff='.*?--\s\<\/editor-fold.*';
+} else {
+    die "do not yet understand extension $fext\n";
+}
+
+while (<>) {
+  chomp;
+  if ( m/${validRegexOn}/) {
+    if ($on) {
+      close(FILE);
+    }
+    $on=1;
+    $quest=$1;
+    $max=$2;
+    $snipfile= $quest.'.'.$fext.'.snippet';
+    $qdir=$exam_web_dir.'/harvest/solution';
+    $filepath=$qdir.'/'.$snipfile;
+    print STDERR "creating $filepath\n";
+    make_path($qdir);
+    open(FILE,">$filepath") or die "cannot open $filepath\n";
+    print FILE qq($_\n);
+  } elsif (m/${validRegexOff}/ && $on) {
+    print FILE qq($_\n) unless $_ =~m/^\s*$/;
+#    print STDERR "closing $filepath\n";
+    close(FILE);
+    $on = 0;
+  } elsif ($on) {
+    print FILE qq($_\n) unless $_ =~m/^\s*$/;
+  }
+}

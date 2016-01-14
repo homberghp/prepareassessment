@@ -1,0 +1,10 @@
+#!/bin/bash
+if [ $# -lt 2  ] ; then
+    echo usage $0 parttable disk
+    exit 1
+fi
+parttable=$1
+shift
+disk=$1
+
+cat $(dirname $0)/${parttable} | sfdisk -q --force $disk >> sfdisk.log

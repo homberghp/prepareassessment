@@ -1,0 +1,51 @@
+#!/usr/bin/perl -w
+# copies and renumbers set of question
+# 
+use strict;
+use diagnostics;
+use warnings;
+use Config::Properties;
+use File::Path qw(make_path remove_tree);;
+
+make_path('./examsolution');
+my $defproperties = new Config::Properties();
+
+if ( -f '../default.properties') {
+
+    open PROPS, "<../default.properties" or die "unable to open ../default.properties file\n";
+    $defproperties->load(*PROPS);
+    close(PROPS);
+}
+my $properties = new Config::Properties(defaults=>$defproperties);
+
+my $question_base=$properties->getProperty('question_base','../../../../modulerepos/databases/45_assessment/questions');
+my $extension=$properties->getProperty('extension','sql');
+my $qfile_prefix=$properties->getProperty('question','question');
+my ($questionfile, $questionpath,$points,$destfile);
+my $qnum=1;
+remove_tree('./examsolution','./examproject');
+make_path('./examsolution');
+
+open(QUESTIONS,"<questions.txt") or die qq(cannot open questions.txt\n);
+while(<QUESTIONS>){
+  chomp;
+  if ($_ ne '') {
+      ($questionfile,$points) = split/;/;
+      $questionpath="$question_base/$questionfile";
+      $destfile =sprintf("examsolution/${qfile_prefix}%02d.${extension}",$qnum);
+      print  sprintf("created ${destfile} from %-50s as question %2d for %2d points \n",$questionfile,$qnum,$points);
+      open(QF,"<$questionpath") or die qq(cannot open file $questionpath\n);
+      open(SOL,">${destfile}") or die qq(cannot open file $destfile for writing\n);
+      while(<QF>){
+	  if (m/editor-fold defaultstate="expanded" desc="/){
+	      s/desc="Q\d+/desc="Q${qnum}/;
+	      s/(WEIGHT\s+\d+)/WEIGHT ${points}/;
+	  }
+	  print SOL;
+      }
+      close(SOL);
+      close(QF);
+      $qnum++;
+  }
+} 
+close(QUESTIONS);

@@ -1,0 +1,3 @@
+ENV{ID_SERIAL}="SanDisk_Extreme*", GOTO="no_mount"
+
+LABEL="no_mount"

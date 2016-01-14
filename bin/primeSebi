@@ -1,0 +1,50 @@
+#!/bin/bash
+# intialize a usb stick with a new exam set.
+# this script cleans the exam user area on the usb stick.
+#
+# The logged in user, for who he sticks are auto mounted by udev.
+me=${SUDO_USER}
+debug=
+if [ "root"  != "$USER" ]; then
+    echo must be root or in sudo process, sorry.
+    exit 1
+fi
+if [ ! -e skel.tgz ]; then
+    echo -e "missing skel dir template 'skel.tgz';\n\t please make sure it (or a sym link) exists in the current dir."
+    exit 2;
+fi
+# chown sandbox stuff to exam uid:gid
+
+for i in /media/${me}/SEBI*; do 
+    stick=$(basename $i)
+    if [ -d /exam/exam/${stick}-repo ] ; then 
+    mountpoint=/media/${me}/casper-rw-${stick}
+    ${debug} mkdir -p ${mountpoint}
+    ${debug} mount -o loop ${i}/casper-rw  ${mountpoint}
+    ( # clean exam disk, new initial and sync sandbox  
+	${debug} rm -fr  ${mountpoint}/exam/exam
+	${debug} mkdir -p  ${mountpoint}/exam
+	${debug} tar -C ${mountpoint}/exam/ -xzf skel.tgz 
+	${debug} mkdir -p  ${mountpoint}/usr/share/java
+	${debug} rsync -aq /home/FileSystem/usr/share/java/postgres* {,${mountpoint}}/usr/share/java/ 
+	${debug} rsync -aq {,${mountpoint}}/exam/exam/${stick}-repo/  
+	${debug} rsync -aq {,${mountpoint}}/exam/exam/Desktop/examproject-${stick}/
+	echo primed stick ${stick}
+    ) &
+    else
+	echo warning: no sandbox for stick ${stick}
+    fi
+done
+wait
+sync
+# unmount all
+for i in /media/${me}/SEBI*; do 
+    mountpoint=/media/${me}/casper-rw-$(basename ${i}) 
+    ${debug} umount ${mountpoint}
+    ${debug} rmdir ${mountpoint}
+done
+sync
+for i in /media/${me}/SEBI*; do 
+  ${debug}  umount ${i}
+  echo unmounted  ${i}
+done

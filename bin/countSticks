@@ -1,0 +1,15 @@
+#!/bin/bash
+quiet=0
+if [  $# -gt 0 ]; then 
+    quiet=1
+fi
+tmpf=$(tempfile)
+ls -d /sys/block/sd? | grep  -P sd[c-p]  > ${tmpf}
+
+if [ $quiet != 1 ] ; then 
+    cat ${tmpf}; 
+    echo counted $(cat ${tmpf}| wc -l) sticks
+else
+    echo $(cat ${tmpf}| wc -l)
+fi
+rm ${tmpf}

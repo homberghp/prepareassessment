@@ -1,0 +1,17 @@
+
+The makerepos.pl is written in perl and depends on the perl module Config::Properties.
+
+To install that it is best to use CPAN.
+Recipe:
+steps: 
+1 start CPAN and update and reload it. (first three lines)
+2 install Config::Properties (cpan> is the prompt. Do not type)
+cut -----
+
+perl -MCPAN -e shell
+cpan> install Bundle::CPAN
+cpan> reload cpan
+cpan> install Config::Properties
+
+cut ---
+

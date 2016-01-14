@@ -1,0 +1,17 @@
+#!/bin/bash
+# first enumerate sticks
+scriptdir=$(dirname $(readlink -f $0))
+for i in /sys/block/sd{c..p}; do 
+    if [ -e ${i} ] ; then
+	disk=/dev/$(basename ${i})
+	size=$(cat ${i}/size)
+	size=$((512*${size}))
+	sizeid=${size:0:2}GB
+	echo \# zapping ${disk} size ${size} ${sizeid}
+	echo sgdisk --zap-all ${disk}
+	partfile=${scriptdir}/part-${sizeid}
+	echo \# applying partition table 
+	echo cat  ${partfile} \|  sfdisk -q --force  ${disk}
+	
+    fi
+done

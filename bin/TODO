@@ -1,0 +1,14 @@
+//TODO
+
+aanpassen MAX naar weight
+
+initcwb weer afdrogen (sql vs java liefst één regex)
+
+
+in conventies jaar toevoegen in dir pad ( vb 2014/20140403)
+
+default.properties dan een hoger zodat dit droog is.
+Dus benaderen via ../../default.properties
+
+CWB result view aanpassen, of extra link toevoegen naar view 
+assessment_results

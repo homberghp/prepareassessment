@@ -1,0 +1,38 @@
+#!/bin/bash
+me=hom
+debug=
+# chown sandbox stuff to exam uid:gid
+if [ "root"  != "$USER" ]; then
+    echo must be root or sudo
+    exit 1
+fi
+for i in /media/usb/casper-rw* /media/usb/home-rw*; do
+    if [ -d ${i} ]; then 
+	if grep -q ${i} /proc/mounts ; then 
+	    ${debug} umount ${i}
+	    rm -fr ${i}
+	    echo unmounted  ${i}
+	fi
+    fi
+done
+    
+for i in /media/hom/*; do 
+    if [ -d ${i} ]; then 
+	stick=$(basename $i)
+	mountpoint=${i}
+	if grep -q ${i} /proc/mounts ; then 
+	    ${debug} umount ${mountpoint}
+	    rm -fr ${mountpoint}
+	    echo unmounted  ${mountpoint}
+	fi
+    fi
+done
+sync
+for i in /media/hom/{EXAM,SEBI}*; do 
+    if  grep -q ${i} /proc/mounts ; then 
+	${debug} umount ${i}
+	echo unmounted  ${i}
+    fi
+done
+# last resort
+umount /dev/sd[c-p]1

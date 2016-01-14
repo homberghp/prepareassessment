@@ -1,0 +1,36 @@
+#!/bin/bash
+# harvest work from usb stick.
+# this script does not and should not clean the exam home dir.
+#
+# The logged in user, for who he sticks are auto mounted by udev.
+scriptdir=$(dirname $(readlink -f $0))
+me=${SUDO_USER}
+debug=
+if [ "root"  != "$USER" ]; then
+    echo must be root or sudo
+    exit 1
+fi
+sandbox=/home/exam/Desktop/
+reposroot=/home/exam
+countSticks
+# mount all sticks
+rebind-usb.pl
+for i in /media/usb/home-rw-EXAM*; do 
+    stick=$(basename $i)
+    stick=${stick:8:7}
+    if [ -d ${sandbox}/examproject-${stick} ] ; then 
+	(
+	    ${debug} rsync -aq   ${i}/exam/Desktop/examproject-${stick}/ ${sandbox}/examproject-${stick}/
+	    ${debug} rsync -aq   ${i}/exam/${stick}-repo/ ${reposroot}/${stick}-repo/
+	    echo harvest $stick done 
+	) &
+    else
+	echo "warning: no sandbox at ${sandbox} for stick ${stick}"
+    fi
+done
+wait # for all children to return home
+sync # flush to disk
+# unmount all
+umount-sticks
+paplay ${scriptdir}/tng-picard-engage.ogg
+

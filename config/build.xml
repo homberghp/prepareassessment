@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+2013-10-24 Adapted for BlueJ projects
+$Id: exambuild.xml 311 2010-10-30 05:52:04Z hom $
+@author Pieter van den Hombergh
+@author Ferd van Odenhoven
+@author Richard van den Ham
+Fontys Hogeschool voor Techniek en Logistiek, Venlo
+-->
+<project name="bluejbuild" default="dobluej" basedir=".">
+  <!-- most, if not all properties can be set in build.properties
+       Must read them before any override. -->
+  <property environment="env"/>
+  <property file="${env.PWD}/build.properties"/>
+  <property name="solutiondir" 
+	    location="${env.PWD}/examsolution"/>
+  <property name="targetdir" 
+	    location="${env.PWD}/examproject"/>
+
+  <!-- Get the work done:
+       These are the targets to be executed.
+  -->
+
+  <target name="preparetarget"
+	  description="create clean target directories"
+	  >
+    <delete dir="${targetdir}"/>
+    <echo message="Old target dir removed"/>
+    <mkdir dir="${targetdir}"/>
+    <echo message="New target dir created"/>
+  </target>
+
+  <target name="cpbluej" 
+	  description="copy bluej project files">
+    <copy todir="${targetdir}">
+      <fileset dir="${solutiondir}">
+	<include name="**/*.ctxt"/>
+	<include name="**/bluej.pk*"/>
+	<include name="**/package.bluej"/>
+	<include name="**/README.TXT"/>
+      </fileset>
+    </copy> 
+    <echo message="BlueJ files copied"/>
+  </target>
+
+  <target name="cp-nb" 
+	  description="copy netbeans project files">
+    <copy todir="${targetdir}">
+      <fileset dir="${solutiondir}">
+	<include name="**"/>
+      </fileset>
+    </copy> 
+    <echo message="netbeans files copied"/>
+  </target>
+
+  <target name="cp-r" 
+	  description="copy r project files">
+    <copy todir="${targetdir}">
+      <fileset dir="${solutiondir}">
+	<include name="**"/>
+      </fileset>
+    </copy> 
+    <echo message="r files copied"/>
+  </target>
+  
+  <target name="strip-java"
+	  description="code strip java source files">
+    <taskdef name="codestripper"
+             classname="org.fontysvenlo.codestripper.CodeStripper"
+             classpath="/usr/shared/ant/lib/codestripper.jar" />
+    <codestripper todir="${targetdir}"
+		  dir="${solutiondir}"
+		  deletelines="true"
+		  includes="**/*.java"
+		  />
+    <echo message="Codestripper executed"/>
+  </target>
+
+  <target name="strip-jsf"
+	  description="code strip java source files">
+    <taskdef name="codestripper"
+             classname="org.fontysvenlo.codestripper.CodeStripper"
+             classpath="/usr/shared/ant/lib/codestripper.jar" />
+    <codestripper todir="${targetdir}"
+		  dir="${solutiondir}"
+		  deletelines="true"
+		  includes="**/*.xhtml"
+		  starttag=".*?--Start Solution.*?"
+		  endtag=".*?--End Solution.*?"
+		  />
+    <echo message="Codestripper executed"/>
+  </target>
+
+  <target name="strip-r"
+	  description="code strip r source files">
+    <taskdef name="codestripper"
+             classname="org.fontysvenlo.codestripper.CodeStripper"
+             classpath="/usr/shared/ant/lib/codestripper.jar" />
+    <codestripper todir="${targetdir}"
+		  dir="${solutiondir}"
+		  starttag="#\s*?Start Solution.*?"
+		  endtag="#\s*?End Solution.*?"
+		  deletelines="true"
+		  includes="**/*.R"
+		  />
+    <echo message="Codestripper executed"/>
+  </target>
+
+  <target name="strip-sql"
+	  description="code strip sql source files">
+    <taskdef name="codestripper"
+             classname="org.fontysvenlo.codestripper.CodeStripper"
+             classpath="/usr/shared/ant/lib/codestripper.jar" />
+    <codestripper todir="${targetdir}"
+		  dir="${solutiondir}"
+		  deletelines="true"
+		  includes="**/*.sql"
+		  />
+    <echo message="Codestripper executed"/>
+  </target>
+
+  
+  <target name="dobluej"
+	  description="do the work required for a bluej project"
+	  depends="preparetarget,cpbluej,strip-java"
+	  />
+
+  <target name="dosql"
+	  description="do the work required for a sql exam project"
+	  depends="preparetarget,strip-sql"
+	  />
+
+  <target name="donetbeans"
+	  description="do the work required for a netbeans exam; project may have xhtml sources."
+	  depends="preparetarget,cp-nb,strip-java,strip-jsf"
+	  />
+
+  <target name="doR"
+	  description="do the work required for a r exam; project may
+		       have r sources."
+	  depends="preparetarget,cp-r,preparetarget,strip-r"
+	  />
+  
+</project>
+<!-- eof build.xml -->

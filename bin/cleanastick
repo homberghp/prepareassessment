@@ -1,0 +1,13 @@
+#!/bin/bash 
+sgdisk --zap-all  /dev/sdc
+sync
+cat part-16GB | sfdisk -q --force /dev/sdc
+sync 
+umount /dev/sdc1
+echo partprobe /dev/sdc
+partprobe /dev/sdc
+fdisk -l /dev/sdc
+mkfs.vfat -n SEBI256 /dev/sdc1
+echo mk file system of /dev/sdc2
+mkfs.ext2 -q -L home-rw /dev/sdc2
+

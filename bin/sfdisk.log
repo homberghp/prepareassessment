@@ -1,0 +1,2 @@
+
+sfdisk: can specify only one device (except with -l or -s)

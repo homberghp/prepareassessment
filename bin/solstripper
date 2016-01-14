@@ -1,0 +1,4 @@
+#!/bin/bash
+source ../default.properties
+scriptdir=$(dirname $0)
+ant -f ${scriptdir}/../config/build-stripper.xml -Dstarttag="${starttag}" -Dendtag="${endtag}" -Dreplacetag="${replacetag}"

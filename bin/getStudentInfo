@@ -1,0 +1,15 @@
+#!/bin/bash
+
+if [ $# -lt 2 ] ; then
+    echo usage: $0 '<prjm_id> <start-stickno>'
+    exit 1
+fi
+prjm_id=$1
+sticknr=$2;
+
+# get the project zip file
+wget -q -O studentsForProject.zip "http://www.fontysvenlo.org/wsb/admin/createProjectAccountSet.php?prjm_id=${prjm_id}&exam=exam&stickno=${sticknr}"
+
+# extract only the relevant pieces
+unzip -oj studentsForProject.zip '*/tickets.pdf' '*/records.csv' '*/usb-manual.pdf'
+

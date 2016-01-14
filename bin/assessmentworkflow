@@ -1,0 +1,14 @@
+#!/bin/bash
+
+echo mkdir assessment dir 20130123
+echo goto dir cd 20130123
+echo cp ../any/build.* .
+echo cp ../any/project.xml_template .
+echo getSolution.sh
+echo ant 
+echo getStudentInfo prjm_id sticknr
+echo getStudentInfo 643 101
+echo makerepos3.pl > doit.sh
+echo volg instructies na doit.sh
+
+  

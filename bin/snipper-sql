@@ -1,0 +1,57 @@
+#!/usr/bin/perl -w
+# this file chops up the file into snippets per student.
+# @author Pieter van den Hombergh
+use Config::Properties;
+use File::Path qw(make_path);
+use Cwd;
+open PROPS, "../default.properties" or die "unable to open setup file";
+
+my $workdir= getcwd;
+$workdir =~ m/.*(\d{4})(\d{2})(\d{2})$/;
+my $defexam_date ="$1-$2-$3";
+
+my $properties = new Config::Properties();
+$properties->load(*PROPS);
+my $module_name =$properties->getProperty('module_name','SEN1');
+my $exam_date = $properties->getProperty('exam_date',$defexam_date);
+my $extension= $properties->getProperty('extension','c');
+my $exam_year = substr($exam_date,0,4);
+my $exam_id = $module_name.'-'.$exam_date;
+my $exam_web_dir="/home/examdoc/public_html/${exam_year}/${exam_id}";
+
+my $resources_dir='/usr/local/prepareassessment/resources';
+
+my ($dir,$max,$cand,$snipfile,$qdir,$filepath);
+my $on = 0;
+my $FILE;
+my $writing=0;
+#my $validRegexOn='\<editor-fold.*?\sdesc=\"(\w+);\s+MAX\s+(\d+);\s+\((\d{4,7})\)'; 
+#my $validRegexOn='.+?\<editor-fold\s+defaultstate=\"expanded\"\s+desc=\"(\w+);.+?\((\d{4,7})\).+?WEIGHT\s+(\d+)';
+my $validRegexOn='.+?\<editor-fold\s+defaultstate=\"expanded\"\s+desc=\"(\w+);.+?\((EXAM\d{3})\).+?WEIGHT\s+(\d+)';
+my $validRegexOff='.+?\</editor-fold.*';
+
+while (<>) {
+  chomp;
+  if ( m/${validRegexOn}/) {
+    if ($on) {
+      close(FILE);
+    }
+    $on=1;
+    $dir=$1;
+    $max=$3;
+    $cand=$2;
+    $snipfile= $cand.'.snippet';
+    $qdir=$exam_web_dir.'/harvest/snippets/'.$dir;
+    $filepath=$qdir.'/'.$snipfile;
+    print STDERR "creating $filepath\n";
+    make_path($qdir);
+    open(FILE,">$filepath") or die "cannot open $filepath\n";
+    print FILE qq($_\n);
+  } elsif (m/${validRegexOff}/ && $on) {
+    print FILE qq($_\n) unless $_ =~m/^\s*$/;
+    close(FILE);
+    $on = 0;
+  } elsif ($on) {
+    print FILE qq($_\n) unless $_ =~m/^\s*$/;
+  }
+}

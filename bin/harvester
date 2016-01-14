@@ -1,0 +1,48 @@
+#!/bin/bash
+# This file collects all student solutions of questons into one file per question.
+# this version is specific to *.sql file names.
+
+# pre condition: a directory with the name examproject must exist and be populated 
+# with the same file names as the solution file names
+
+# post condition: a newly (re)created directory named harvest will exist in the 
+# the current directory and all student solutions of a question will be combined in
+# repository order in the question file.
+
+# Side effects: harvest contains a sub directory named sandbox, containing the exported 
+# repositories of the candidates.
+# 
+# @author Pieter van den Hombergh
+function usage() {
+    cat <<EOF
+    usage $0 repos_parent [ -e source_extension ]
+EOF
+}
+if [ $# -lt 1 ]; then
+    usage
+    exit 1
+fi
+
+# fetch settings from parent
+source ../default.properties
+# next line looks complex but it simply transforms an 8 digit date into a dashed date.
+exam_date=$(d=$(pwd);d=${d: -8}; d1=${d:0:4}; d2=${d:4:2}; d3=${d:6:2}; echo ${d1}-${d2}-${d3})
+# year is simpler
+year=$(d=$(pwd);d=${d: -8}; d=${d:0:4}; echo $d)
+webdir=${index_file_grand_parent}/${year}/${module_name}-${exam_date}
+event_name=${module_name}-${exam_date}
+reposbase=${svn_location}/${year}/${event_name}
+EXT=${source_extension}
+# first export stuff
+rm -fr ${webdir}/harvest
+mkdir -p ${webdir}/harvest/{sandbox,snippets}
+for i in $(ls -d ${reposbase}/EXAM*/); do svn export  file://${i} ${webdir}/harvest/sandbox/$(basename ${i}); done
+
+# now cat all same named files into one file with the same name
+for i in $(grep  -rl __STUDENT_ID__ examproject ); do
+    f=$(basename $i)
+    find ${webdir}/harvest/sandbox/ -iname ${f} | xargs cat > ${webdir}/harvest/snippets/${f}; 
+done
+
+echo Happy correcting! 
+# end of solution

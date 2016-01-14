@@ -1,0 +1,27 @@
+<div id='navmain' style='padding:1em;'>
+  <pre>$tabsql</pre>
+  $tab
+  <fieldset><legend>Send results to  participants</legend>
+  <p>You can use the mail from below to send results to assessmemnt
+  participants.
+  The words with a '$'-prefix will be mapped to the
+  actual participants data.
+  You may change the mail text to your liking, which will then be
+  used for the mail(s) you send.</p>
+  <p>The following names are available for expansion in the email
+  text:<br/>
+  <code style='color:#008'>$availableNames</code>.</p>
+  <form method='post' name='invite' action='$PHP_SELF'>
+  <table>
+    <tr><td style='font-weight:bold;text-align:right'>subject:</td>
+    <td><input type='text' size='84' name='mailsubject' value='$mailsubject'/></td>
+  </tr>
+  <tr><td colspan='2'>
+    <textarea cols='120' rows='20' name='mailbody' id='mailbody'>$mailbody</textarea>
+  </td>
+</tr>
+</table>
+<button id='invite' name='invite'>Send result mails</button>
+</form>
+</fieldset>
+</div>

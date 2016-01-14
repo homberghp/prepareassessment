@@ -1,0 +1,26 @@
+#!/usr/bin/perl -w
+# renumbers set of question
+# 
+use strict;
+use diagnostics;
+use warnings;
+use Config::Properties;
+my ($questionfile,$points,$questionpath,@cmd,$num);
+open(QUESTIONS,"<questions.txt") or die qq(cannot open questions.txt\n);
+$num=1;
+while(<QUESTIONS>){
+  chomp;
+  if ($_ ne '') {
+      ($questionfile,$points) = split/;/;
+      $questionpath="./examsolution/$questionfile";
+      if ( -f $questionpath ) {
+	  print qq(found question file $questionpath as Q$num\n);
+	  @cmd=('sed','-i',"s/Q1/Q$num/",$questionpath );
+	  system(@cmd) == 0 or die "system @cmd failed $?\n";
+      } else {
+	  die qq(file $questionpath does not exist, please correct\n);
+      }
+      $num++;
+  } 
+}
+close(QUESTIONS);

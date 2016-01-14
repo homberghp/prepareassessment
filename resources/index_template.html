@@ -1,0 +1,48 @@
+<html>
+    <head>
+
+        <title><?=$title?></title>
+        <style type='text/css'>
+            .beam-back { background-color:white;background-image:url(beam2.png);background-repeat:no-repeat; }
+            .active {background:#4A4; color:white;}
+            .inactive {background:#A44; color:white;}
+
+        </style>
+        <link type="text/css" href="/examdoc/css/pepper-grinder/jquery-ui-1.8.17.custom.css" rel="stylesheet" />
+        <script type="text/javascript" src="/examdoc/js/jquery-1.7.1.min.js"></script>
+        <script type="text/javascript" src="/examdoc/js/jquery-ui-1.8.17.custom.min.js"></script>
+        <script>
+            $(function () {
+                $("#tabs").tabs();
+                $("#tabs").bind('tabsshow', function (event, ui) {
+                    window.location = ui.tab;
+                });
+            });
+        </script>
+
+        <script type="text/javascript">
+            function checkThem(ref, state) {
+                var checks = document.getElementsByName(ref);
+                var boxLength = checks.length;
+                for (i = 0; i < boxLength; i++) {
+                    checks[i].checked = state;
+                }
+            }
+        </script>
+    </head>
+    <body style='font-family:sans-serif;font-size:10pt;'>
+        <h1><?=$h1Title?>, <span style='font-size:60%'>logged in from <?=$remoteAddress?></span></h1>
+        <?php
+        if (file_exists('docblock.html')) {
+        include_once 'docblock.html';
+        }
+        ?>
+        <hr/>
+        <h2>Links to your repository and progress <?=$cwblink?></h2>
+        <div id='tabs'>
+            <?=$reposTable?>
+        </div>
+        <?=$exam_id?>
+    </body>
+</html>
+

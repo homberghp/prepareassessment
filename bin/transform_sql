@@ -1,0 +1,32 @@
+#!/bin/bash
+# This is an example of a transform script.
+# it's purpose to transform some files AFTER they have been copied to the temporary sandboxes, one per candidate,
+# which are to be imported into the repository, before the actual svn import takes place.
+# The script receives three parameters per invocation:
+# 1. the rootpath which is the root of the files that need to be transformed. 
+#    This root typically points into the temproary sandboxes mentioned above.
+# 2. The pre-transfomation pattern, or the text that is to be substituted. 
+#    Something like __STUDENT_ID__, something that is different form all other cwords in the text.
+#     
+# 3. The replacement text. This is the text that replaces the pre-transfomation text, like in 'Pieter van den Hombergh (879417)'
+#    The quotes should be part of the expression.
+#
+# This example script transforms all .sql files it finds below the rootpath.
+#  @author Pieter van den Hombergh. Some linux knowlegde hurts no one.
+function usage() {
+    cat <<EOF
+    This script needs three parameters in the order 'rootpath' 'pattern' 'replacement text'
+EOF
+}
+
+if [ $# -lt 3 ]; then
+    usage
+    exit 1
+fi
+rootpath=$1
+pretransform=$2
+replacement=$3
+
+for file in $(find ${rootpath} -name '*.sql'); do
+    sed -i "s/${pretransform}/${replacement}/" $file
+done
