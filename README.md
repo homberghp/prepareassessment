@@ -27,6 +27,7 @@ The preparation of the image to be put on the stick has started with customizer,
 
 ## stick preparation.
 The preparation of a USB stick consists of two steps:
+
 1. Prepare the base image. This needs to be done once to make the stick usable and otherwise everey time you want to update the base image. The base image can be reused between exam. The program involved is `bin/prepareSticks`.
 2. Insert the exam environment and home directory for the exam candidate. This is done once per exam and inserts a fresh home directory into the stick, erasing any earlier work and insert both a local repository and a checked out sandbox as exam into the stick. The snadbox is conected to the local repository, so that the candidate has a limit backup for the case that he or she screws up the exam environment or an earlier solution.
 
