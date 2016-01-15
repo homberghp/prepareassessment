@@ -39,6 +39,9 @@ if ($fext eq 'java' ) {
 } elsif ($fext eq 'sql' ) {
     $validRegexOn='.*?--\s\<editor-fold\s+defaultstate=\"expanded\"\s+desc=\"(\w+);.+?WEIGHT\s+(\d+)';
     $validRegexOff='.*?--\s\<\/editor-fold.*';
+} elsif ($fext eq 'R' ) {
+    $validRegexOn='.*?\<editor-fold\s+defaultstate=\"expanded\"\s+desc=\"(\w+);.+?WEIGHT\s+(\d+)';
+    $validRegexOff='.*?\<\/editor-fold.*';
 } else {
     die "do not yet understand extension $fext\n";
 }
