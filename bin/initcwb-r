@@ -37,7 +37,9 @@ done
 if [ $extension == 'R' ] ; then
     for i in $(find ${webdir}/harvest -name "*.R.snippet"); do 
 	echo appending  r run to  ${i}.html
-	 cat  $i | grep -v '^#'  | R --silent --no-save  >> ${i}.html ; 
+	echo "<pre style='color:#008'>" >> ${i}.html
+	cat  $i | grep -v '^#'  | R --silent --no-save  &>> ${i}.html  
+	echo "<pre>" >> ${i}.html
     done
 fi
 
