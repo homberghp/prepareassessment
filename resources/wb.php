@@ -58,6 +58,7 @@ if ($snippets == 1) {
 } else {
   $snippetfile = "harvest/sandbox/EXAM{$stick_nr}/{$filepath}.html";
 }
+$workdir=dirname("harvest/sandbox/EXAM{$stick_nr}/{$filepath}.html");
 //echo "<pre>$sql</pre>";
 $solsnippetfile = "harvest/solution/{$quest}.{$fext}.snippet.html";
 $radio = '';

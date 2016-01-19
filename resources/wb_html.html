@@ -3,7 +3,8 @@
   <tr>
   <td valign='top' width='65%'><fieldset style='background:#ddF;font-family:verdana;font-size:10pt'>
     <!--legend><?= $quest ?> (<?= $cand ?>) <?= $snippetfile ?></legend-->
-    <legend><?= $quest ?> (<?= 'EXAM'.$stick_nr ?>) <?= $snippetfile ?></legend>
+    <legend><?= $quest ?> (<?= 'EXAM'.$stick_nr ?>) <?= $snippetfile
+    ?>&nbsp;<a href="<?=$workdir?>" target="_blank">Workdir</a></legend>
   <div class ='scroll task' height='320px' >
     <?=$snippetfile?>
     <?php include "$snippetfile"; ?>
