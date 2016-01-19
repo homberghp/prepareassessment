@@ -34,18 +34,30 @@ for i in $(find ${webdir}/harvest -name "*.R.snippet"); do
     ( enscript --line-numbers -whtml -Esh -q  --color -p -  $i | stripsnip.pl > $i.html &); 
 done
 
+# run complete files in workdir
 if [ $extension == 'R' ] ; then
-    for i in $(find ${webdir}/harvest -name "*.R.snippet"); do 
-	echo appending  r run to  ${i}.html
-	echo "<pre style='color:#008'>" >> ${i}.html
-	cat  $i | grep -v '^#'  | R --silent --no-save  &>> ${i}.html  
-	echo "<pre>" >> ${i}.html
+    for i in $(find ${webdir}/harvest -name "*.R"); do 
+	( 
+	    enscript --line-numbers -whtml -Esh -q  --color -p -  $i | stripsnip.pl > $i.html 
+	    cd $(dirname ${i}) 
+	    echo appending  r run to  ${i}.html
+	    outfile=$(basename ${i} .R).out
+	    cat  $i | grep -v '^#' | R --silent --no-save ${i} > ${outfile}
+	    echo "<pre style='color:#008'>" >> ${i}.html
+	    cat  ${outfile} >> ${i}.html  
+	    echo "<pre>" >> ${i}.html
+	    if [ -f Rplots.pdf ]; then
+		for p in *.pdf; do
+		    convert $p $(basename $p .pdf).png
+		done
+	    fi
+	) 
     done
 fi
 
-for i in $(find ${webdir}/harvest -name "*.${extension}"); do
-    ( enscript --line-numbers -whtml -Esh -q  --color -p -  $i | stripsnip.pl > $i.html &); 
-done
+# for i in $(find ${webdir}/harvest -name "*.${extension}"); do
+#     ( enscript --line-numbers -whtml -Esh -q  --color -p -  $i | stripsnip.pl > $i.html &); 
+# done
 
 # link to resources
 ln -sf /usr/local/prepareassessment/resources/*.php ${webdir}
