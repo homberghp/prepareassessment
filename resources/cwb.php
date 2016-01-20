@@ -15,19 +15,24 @@ $quest = '';
 $cand = '';
 $snippets=0;
 $rremarks=0;
-if (!isSet($_SESSION['stick_event_repo_id'])) {
-  $sql = "select min(stick_event_repo_id) as stick_event_repo_id from stick_event_repo where event='{$event}'";
+if (!isSet($_SESSION['stick_event_repo_id']) || !isSet($_SESSION['quest'])) {
+  $sql = "select min(question||':'||stick_event_repo_id) as next_qs from assessment_scores \n"
+      ."where event='{$event}' and question||':'||stick_event_repo_id > '{$quest}:{$stick_event_repo_id}'";
     $resultSet = $dbConn->Execute( $sql );
     if ( $resultSet === null ) {
         die( "query '$sql' failed with " . $dbConn->ErrorMsg() );
     }
-    $stick_event_repo_id=$_SESSION['stick_event_repo_id'] = $resultSet->fields['stick_event_repo_id'];
+    if ( !$resultSet->EOF ) {
+      list($q,$stk) = explode( ':', $resultSet->fields['next_qs'] );
+      $stick_event_repo_id=$_SESSION['stick_event_repo_id'] = $stk;
+      $quest=$_SESSION['quest']=$q;
+    }
 }
 extract( $_SESSION );
-if ( isSet( $_REQUEST['quest'] ) ) {
+if ( isSet( $_REQUEST['quest'] ) && $_REQUEST['quest'] !=='' ) {
     $quest = $_REQUEST['quest'];
 }
-if ( isSet( $_REQUEST['stick_event_repo_id'] ) ) {
+if ( isSet( $_REQUEST['stick_event_repo_id'] )  && $_REQUEST['stick_event_repo_id']!=='') {
     $stick_event_repo_id = $_REQUEST['stick_event_repo_id'];
 }
 $snippets = $_SESSION['snippets']; 
