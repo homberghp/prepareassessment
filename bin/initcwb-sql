@@ -36,6 +36,7 @@ for i in $(find ${webdir}/harvest -name "*.sql"); do
 	cd $(dirname ${i}) 
 	outfile=$(basename ${i}).out.html
 	(echo 'begin work;' ;cat  $i; echo ';rollback;') | psql  --pset format=html ${database} >> ${outfile}
+	echo "<hr/>" >> ${i}.html
 	cat ${outfile} >> ${i}.html
 	echo done with ${i}
 	) & 
@@ -50,6 +51,7 @@ if [ $extension == 'sql' ] ; then
 	    enscript --line-numbers -whtml -E${extension} -q  --color -p -  $i | stripsnip.pl > $i.html
 	    
 	    (echo 'begin work;' ;cat  $i; echo ';rollback;') | psql  --pset format=html ${database} >> ${outfile}
+	    echo "<hr/>" >> ${i}.html
 	    cat ${outfile} >> ${i}.html
 	    echo done with ${i}
 	)
