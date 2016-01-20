@@ -1,0 +1,68 @@
+#!/usr/bin/perl -w
+# connect students to sticks
+use strict;
+use Config::Properties;
+use DBI;
+use POSIX qw(floor);;
+use File::Path qw(make_path);
+use Cwd;
+
+my $db='assessment';
+my $dbuser='wwwrun';
+my $dbpasswd='apache4ever';
+
+my $dbh= DBI->connect("dbi:Pg:dbname=$db","$dbuser" ,"$dbpasswd");
+my $sth;
+my $workdir= getcwd;
+$workdir =~ m/.*(\d{4})(\d{2})(\d{2})$/;
+my $defexam_date ="$1-$2-$3";
+
+open PROPS, "<../default.properties" or die "unable to open setup file";
+open STICKS, "<./sticks.csv" or die "unable to open sticks file";
+my $properties = new Config::Properties();
+$properties->load(*PROPS);
+my $module_name =$properties->getProperty('module_name','SEN1');
+my $exam_date = $properties->getProperty('exam_date',$defexam_date);
+my $exam_year = substr($exam_date,0,4);
+my $exam_id = $module_name.'-'.$exam_date;
+my $exam_web_dir="/home/examdoc/public_html/${exam_year}/${exam_id}";
+my ($stick,$snummer);
+
+my $resources_dir='/usr/local/prepareassessment/resources';
+my $event=$exam_id;
+$event =~ s/-//g;
+my $query= qq(begin work;
+prepare drop_stick(int) as 
+   delete from candidate_stick cs 
+   where exists (select 1 from candidate_stick 
+               join stick_event_repo using(stick_event_repo_id) 
+               where stick_event_repo_id=cs.stick_event_repo_id and event='$event' and stick_nr=\$1);
+
+prepare new_stick (int,int) as
+   insert into candidate_stick select stick_event_repo_id,\$2 
+   from stick_event_repo 
+    where stick_nr=\$1 and event='$event'
+    and not exists (select * from candidate_stick 
+               join stick_event_repo using(stick_event_repo_id) where stick_nr=\$1 and snummer=\$2);\n);
+while(<STICKS>){
+    chomp;
+    $_=~s/\r//g;
+    ($stick,$snummer) = split/;/;
+    if ($snummer =~ m/\d+/) {
+	$query .= qq(execute drop_stick($stick);\nexecute new_stick($stick,$snummer);\n);
+    }
+}
+
+$query .= qq(
+update stick_event_repo s set youngest=2 where event='$event' 
+   and exists (select 1 from candidate_stick where stick_event_repo_id=s.stick_event_repo_id);
+insert into assessment_scores (event,student,question,update_ts,snummer,stick_event_repo_id)
+    select event,username as student,question,null, snummer,stick_event_repo_id
+    from candidate_repos
+    join assessment_questions using(event)
+    where event='$event' and (event,snummer) not in (select event,snummer from assessment_scores);
+commit;
+);
+
+print qq($query);
+exit(0);
