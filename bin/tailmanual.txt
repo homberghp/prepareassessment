@@ -1,10 +1,23 @@
 #!/bin/bash
+
+if [ -e ../default.properties ] ; then
+    source ../default.properties
+else 
+    echo "cannot find settings '../default.properties', please got to proper dir."
+    exit 1
+fi
+exam_date=$(d=$(pwd);d=${d: -8}; d1=${d:0:4}; d2=${d:4:2}; d3=${d:6:2}; echo ${d1}-${d2}-${d3})
+event_name=${module_name}-${exam_date}
+year=${exam_date:0:4}
+if [ $# -gt 1 ] ; then
+    exam_id=$1
+fi
 echo \# Do not forget to fill the database with:
 echo cat paconfig/filldb.sql \| psql -X assessment
 echo 
 echo \# copy the config file apache and activate it:
-echo sudo cp paconfig/$exam_id.conf /etc/apache2/sslsites-available
-echo sudo ln -sf ../sslsites-available/$exam_id.conf /etc/apache2/sslsites-enabled
+echo sudo cp paconfig/${exam_id}.conf /etc/apache2/sslsites-available
+echo sudo ln -sf /etc/apache2/sslsites-available/${exam_id}.conf /etc/apache2/sslsites-enabled
 echo sudo service apache2 reload
 echo 
 echo \# Once an exam site is visible under /etc/apache2/sites-available
