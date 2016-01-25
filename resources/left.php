@@ -8,7 +8,8 @@ function leftMenu($dbConn,$event,$quest,$stick){
     ." join assessment_scores ac using(stick_event_repo_id,event) \n"
     ." join stick_grade_sum using(stick_event_repo_id) \n"
     ."join assessment_weight_sum using(event)\n"
-    ."where ser.event='{$event}' and question='{$quest}' order by stick_nr";
+    ."where ser.event='{$event}' "
+    ."and question='{$quest}' and youngest notnull order by stick_nr";
   //  select *,round(summed_score/weight_sum,1) as final from stick_grade_sum natural join stick_event_repo join assessment_weight_sum using(event)  where event='DBS120150126';
 
   $resultSet = $dbConn->Execute( $sql );
