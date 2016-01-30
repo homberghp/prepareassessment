@@ -30,7 +30,7 @@ if ( isSet( $_POST['submit'] ) && isSet( $_POST['stick_event_repo_id'] ) && isSe
         die( "query '$sql' failed with " . $dbConn->ErrorMsg() );
     }
 
-    $query ="select min(question||':'||stick_event_repo_id) as next_qs from assessment_scores \n"
+    $query ="select min(question||':'||stick_event_repo_id) as next_qs from assessment_scores join candidate_stick using(stick_event_repo_id)\n"
       ."where event='{$event}' and question||':'||stick_event_repo_id > '{$quest}:{$stick_event_repo_id}'";
 
     $resultSet = $dbConn->Execute( $query );

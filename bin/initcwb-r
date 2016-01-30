@@ -42,7 +42,8 @@ if [ $extension == 'R' ] ; then
 	    cd $(dirname ${i}) 
 	    echo appending  r run to  ${i}.html
 	    outfile=$(basename ${i} .R).out
-	    cat  $i | grep -v '^#' | R --silent --no-save ${i} > ${outfile}
+	    echo -n > ${outfile}
+	    cat  $i | grep -v '^#' | R --silent --no-save ${i} &>> ${outfile}
 	    echo "<pre style='color:#008'>" >> ${i}.html
 	    cat  ${outfile} >> ${i}.html  
 	    echo "<pre>" >> ${i}.html

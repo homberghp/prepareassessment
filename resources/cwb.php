@@ -16,7 +16,7 @@ $cand = '';
 $snippets=0;
 $rremarks=0;
 if (!isSet($_SESSION['stick_event_repo_id']) || !isSet($_SESSION['quest'])) {
-  $sql = "select min(question||':'||stick_event_repo_id) as next_qs from assessment_scores \n"
+  $sql = "select min(question||':'||stick_event_repo_id) as next_qs from assessment_scores join candidate_stick using(stick_event_repo_id)\n"
       ."where event='{$event}' and question||':'||stick_event_repo_id > '{$quest}:{$stick_event_repo_id}'";
     $resultSet = $dbConn->Execute( $sql );
     if ( $resultSet === null ) {

@@ -222,7 +222,7 @@ harvester = rw
 open(STREAM,"grep -r  STUDENT_ID  examproject|") or die qq(cannot open stream from examproject/*\n);
 my ($filepart,$tagpart,$question,$maxpoints,$filename);
 print SQL qq(prepare new_question(text,varchar(40),int,text) as
-	insert into assessment_questions (event,question,max_points,filepath) values(\$1,\$2,\$3,\$3);
+	insert into assessment_questions (event,question,max_points,filepath) values(\$1,\$2,\$3,\$4);
 );
 while(<STREAM>){
     chomp;
