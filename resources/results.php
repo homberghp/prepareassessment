@@ -12,15 +12,21 @@ function score_by_category($event,$category,$tweight){
   global $dbConn;
   global $catMap;
   global $spreadSheetWriter;
+  $tabHead="<div style='margin:1em;font-size:10pt'><table border='1' style='border-collapse:collapse'>\n<thead><tr><th>Task</th>";
+  $weightsRow="\n<tr><th>Weight</th>";
+  $tab='<table>';
   $weights=array();
-  $sql ="select max_points as weight from assessment_questions where event='{$event}' and category='{$category}' order by question";
+  $sql ="select question,max_points as weight from assessment_questions where event='{$event}' and category='{$category}' order by question";
   $resultSet = $dbConn->Execute( $sql );
   if ( $resultSet === null ) {
     die( "query '{$sql}' failed with " . $dbConn->ErrorMsg() . "\n" );
   }
   for(;!$resultSet->EOF; $resultSet->moveNext()){
+    $tabHead .="<th>{$resultSet->fields['question']}</th>";
+    $weightsRow .="<td align='right'>{$resultSet->fields['weight']}</td>";
     $weights[] =  $resultSet->fields['weight'];
   }
+  $tabHead .="</tr></thead>\n{$weightsRow}</tr>\n</table>\n</div>";
   $sql = "select assessment_score_query3('{$event}','{$category}') as query";
   $resultSet = $dbConn->Execute( $sql );
   if ( $resultSet === null ) {
@@ -48,7 +54,7 @@ function score_by_category($event,$category,$tweight){
   }
   $res .="\n</table>";
   //$query="select * from assessment_results where event='$event'";
-  $tab = simpleTableString( $dbConn, $query,"<table id='myTable-{$category}' name='myTable-{$category}' "
+  $tab = $tabHead.simpleTableString( $dbConn, $query,"<table id='myTable-{$category}' name='myTable-{$category}' "
 			    ."class='tablesorter' summary='simple table' style='empty-cells:show;border-collapse:collapse' border='1'>" );
   $resultSet = $dbConn->Execute( $query );
   $spreadSheetWriter[$category] = new SpreadSheetWriter( $dbConn, $query );
