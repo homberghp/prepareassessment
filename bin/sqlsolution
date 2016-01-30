@@ -1,0 +1,8 @@
+#!/bin/bash
+for i in examsolution/*.sql;  do 
+    echo "-- <expectedresult>" > rommel
+    cat $i | psql presidentDB | grep -v "^Pager" | sqlcomment  >> rommel
+    echo "-- </expectedresult>" >>  rommel
+    cat rommel >> $i
+    rm rommel
+done
