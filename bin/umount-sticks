@@ -10,9 +10,9 @@ for i in /media/usb/casper-rw* /media/usb/home-rw*; do
     if [ -d ${i} ]; then 
 	if grep -q ${i} /proc/mounts ; then 
 	    ${debug} umount ${i}
-	    rm -fr ${i}
 	    echo unmounted  ${i}
 	fi
+	rm -fr ${i}
     fi
 done
     
@@ -22,9 +22,9 @@ for i in /media/hom/*; do
 	mountpoint=${i}
 	if grep -q ${i} /proc/mounts ; then 
 	    ${debug} umount ${mountpoint}
-	    rm -fr ${mountpoint}
 	    echo unmounted  ${mountpoint}
 	fi
+	rm -fr ${mountpoint}
     fi
 done
 sync

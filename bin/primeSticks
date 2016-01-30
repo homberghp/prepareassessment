@@ -42,15 +42,17 @@ for i in /media/usb/home-rw-${STYPE}*; do
 	${debug} rsync -aq /home/${stype}/.netbeans/ ${homedir}/.netbeans/
 	#  sandbox should have .svn child
 	${debug} rsync -aq /home/${stype}/Desktop/examproject-${stick}/ ${homedir}/Desktop/examproject-${stick}/
-	if [ -e rootfs.tgz ]; then 
-	    echo found rootfs payload, copying
-	    if [ ! -e ${rootfsmountpoint}/format ] ; then 
+	if [ ! -e ${rootfsmountpoint}/format ] ; then # work/work is Okay
 	    mkdir -p ${rootfsmountpoint}/{upper,work/work}
 	    cat -- <<EOF > ${rootfsmountpoint}/format
 # This records the union filesystem format used for this cow medium; do not delete or alter.
 UNIONFS=overlay
 EOF
-	    fi
+	else
+	    rm -fr ${rootfsmountpoint}/upper/var/log/*
+	fi
+	if [ -e rootfs.tgz ]; then 
+	    echo found rootfs payload, copying
 	    ${debug} tar -C ${rootfsmountpoint}/upper/ -xzf rootfs.tgz 
 	fi
 	echo primed stick ${stick}
