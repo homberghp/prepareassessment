@@ -12,10 +12,19 @@ function score_by_category($event,$category,$tweight){
   global $dbConn;
   global $catMap;
   global $spreadSheetWriter;
+  $weights=array();
+  $sql ="select max_points as weight from assessment_questions where event='{$event}' and category='{$category}' order by question";
+  $resultSet = $dbConn->Execute( $sql );
+  if ( $resultSet === null ) {
+    die( "query '{$sql}' failed with " . $dbConn->ErrorMsg() . "\n" );
+  }
+  for(;!$resultSet->EOF; $resultSet->moveNext()){
+    $weights[] =  $resultSet->fields['weight'];
+  }
   $sql = "select assessment_score_query3('{$event}','{$category}') as query";
   $resultSet = $dbConn->Execute( $sql );
   if ( $resultSet === null ) {
-    die( "query '$sql' failed with " . $dbConn->ErrorMsg() . "\n" );
+    die( "query '{$sql}' failed with " . $dbConn->ErrorMsg() . "\n" );
   }
 //echo "{$resultSet->fields['query']}<br/>";
   $query = "select s.snummer,s.achternaam,s.roepnaam,s.voorvoegsel,trim(email1) as email,ct.*,round(fs.weighted_sum/{$tweight},1) as final \n"
@@ -30,6 +39,8 @@ function score_by_category($event,$category,$tweight){
     die( "query '$query' failed with " . $dbConn->ErrorMsg() . "\n" );
   }
   $res = "<table border=1 style='border-collapse:collapse'>\n";
+  $firstWeightColumn =7;
+  $weightSumColumn=$firstWeightColumn+count($weights)+1;
   while ( !$resultSet->EOF ) {
     
     $res .= '<tr><td>' . join( '</td><td>', $resultSet->fields ) . "</td></tr>\n";
@@ -45,6 +56,9 @@ function score_by_category($event,$category,$tweight){
   $spreadSheetWriter[$category]->setTitle("Result for ".$event." part {$catMap[$category]}")
     ->setName('spreadsheetwriter_'.$category)
     ->setLinkUrl("https://osirix.fontysvenlo.org")
+    ->setWeights($weights)
+    ->setFirstWeightsColumn($firstWeightColumn)
+    ->setWeightSumsColumn($weightSumColumn)
     ->setFilename(  $fileName )
     ->setAutoZebra(true);
   // when the previous method returns, render the page.
