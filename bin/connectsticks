@@ -48,7 +48,7 @@ while(<STICKS>){
     chomp;
     $_=~s/\r//g;
     ($stick,$snummer) = split/;/;
-    if ($snummer =~ m/\d+/) {
+    if ( ($stick =~m/\d+/) && ($snummer =~ m/\d+/)  ) {
 	$query .= qq(execute drop_stick($stick);\nexecute new_stick($stick,$snummer);\n);
     }
 }
