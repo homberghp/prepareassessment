@@ -1,5 +1,7 @@
 <?php
-$db_name = 'assessment';
+if (!isSet($db_name)) {
+  $db_name = 'assessment';
+}
 $dbUser='wwwrun';
 $host = 'localhost';
 $proto = 'pgsql';
