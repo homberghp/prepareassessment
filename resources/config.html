@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Configuration page for performance assessment for event<?=$event?></title>
+    <link type="text/css" href="/examdoc/css/pepper-grinder/jquery-ui-1.8.17.custom.css" rel="stylesheet" />
+    <script type="text/javascript" src="/examdoc/js/jquery-1.7.1.min.js"></script>
+    <script type="text/javascript" src="/examdoc/js/jquery-ui-1.8.17.custom.min.js"></script>
+    <script src="/examdoc/js/jquery.tablesorter.min.js"></script>
+  <script type="text/javascript">
+   $(document).ready(function() {
+        $("#questionTable").tablesorter({widgets: ["zebra"]});
+    });
+  </script>
+
+<style type='text/css'>
+  .num {text-align:right;}
+   textarea{width:100%;height:80px}
+</style>
+    <link rel='stylesheet' type='text/css' href='/examdoc/css/tablesorterstyle.css'/>
+
+</head>
+    <body style='margin:.5em; font-family:verdana'>
+        <h3>Settings for performance assessment <?=$event?>  or back to <a href='cwb.php'>CWB</a></h3>
+ <?=$table?>
+</body>
+</html>
