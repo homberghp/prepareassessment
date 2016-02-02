@@ -1,6 +1,6 @@
 <?php
 if (!isSet($db_name)) {
-  $db_name = 'assessment';
+  $db_name = 'sebiassessment';
 }
 $dbUser='wwwrun';
 $host = 'localhost';
