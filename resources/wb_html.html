@@ -1,48 +1,63 @@
 <form method='post' name='scoreForm' id='scoreForm' action='process.php'>
 <table width='100%'>
   <tr>
-  <td valign='top' width='65%'><fieldset style='background:#ddF;font-family:verdana;font-size:10pt'>
-    <!--legend><?= $quest ?> (<?= $cand ?>) <?= $snippetfile ?></legend-->
-    <legend><?= $quest ?> (<?= 'EXAM'.$stick_nr ?>) <?= $snippetfile
-    ?>&nbsp;<a href="<?=$workdir?>" target="_blank"><img
-    src='images/workbench-22x22.png' alt='workdir' border='0'/>Workdir</a></legend>
-  <div class ='scroll task' height='320px' >
-    <?=$snippetfile?>
-    <?php include "$snippetfile"; ?>
-  </div>
+    <td valign='top' width='65%'><fieldset style='background:#ddF;font-family:verdana;font-size:10pt'>
+      <!--legend><?= $quest ?> (<?= $cand ?>) <?= $snippetfile ?></legend-->
+      <legend><span style='font-size:140%; font-weight:bold;background-color:#FFF'><?= $quest ?> (<?= 'EXAM'.$stick_nr ?>)</span> <?= $snippetfile
+      ?>&nbsp;<a href="<?=$workdir?>" target="_blank"><img
+      src='images/workbench-22x22.png' alt='workdir' border='0'/>Workdir</a></legend>
+    <div class ='scroll task' height='320px' >
+      <?=$snippetfile?>
+      <?php include "$snippetfile"; ?>
+    </div>
+    </fieldset>
+    </td>
+    <td rowspan='4' valign='top' >
+      <fieldset ><legend>Corrector&#39;s Remark per candidate*answer</legend>
+      <textarea name='remark' rows='10' cols='60'><?= $remark ?></textarea>
+      </fieldset>
+      <fieldset class='remarks'>
+      Remarks by <a href='cwb.php?rremarks=1'>quest</a>
+      <a href='cwb.php?rremarks=0'>cand</a>.<br/>
+      <?=$remarks?></fieldset>
+    </td>
+  </tr>
+  <tr>
+    <td valign='top'>
+    <div style='background:whitesmoke'>
+      <label style='font-weight:bold' for='score'>Score </label>
+      <input type='hidden' name='quest' value='<?= $quest ?>'/>
+      <input type='hidden' name='stick_event_repo_id' value='<?= $stick_event_repo_id ?>'/>
+      <input type='hidden' name='id' value='<?= $id ?>'/>
+    <!--   <input type="range" name="points" id="points" min="1" max="10" -->
+    <!--   value="<?=$score?>" step="0.1" onchange="setScore(this.value)" -->
+    <!--   list="steplist"/> -->
+    <!--   <datalist id="steplist"> -->
+    <!-- <option>0</option> -->
+    <!-- <option>1</option> -->
+    <!-- <option>2</option> -->
+    <!-- <option>3</option> -->
+    <!-- <option>4</option> -->
+    <!-- <option>5</option> -->
+    <!-- <option>6</option> -->
+    <!-- <option>7</option> -->
+    <!-- <option>8</option> -->
+    <!-- <option>9</option> -->
+    <!-- <option>10</option> -->
+    <!--   </datalist> -->
+      <?= $radio ?>
+      <input type='number' style='text-align:right;' 
+      placeholder='6.5' min="0" max="10.0" step="0.1" size='4' value='<?= $score ?>'
+      name='score' id='score' onchange="setScore(this.value)"/>
+      <button id='submitbutton' name ='submit'  type='submit'>Check</button>
+      <input type='reset'/><br/>
+    </div>
+    </td>
+  </tr>
+  <tr><td valign='top'><fieldset style='background:#dFd;font-family:verdana;font-size:10pt'><legend>Solution: <?= $solsnippetfile ?></legend>
+  <div class='scroll sol' height='320px'><?php include "$solsnippetfile"; ?></div>
   </fieldset>
   </td>
-  <td rowspan='4' valign='top' >
-    <fieldset ><legend>Corrector&#39;s Remark per candidate*answer</legend>
-    <textarea name='remark' rows='10' cols='60'><?= $remark ?></textarea>
-    </fieldset>
-  <fieldset class='remarks'>
-    Remarks by <a href='cwb.php?rremarks=1'>quest</a>
-    <a href='cwb.php?rremarks=0'>cand</a>.<br/>
-    <?=$remarks?></fieldset>
-  </td>
-</tr>
-<tr>
-  <td valign='top'>
-  <div style='background:whitesmoke'>
-    <label style='font-weight:bold' for='score'>Score </label>
-    <input type='number' style='text-align:right;' 
-    placeholder='6.5' min="0" max="10.0" step="0.1" size='4' value='<?= $score ?>'
-    name='score' id='score' onchange="setScore(this.value)"/>
-    <input type='hidden' name='quest' value='<?= $quest ?>'/>
-    <input type='hidden' name='stick_event_repo_id' value='<?= $stick_event_repo_id ?>'/>
-    <input type='hidden' name='id' value='<?= $id ?>'/>
-    <!--input type="range" name="points" id="points" min="1" max="10" value="<?=$score?>" step="0.1" onchange="setScore(this.value)"/-->
-    <?= $radio ?>
-    <button id='submitbutton' name ='submit'  type='submit'>Check</button>
-    <input type='reset'/><br/>
-  </div>
-  </td>
-</tr>
-<tr><td valign='top'><fieldset style='background:#dFd;font-family:verdana;font-size:10pt'><legend>Solution: <?= $solsnippetfile ?></legend>
-<div class='scroll sol' height='320px'><?php include "$solsnippetfile"; ?></div>
-</fieldset>
-</td>
 </tr>
 <tr><td valign='top'><fieldset
   style='background:#ddF;font-family:verdana;font-size:8pt'><legend>Grading

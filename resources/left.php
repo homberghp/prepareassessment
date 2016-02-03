@@ -20,16 +20,18 @@ function leftMenu($dbConn,$event,$quest,$stick){
   $left_idx=0;
   while ( !$resultSet->EOF ) {
     extract( $resultSet->fields );
+    $r=180; $g=180; $b=180;
+    $fweight='medium';
+    if ( $score > 6.0 ) {
+      $g =255;
+    } else if ( $score >= 1.0 ) {
+      $r =255;
+    }
     if ( $stick == $stick_event_repo_id ) {
-      $style = 'background:#fff;font-weight:bold;';
-    } else
-      if ( $score > 6.0 ) {
-        $style = 'background:#afa;';
-      } else if ( $score >= 1.0 ) {
-        $style = 'background:#faa;';
-      } else {
-        $style = 'background:#bbb;';
-      }
+      $r =255; $g=255; $b =255; 
+      $fweight='bold';
+    }
+    $style = "background-color:rgb({$r},{$g},{$b});font-weight:{$fweight};";
     $gradestyle = 'font-weight:bold;';
     if ( $grade < 5.5 ) {
       $gradestyle .='color:c00;';
