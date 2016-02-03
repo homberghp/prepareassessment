@@ -45,8 +45,8 @@ function score_by_category($event,$category,$tweight){
     die( "query '$query' failed with " . $dbConn->ErrorMsg() . "\n" );
   }
   $res = "<table border=1 style='border-collapse:collapse'>\n";
-  $firstWeightColumn =7;
-  $weightSumColumn=$firstWeightColumn+count($weights)+1;
+  $firstWeightColumn =8;
+  $weightSumColumn=$firstWeightColumn+count($weights);
   while ( !$resultSet->EOF ) {
     
     $res .= '<tr><td>' . join( '</td><td>', $resultSet->fields ) . "</td></tr>\n";
