@@ -13,7 +13,9 @@ include_once 'settings.php';
 include_once '/usr/local/prepareassessment/resources/setdb.php';
 $quest = '';
 $cand = '';
-$snippets=0;
+if (!isSet($_SESSION['snippets'])) {
+  $snippets = $_SESSION['snippets'] = 1;
+}
 $rremarks=0;
 if (!isSet($_SESSION['stick_event_repo_id']) || !isSet($_SESSION['quest']) || ! isSet($_SESSION['event']) || $event !== $_SESSION['event']) {
   $sql = "select min(question||':'||stick_event_repo_id) as next_qs from assessment_scores join candidate_stick using(stick_event_repo_id)\n"
@@ -76,7 +78,7 @@ if ( $quest == '' ) {
     <body style='padding:0' onload='setFocus()' >
 	    stick session=<?=$_SESSION['stick_event_repo_id']?>
         <form name="noofcommits" method="get" action="cwb.php" style='background:#ccf;display:inline'>
-           Show: <input type='Radio' name='snippets' value=1 onclick="submit()" <?=(($_SESSION['snippets']!=0)? 'checked="checked"' : '')?>/>Snippets
+					      Show: <input type='Radio' name='snippets' value=1 onclick="submit()" <?=(($_SESSION['snippets']!=0)? 'checked="checked"' : '')?>/>Snippets
           <input type='Radio' name='snippets' value=0 onclick="submit()" <?=(($_SESSION['snippets']!=0)?'': 'checked="checked"')?>/>Complete files
 	  <input type='hidden' name='stick_event_repo_id' value='<?=$stick_event_repo_id?>' />
 	  <input type='hidden' name='quest' value='<?=$quest?>' /><a href='http://osirix.fontysvenlo.org'><img src='images/home.png' border=0/>&nbsp;osirix home</a>
