@@ -47,11 +47,9 @@ while(<STREAM>){
     }
 }
 close(STREAM);
-print qq(insert into assessment_scores (event,student,question,update_ts,snummer,stick_event_repo_id) 
-    select event,username as student,question,null, snummer,stick_event_repo_id from candidate_repos 
+print qq(insert into assessment_scores (event,question,stick_event_repo_id) 
+    select event,question,stick_event_repo_id from candidate_repos 
     join assessment_questions using(event)
-      where (event,snummer) not in (select event,snummer from assessment_scores);
-     -- update stick_event_repo set youngest=2 where stick_event_repo_id in 
-     -- (select stick_event_repo_id from stick_event_repo join candidate_stick using(stick_event_repo_id) where event='$event');
+      where (event,stick_event_repo_id) not in (select event,stick_event_repo_id from assessment_scores);
 commit;
 );

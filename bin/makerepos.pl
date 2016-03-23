@@ -172,8 +172,8 @@ rm -fr /home/${stype}/Desktop/examproject-${STYPE}*
 print qq(echo in the next few seconds the script creates all repositories using all server cores, so be please be patient.\n);
 $repolist='';
 my $stickcount=0;
-print SQL qq(prepare new_repo(text,int,text,text) as
-	insert into  stick_event_repo (event,stick_nr,reposroot,reposuri) values (\$1,\$2,\$3,\$4);
+print SQL qq(prepare new_repo(text,int) as
+	insert into  stick_event_repo (event,stick_nr) values (\$1,\$2);
 );
 while ($stickcount < $examcount) {
   $sticknr = $stick_id+$stickcount;
@@ -215,7 +215,7 @@ harvester = rw
     \t\tsvn co $reposurilocal $projdir
     \t\)&\n);
   print PHP_INPUT qq($uname;$reposdir\n);
-  print SQL qq(execute new_repo('$event',$sticknr,'$reposdir','$reposuri');\n);
+  print SQL qq(execute new_repo('$event',$sticknr);\n);
   $stickcount++;
 }
 # process questions by filtering by tag.
@@ -239,7 +239,7 @@ close(STREAM);
 print SQL qq(insert into assessment_scores (event,question,update_ts,stick_event_repo_id) 
     select event,question,null, stick_event_repo_id from stick_event_repo 
     join assessment_questions using(event)
-      where (event,stick_event_repo_id) not in (select event,stick_event_repo_id from assessment_scores);
+      where event='$event' and (event,stick_event_repo_id) not in (select event,stick_event_repo_id from assessment_scores);
      -- update stick_event_repo set youngest=2 where stick_event_repo_id in 
      -- (select stick_event_repo_id from stick_event_repo join candidate_stick using(stick_event_repo_id) where event='$event');
 commit;
