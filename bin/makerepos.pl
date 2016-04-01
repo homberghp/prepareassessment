@@ -4,7 +4,7 @@
 use strict;
 use diagnostics;
 use warnings;
-use  Config::Properties;
+use Config::Properties;
 use File::Path qw(make_path remove_tree);
 use File::Basename;
 use POSIX qw(floor);

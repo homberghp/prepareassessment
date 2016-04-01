@@ -48,5 +48,7 @@ while(<STICKS>){
 	$query .= qq(execute drop_stick($stick);\nexecute new_stick($stick,$snummer);\n);
     }
 }
-print qq($query);
+print qq($query;\n
+commit;);
+
 exit(0);

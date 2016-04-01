@@ -55,6 +55,17 @@ if ( $quest == '' ) {
         die( "query '$sql' failed with " . $dbConn->ErrorMsg() );
     }
     extract( $resultSet->fields );
+    $_SESSION['quest']=$quest;
+}
+
+if ( !isSet($stick_event_repo_id) ) {
+    $sql = "select min(stick_event_repo_id) as stick_event_repo_id from stick_event_repo_id where event='{$event}'";
+    $resultSet = $dbConn->Execute( $sql );
+    if ( $resultSet === null ) {
+        die( "query '$sql' failed with " . $dbConn->ErrorMsg() );
+    }
+    extract( $resultSet->fields );
+    $_SESSION['stick_event_repo_id']=$stick_event_repo_id;
 }
 ?>
 <!DOCTYPE html>
