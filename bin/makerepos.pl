@@ -97,9 +97,6 @@ if ($extension eq 'java') {
 system ('validateProject') == 0 or die "\033[01;41;37mproject not suited for show time, aborting\033[K\033[0m \n\n";
 
 open(SETTINGSPHP,">paconfig/settings.php") or die "cannot open php settings file settings.php for write\n";
-open(SQL,">paconfig/filldb.sql") or die "cannot write to filldb.sql\n";
-#open(SCHEMA,"</usr/local/prepareassessment/resources/exampw.sql") or die "cannot read database schema\n";
-#open(TUTPW,"</home/svn/lecturerPass.exam") or die "cannot open tutor password file\n";
 my $event=$exam_id;
 $event =~ s/-//g;
 my $sortdate=$exam_date;
@@ -110,16 +107,6 @@ $simpledate =~ s/-//g;
 my $authz_svn_file = $repos_parent.'/conf/authz';
 my $site_url=qq(https://osirix.fontysvenlo.org/examdoc/$exam_year/$exam_id/index.php);
 # cleanup from previous run
-print SQL qq(
-begin work;
-delete  from assessment_scores where event='$event';
-delete  from assessment_questions where event='$event';
-delete  from assessment_events where event='$event';
-insert into assessment_events (event) select '$event';
-delete from candidate_stick where stick_event_repo_id  in (select stick_event_repo_id from stick_event_repo where event='$event');
-delete from stick_event_repo  where event='$event';
-insert into event select '$event','$exam_date' where not exists (select 1 from event where event='$event');
-);
 
 print SETTINGSPHP qq(<?php
 \$title='Progress performance assessment ${module_name} ${exam_date}';
@@ -172,9 +159,6 @@ rm -fr /home/${stype}/Desktop/examproject-${STYPE}*
 print qq(echo in the next few seconds the script creates all repositories using all server cores, so be please be patient.\n);
 $repolist='';
 my $stickcount=0;
-print SQL qq(prepare new_repo(text,int) as
-	insert into  stick_event_repo (event,stick_nr) values (\$1,\$2);
-);
 while ($stickcount < $examcount) {
   $sticknr = $stick_id+$stickcount;
   $uname = $STYPE.$sticknr;
@@ -215,15 +199,11 @@ harvester = rw
     \t\tsvn co $reposurilocal $projdir
     \t\)&\n);
   print PHP_INPUT qq($uname;$reposdir\n);
-  print SQL qq(execute new_repo('$event',$sticknr);\n);
   $stickcount++;
 }
 # process questions by filtering by tag.
 open(STREAM,"grep -r  STUDENT_ID  examproject|") or die qq(cannot open stream from examproject/*\n);
 my ($filepart,$tagpart,$question,$maxpoints,$filename);
-print SQL qq(prepare new_question(text,varchar(40),int,text) as
-	insert into assessment_questions (event,question,max_points,filepath) values(\$1,\$2,\$3,\$4);
-);
 while(<STREAM>){
     chomp;
     ($filepart,$tagpart) = split/:\s*/;
@@ -232,19 +212,9 @@ while(<STREAM>){
       $maxpoints=$2;
       $filename=$filepart;
       $filename =~ s/.*?examproject\///;
-      print SQL qq(execute new_question ('$event','$question',$maxpoints,'$filename'); \n);
     }
 }
 close(STREAM);
-print SQL qq(insert into assessment_scores (event,question,update_ts,stick_event_repo_id) 
-    select event,question,null, stick_event_repo_id from stick_event_repo 
-    join assessment_questions using(event)
-      where event='$event' and (event,stick_event_repo_id) not in (select event,stick_event_repo_id from assessment_scores);
-     -- update stick_event_repo set youngest=2 where stick_event_repo_id in 
-     -- (select stick_event_repo_id from stick_event_repo join candidate_stick using(stick_event_repo_id) where event='$event');
-commit;
-);
-close(SQL);
 print qq(# wait for svn import childs to complete
 wait
 echo created all repos

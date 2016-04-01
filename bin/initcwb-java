@@ -7,8 +7,6 @@ year=${exam_date:0:4}
 webdir=${index_file_grand_parent}/${year}/${module_name}-${exam_date}
 svnroot=${svn_location}/${year}/${event_name}
 #hvd 20131101 store filename of question as well
-#grep -rh  STUDENT_ID  examproject | filldbquestions.pl > paconfig/filldbquestions.sql 
-#grep -r  STUDENT_ID  examproject | filldbquestions-java.pl > paconfig/filldbquestions.sql
 rm -fr ${webdir}/harvest/sandbox
 harvester ${svnroot} 
 # echo continue work in ${webdir}
