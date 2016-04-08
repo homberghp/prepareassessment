@@ -116,7 +116,7 @@ print SETTINGSPHP qq(<?php
 \$exam_id='$exam_id';
 \$exam_year='$exam_year';
 \$event='$event';
-\$catmap = array(1=>'T');
+\$catMap = array(1=>'T');
 ?>
 );
 my $svn_groups=qq(# This file auto generated. Only change when you know what you are doing
