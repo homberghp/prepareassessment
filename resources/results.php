@@ -33,7 +33,7 @@ function score_by_category($event,$category,$tweight){
     die( "query '{$sql}' failed with " . $dbConn->ErrorMsg() . "\n" );
   }
 //echo "{$resultSet->fields['query']}<br/>";
-  $query = "select s.snummer,s.achternaam,s.roepnaam,s.voorvoegsel,trim(email1) as email,ct.*,round(fs.weighted_sum/{$tweight},1) as final \n"
+  $query = "select s.snummer,s.achternaam,s.roepnaam,s.voorvoegsel,trim(email1) as email,s.cohort,ct.*,round(fs.weighted_sum/{$tweight},1) as final \n"
     ." from {$resultSet->fields['query']}\n"
     /* ." join candidate_stick cs using(stick_event_repo_id)\n" */
     /* ." join stick_event_repo using(stick_event_repo_id)\n" */

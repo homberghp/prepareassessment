@@ -1,6 +1,8 @@
 <?php
 function topMenu($dbConn,$event,$quest,$stick) {
-  $sql = "select trim(question) as qst, max_points as weight,filepath from assessment_questions where event ='{$event}' order by question";
+  global $catMap;
+  $sql = "select trim(question) as qst, max_points as weight,category,filepath \n"
+    ."from assessment_questions where event ='{$event}' order by question";
   $resultSet = $dbConn->Execute( $sql );
   if ( $resultSet === null ) {
     die( 'query failed with ' . $dbConn->ErrorMsg() );
@@ -14,7 +16,8 @@ function topMenu($dbConn,$event,$quest,$stick) {
       $css="class='quest'";
     }
     $snip=$_SESSION['snippets'];
-    $out .="<li {$css}><a href='cwb.php?quest={$qst}&stick_event_repo_id={$stick}&snippets={$snip}'>{$qst}</a></li>\n";
+    $linkText= "{$catMap[$category]}".str_replace('TASK_','',$qst);
+    $out .="<li {$css}><a href='cwb.php?quest={$qst}&stick_event_repo_id={$stick}&snippets={$snip}'>{$linkText}</a></li>\n";
     $resultSet->moveNext();
   }
   return $out;
