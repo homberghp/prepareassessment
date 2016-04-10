@@ -7,7 +7,7 @@ function leftMenu($dbConn,$event,$quest,$stick){
     ."from stick_event_repo ser join candidate_stick cs using(stick_event_repo_id)\n"
     ." join assessment_scores ac using(stick_event_repo_id,event) \n"
    . " join assessment_questions aq using(event,question)"
-    ." join stick_grade_sum sgs using(stick_event_repo_id) \n"
+    ." join stick_grade_sum_cat sgs using(stick_event_repo_id,category) \n"
     ."join assessment_weight_sum aws on (ser.event=aws.event and aq.category=aws.category)\n"
     ."where ser.event='{$event}' "
     ."and question='{$quest}' order by stick_nr";
