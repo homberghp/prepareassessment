@@ -103,7 +103,7 @@ if ( !isSet($stick_event_repo_id) ) {
                 <td width='220px' valign='top'>
                     <?php include 'left.php' ?>
                 </td>
-                <td valign='top'>
+                <td width='1600px'valign='top'>
                     <?php include 'wb.php' ?>
                 </td>
             </tr>

@@ -22,7 +22,7 @@ function leftMenu($dbConn,$event,$quest,$stick){
     extract( $resultSet->fields );
     $r=180; $g=180; $b=180;
     $fweight='medium';
-    if ( $score > 6.0 ) {
+    if ( $score > 5.5 ) {
       $g =255;
     } else if ( $score >= 1.0 ) {
       $r =255;
