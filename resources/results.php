@@ -21,11 +21,15 @@ function score_by_category($event,$category,$tweight){
   if ( $resultSet === null ) {
     die( "query '{$sql}' failed with " . $dbConn->ErrorMsg() . "\n" );
   }
+  $weightSum =0;
   for(;!$resultSet->EOF; $resultSet->moveNext()){
     $tabHead .="<th>{$resultSet->fields['question']}</th>";
     $weightsRow .="<td align='right'>{$resultSet->fields['weight']}</td>";
+    $weightSum += $resultSet->fields['weight'];
     $weights[] =  $resultSet->fields['weight'];
   }
+  $tabHead .="<th>WeightSum</th>";
+  $weightsRow.="<td align='right'>{$weightSum}</td>";
   $tabHead .="</tr></thead>\n{$weightsRow}</tr>\n</table>\n</div>";
   $sql = "select assessment_score_query3('{$event}','{$category}') as query";
   $resultSet = $dbConn->Execute( $sql );
@@ -45,7 +49,7 @@ function score_by_category($event,$category,$tweight){
     die( "query '$query' failed with " . $dbConn->ErrorMsg() . "\n" );
   }
   $res = "<table border=1 style='border-collapse:collapse'>\n";
-  $firstWeightColumn =8;
+  $firstWeightColumn =9;
   $weightSumColumn=$firstWeightColumn+count($weights);
   while ( !$resultSet->EOF ) {
     
