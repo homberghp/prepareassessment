@@ -1,7 +1,7 @@
 begin work;
--- drop function if exists assessment_score_def(text,char(1));
-
--- drop function if exists assessment_score_query3(text,char(1));
+drop function if exists assessment_score_def(text,char(1));
+drop function if exists assessment_column_names(text,char(1));
+drop function if exists assessment_score_query3(text,char(1));
 
 create or replace function assessment_score_def (myevent text, mycategory char(1)) returns text
 as $assessment_score_def$
@@ -11,6 +11,18 @@ begin
   select array_agg('q'||question||' numeric') into strict th 
   from (select question from assessment_questions where event=myevent and category=mycategory order by question) qq;
   return 'snummer integer,stick_nr integer,stick_event_repo_id integer,'||regexp_replace(th,'[}"{]','','g');
+end;
+$assessment_score_def$ language 'plpgsql';
+
+create or replace function assessment_column_names (myevent text, mycategory char(1)) returns text
+as $assessment_score_def$
+declare 
+-- note thate snummer collumn is dropped, it would be duplicated in output.
+th text;
+begin
+  select array_agg('ct.q'||question) into strict th 
+  from (select question from assessment_questions where event=myevent and category=mycategory order by question) qq;
+  return 'ct.stick_nr,ct.stick_event_repo_id,'||regexp_replace(th,'[}"{]','','g');
 end;
 $assessment_score_def$ language 'plpgsql';
 

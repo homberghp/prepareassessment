@@ -31,25 +31,30 @@ function score_by_category($event,$category,$tweight){
   $tabHead .="<th>WeightSum</th>";
   $weightsRow.="<td align='right'>{$weightSum}</td>";
   $tabHead .="</tr></thead>\n{$weightsRow}</tr>\n</table>\n</div>";
+  $sqln ="select * from assessment_column_names('{$event}','{$category}')";
+  $resultSetn= $dbConn->Execute( $sqln );
+  $ctcolumns = $resultSetn->fields['assessment_column_names'];
   $sql = "select assessment_score_query3('{$event}','{$category}') as query";
   $resultSet = $dbConn->Execute( $sql );
   if ( $resultSet === null ) {
     die( "query '{$sql}' failed with " . $dbConn->ErrorMsg() . "\n" );
   }
-//echo "{$resultSet->fields['query']}<br/>";
-  $query = "select s.snummer,s.achternaam,s.roepnaam,s.voorvoegsel,trim(email1) as email,s.cohort,ct.*,round(fs.weighted_sum/{$tweight},1) as final \n"
+  //  echo "{$query}<br/>";
+  $query = "select s.snummer,s.achternaam,s.roepnaam,s.voorvoegsel,trim(email1) as email,\n"
+    ."s.cohort,{$ctcolumns},round(fs.weighted_sum/{$tweight},1) as final \n"
     ." from {$resultSet->fields['query']}\n"
     /* ." join candidate_stick cs using(stick_event_repo_id)\n" */
     /* ." join stick_event_repo using(stick_event_repo_id)\n" */
     ." join student s using(snummer) \n"
     ." join assessment_final_score3 fs using(stick_event_repo_id) where category='{$category}' order by s.achternaam,s.roepnaam";
-
+  //  echo $query;
+  //  exit(0);
   $resultSet = $dbConn->Execute( $query );
   if ( $resultSet === null ) {
     die( "query '$query' failed with " . $dbConn->ErrorMsg() . "\n" );
   }
   $res = "<table border=1 style='border-collapse:collapse'>\n";
-  $firstWeightColumn =9;
+  $firstWeightColumn =8;
   $weightSumColumn=$firstWeightColumn+count($weights);
   while ( !$resultSet->EOF ) {
     
