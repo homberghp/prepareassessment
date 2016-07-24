@@ -3,8 +3,10 @@ quiet=0
 if [  $# -gt 0 ]; then 
     quiet=1
 fi
+first=d
+last=x
 tmpf=$(tempfile)
-ls -d /sys/block/sd? | grep  -P sd[c-p]  > ${tmpf}
+ls -d /sys/block/sd? | grep  -P sd[${first}-${last}]  > ${tmpf}
 
 if [ $quiet != 1 ] ; then 
     cat ${tmpf}; 

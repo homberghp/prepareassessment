@@ -5,13 +5,13 @@ scriptdir=/usr/local/prepareassessment/bin
 
 function enumerateSticks(){
     local disks=''
-    for d in $(ls -d /sys/block/sd?  | grep -P '\/sys\/block\/sd[c-p]'  ) ; do
+    for d in $(ls -d /sys/block/sd?  | grep -P '\/sys\/block\/sd[d-x]'  ) ; do
 	# only accept sandisk extreme
 	v=$(cat $d/device/vendor); v=${v/ /}
 	m=$(cat $d/device/model); m=${m/ /}
-	if [ $v = 'SanDisk' -a $m = 'Extreme' ] ; then 
+	if [[ $v==SanDisk && $m==Extreme ]] ; then 
 	    disk=$(basename $d)
-	    if [ ${disks}a == 'a' ]; then disks="$disk"; else disks="$disks,$disk"; fi
+	    if [[ ${disks}a == a ]]; then disks="$disk"; else disks="$disks,$disk"; fi
 	fi
     done
     echo "$disks"
