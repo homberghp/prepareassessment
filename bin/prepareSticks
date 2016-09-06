@@ -7,10 +7,10 @@
 # 4. label vfat to name stick, e.g. EXAM100 and ext3 part to casper-rw
 # 5. syslinux --install  /dev/sd?1
 # 6. mount vfat part to /media/hom/STICK-ID
-# 7. cp -r /home/ISO/. /media/hom/STICK-ID
+# 7. cp -r /home/U14.04/ISO/. /media/hom/STICK-ID
 debug=
 if [ -z $stickclass ] ; then
-    export stickclass=EXAM
+    export stickclass=SEBI
 fi
 source stick_helpers.sh
 scriptdir=$(dirname $(readlink -f $0))

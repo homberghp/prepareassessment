@@ -1,15 +1,17 @@
 #!/bin/bash
 # this a collection of helper scripts
 scriptdir=$(dirname $(readlink -f $0))
-scriptdir=/usr/local/prepareassessment/bin
+scriptdir=/home/prepareassessment/bin
 
 function enumerateSticks(){
     local disks=''
-    for d in $(ls -d /sys/block/sd?  | grep -P '\/sys\/block\/sd[d-x]'  ) ; do
+    for d in $(ls -d /sys/block/sd?  | grep -P '\/sys\/block\/sd[c-z]'  ) ; do
 	# only accept sandisk extreme
-	v=$(cat $d/device/vendor); v=${v/ /}
-	m=$(cat $d/device/model); m=${m/ /}
-	if [[ $v==SanDisk && $m==Extreme ]] ; then 
+	v=$(cat $d/device/vendor); v=${v// /} # trim spaces
+	m=$(cat $d/device/model); m=${m// /} # trim spaces
+	vm="$v $m"
+	if [[ $vm == 'SanDisk Extreme' ]] ; then 
+#	    echo "'${vm}'"
 	    disk=$(basename $d)
 	    if [[ ${disks}a == a ]]; then disks="$disk"; else disks="$disks,$disk"; fi
 	fi
@@ -93,8 +95,8 @@ installToStick() {
     ${debug} mount ${BOOTPART}  ${MOUNTPOINT}
     ${debug} mount ${HOMEPART}  ${HOMEMOUNTPOINT}
     echo  start copy of ISO files to stick ${LABEL}
-    ${debug} cp -r /home/ISO/{boot,casper,.disk,dists,EFI,install,md5sum.txt,pics,pool,preseed,README.diskdefines} ${MOUNTPOINT}
-    ${debug} cp -r /home/ISO/isolinux ${MOUNTPOINT}/syslinux
+    ${debug} cp -r /home/U14.04/ISO/{boot,casper,.disk,dists,EFI,install,md5sum.txt,pics,pool,preseed,README.diskdefines} ${MOUNTPOINT}
+    ${debug} cp -r /home/U14.04/ISO/isolinux ${MOUNTPOINT}/syslinux
     echo  rename syslinux.cfg for stick ${LABEL}
     ${debug} mv ${MOUNTPOINT}/syslinux/{iso,sys}linux.cfg
     echo creating casper-rw file space for stick ${LABEL}
