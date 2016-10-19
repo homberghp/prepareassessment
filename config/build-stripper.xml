@@ -39,7 +39,7 @@
     <target name="strip" depends="cpsolution">
         <taskdef name="codestripper"
              classname="org.fontysvenlo.codestripper.CodeStripper"
-             classpath="/usr/shared/ant/lib/codestripper.jar" />
+             classpath="/usr/share/ant/lib/codestripper.jar" />
         <codestripper todir="${targetdir}" 
                       dir="${solutiondir}" 
                       deletelines="true" 

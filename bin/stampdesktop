@@ -2,13 +2,14 @@
 dir=$(basename $(pwd))
 datum=${dir:0:4}-${dir:4:2}-${dir:6:2}
 basetext="Fontys SEBI Venlo EXAM ${datum}"
+distro=U14.04
 if [ $# -gt 0 ]; then
     basetext=$1
 fi
 . ./setup.properties
 echo will write "'${basetext}'" to image
 echo will create ${candidate_count} images, starting at ${stick_id}, be patient 
-in=/home/FileSystem/usr/share/xfce4/backdrops/xubuntu-trusty.png
+in=/home/${distro}/FileSystem/usr/share/xfce4/backdrops/xubuntu-trusty.png
 out=xubuntu-trusty.png
 pointsize=64
 for i  in $(seq ${stick_id} $(((${stick_id}+${candidate_count})-1))) ; do 

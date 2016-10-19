@@ -1,7 +1,7 @@
-# partition table of /dev/sdc
+# partition table of /dev/sdd
 unit: sectors
 
-/dev/sdc1 : start=     2048, size=  9437184, Id= 7, bootable
-/dev/sdc2 : start=  9439232, size= 21212456, Id=93
-/dev/sdc3 : start=        0, size=        0, Id= 0
-/dev/sdc4 : start=        0, size=        0, Id= 0
+/dev/sdd1 : start=     2048, size= 12582912, Id= c, bootable
+/dev/sdd2 : start= 12584960, size= 18066728, Id=93
+/dev/sdd3 : start=        0, size=        0, Id= 0
+/dev/sdd4 : start=        0, size=        0, Id= 0
