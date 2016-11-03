@@ -95,7 +95,7 @@ while(!$resultSet->EOF) {
   $tweight=$resultSet->fields['tweight'];
   $category =$resultSet->fields['category'];
   $categories[] = $category;
-  //  echo "{$event} and {$category}<br/>";
+  //echo "{$event} and {$category}<br/>";
   $divs .= "<div id='tabs-{$category}'>".score_by_category($event,$category,$tweight)."</div>\n<!-- end tabs-{$category}-->\n";
   $tabs .= "\t\t<li><a href='#tabs-{$category}'>Part {$catMap[$category]}</a></li>\n";
   $headScripts .= '

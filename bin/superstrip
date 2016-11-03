@@ -1,0 +1,10 @@
+#!/bin/bash
+
+for i in $(find examproject/ -name "*Test.java"); do
+    grep -P -q '^\s+@Test' $i
+    if [ $? -ne 0  ] ; then
+	echo No Tests found  in $i;
+	rm -fr $i
+	
+    fi;
+done
