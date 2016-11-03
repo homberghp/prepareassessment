@@ -20,7 +20,7 @@ fi
 #chown -R 1001:1001 /exam/exam
 countSticks
 #rebind-usb.pl 
-mountSticks.pl
+mountSticks2.pl
 # casper-rw mounted ad /media/usb/casper-rw-${STYPE}xxx
 # note that file system lives at /media/usb/casper-rw-${STYPE}xxx/upper/
 for i in /media/usb/home-rw-${STYPE}*; do 

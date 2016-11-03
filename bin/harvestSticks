@@ -14,7 +14,7 @@ sandbox=/home/exam/Desktop/
 reposroot=/home/exam
 countSticks
 # mount all sticks
-rebind-usb.pl
+mountSticks2.pl
 for i in /media/usb/home-rw-EXAM*; do 
     stick=$(basename $i)
     stick=${stick:8:7}
