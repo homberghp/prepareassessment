@@ -116,3 +116,116 @@ installToStick() {
     fi
     umount ${BOOTPART} ${HOMEPART}
 }
+
+## mount files systems of stick excluding casper-rw file
+# @param disk e.g. c for 3rd disk device
+# @param label eg EXAM131
+##
+mountFS() {
+    local d=$1
+    local LABEL=$2
+    local MOUNTPOINT=/media/usb/${LABEL}
+    local HOMEMOUNTPOINT=/media/usb/home-rw-${LABEL}
+    local BOOTPART=/dev/${d}1
+    local HOMEPART=/dev/${d}2
+    ${debug} mkdir -p ${MOUNTPOINT} ${HOMEMOUNTPOINT}
+    # mount partition 1
+    ${debug} mount ${BOOTPART}  ${MOUNTPOINT}
+    ${debug} mount ${HOMEPART}  ${HOMEMOUNTPOINT}
+}
+
+## unmount files systems of stick.
+# @param disk e.g. c for 3rd disk device
+# @param label eg EXAM131
+##
+umountFS(){
+    local d=$1
+    local LABEL=$2
+    local MOUNTPOINT=/media/usb/${LABEL}
+    local HOMEMOUNTPOINT=/media/usb/home-rw-${LABEL}
+    local BOOTPART=/dev/${d}1
+    local HOMEPART=/dev/${d}2
+    ${debug} mkdir -p ${MOUNTPOINT} ${HOMEMOUNTPOINT}
+    # mount partition 1
+    ${debug} umount ${BOOTPART} ${HOMEPART}
+}
+
+##
+# create casper-rw file on boot part of stick
+# @param disk e.g. c for 3rd disk device
+# @param label eg EXAM131
+##
+createCasperRW() {
+    local d=$1
+    local LABEL=$2
+    local MOUNTPOINT=/media/usb/${LABEL}
+    local HOMEMOUNTPOINT=/media/usb/home-rw-${LABEL}
+    local BOOTPART=/dev/${d}1
+    local HOMEPART=/dev/${d}2
+    ${debug} mkdir -p ${HOMEMOUNTPOINT}
+    # mount partition 1
+    ${debug} mount ${BOOTPART}  ${MOUNTPOINT}
+    ${debug} mount ${HOMEPART}  ${HOMEMOUNTPOINT}
+    echo creating casper-rw file space for stick ${LABEL}
+    ${debug} dd if=/dev/zero of=${MOUNTPOINT}/casper-rw bs=1M count=1024
+    echo initializing casper-rw file-system for stick ${LABEL}
+    mkfs.ext4 -q -F ${MOUNTPOINT}/casper-rw
+    echo creating casper-rw installation for stick ${LABEL} done
+}
+
+##
+# inject skeleton directory for sebi and exam user.
+# @param disk e.g. c for 3rd disk device
+# @param label eg EXAM131
+##
+applySkel(){
+    local d=$1
+    local LABEL=$2
+    local MOUNTPOINT=/media/usb/${LABEL}
+    local HOMEMOUNTPOINT=/media/usb/home-rw-${LABEL}
+    local BOOTPART=/dev/${d}1
+    local HOMEPART=/dev/${d}2
+    if [ -e skel.tgz ] ; then
+	rm -fr  ${HOMEMOUNTPOINT}/{exam,sebi}
+	mkdir -p  ${HOMEMOUNTPOINT}/{exam,sebi}
+	tar -C ${HOMEMOUNTPOINT}/sebi -xzf skel.tgz
+	chown -R sebi:sebi ${HOMEMOUNTPOINT}/sebi
+	tar -C ${HOMEMOUNTPOINT}/exam -xzf skel.tgz
+	chown -R exam:exam ${HOMEMOUNTPOINT}/exam
+    fi
+}
+
+
+##
+# replace distro files in boot partition of stick and apply syslinux to bootpart.
+# @param disk e.g. c for 3rd disk device
+# @param label eg EXAM131
+##
+replaceDistroFiles() {
+    local d=$1
+    local LABEL=$2
+    local MOUNTPOINT=/media/usb/${LABEL}
+    local BOOTPART=/dev/${d}1
+    echo delete old stuff if any
+    rm -fr ${MOUNTPOINT}/{boot,casper,.disk,dists,EFI,install,md5sum.txt,pics,pool,preseed,README.diskdefines,syslinux}
+    echo  start copy of ISO files to stick ${LABEL}
+    ${debug} cp -r /home/U14.04/ISO/{boot,casper,.disk,dists,EFI,install,md5sum.txt,pics,pool,preseed,README.diskdefines} ${MOUNTPOINT}
+    ${debug} cp -r /home/U14.04/ISO/isolinux ${MOUNTPOINT}/syslinux
+    echo  rename syslinux.cfg for stick ${LABEL}
+    ${debug} mv ${MOUNTPOINT}/syslinux/{iso,sys}linux.cfg
+    ${debug} syslinux --stupid ${BOOTPART}
+    echo done installing distor files for disk ${d} labeled ${LABEL}
+}
+
+##
+# update the distro files on a stick giving it an almost fresh installation.
+# @param disk e.g. c for 3rd disk device
+# @param label eg EXAM131
+##
+updateDistro(){
+    local d=$1
+    local LABEL=$2
+    mountFS ${d} ${LABEL}
+    replaceDistroFiles ${d} ${LABEL}
+    umountFS ${d} ${LABEL}
+}

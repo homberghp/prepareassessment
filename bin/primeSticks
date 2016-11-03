@@ -19,7 +19,8 @@ fi
 # chown sandbox stuff to exam uid:gid
 #chown -R 1001:1001 /exam/exam
 countSticks
-rebind-usb.pl 
+#rebind-usb.pl 
+mountSticks2.pl
 # casper-rw mounted ad /media/usb/casper-rw-${STYPE}xxx
 # note that file system lives at /media/usb/casper-rw-${STYPE}xxx/upper/
 for i in /media/usb/home-rw-${STYPE}*; do 
@@ -35,7 +36,6 @@ for i in /media/usb/home-rw-${STYPE}*; do
 	${debug} mkdir -p ${homedir}
 	${debug} tar -C ${homedir} -xzf skel.tgz 
 	${debug} mkdir -p ${homedir}/{Pictures,Desktop}
-	${debug} cp /home/${stype}/Pictures/xubuntu-trusty-${stick}.jpg ${homedir}/Pictures/xfce-blue.jpg
 	${debug} chown -R ${stype}:${stype} ${homedir} 
 	${debug} rsync -aq /home/${stype}/${stick}-repo/ ${homedir}/${stick}-repo/
 	${debug} rsync -aq /home/${stype}/JavaLibs/ ${homedir}/JavaLibs/
@@ -55,6 +55,8 @@ EOF
 	    echo found rootfs payload, copying
 	    ${debug} tar -C ${rootfsmountpoint}/upper/ -xzf rootfs.tgz 
 	fi
+	${debug} mkdir -p ${rootfsmountpoint}/upper/usr/share/xfce4/backdrops/
+	${debug} cp /home/${stype}/Pictures/xubuntu-trusty-${stick}.jpg ${rootfsmountpoint}/upper/usr/share/xfce4/backdrops/fontys-backdrop.jpg
 	echo primed stick ${stick}
     ) &
     else

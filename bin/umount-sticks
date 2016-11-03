@@ -35,4 +35,4 @@ for i in /media/hom/{EXAM,SEBI}*; do
     fi
 done
 # last resort
-umount /dev/sd[c-p]1
+umount /dev/sd{d..x}1

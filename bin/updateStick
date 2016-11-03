@@ -1,0 +1,37 @@
+#!/bin/bash
+# steps: 
+# 1. enumerated inserted sticks using /sys/block/sd{c..p} and regex
+# 2. unmount them all
+# 3. mount root parts of stick
+# 4. remove old distor files
+# 4. copy new ones
+# 5. unmount
+
+debug=
+if [ -z $stickclass ] ; then
+    export stickclass=SEBI
+fi
+source stick_helpers.sh
+scriptdir=$(dirname $(readlink -f $0))
+ininum=100
+if [ $# -ge 1 ]; then ininum=$1; shift; fi 
+disks=$(enumerateSticks)
+echo sticks found: $disks
+IFS=','
+
+num=${ininum}
+for d in $disks; do 
+    printf -v LABEL "${stickclass}%3.3d" ${num}
+     ( updateDistro ${d} ${LABEL} )& 
+    num=$((num+1))
+done
+
+wait
+sync
+for d in $disks; do 
+    echo done with stick ${d}
+    ${debug} umount -d /dev/${d}1
+done
+echo next num=${num}
+rm -fr /media/usb
+paplay ${scriptdir}/programisready.ogg

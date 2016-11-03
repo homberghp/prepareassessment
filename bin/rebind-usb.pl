@@ -1,7 +1,10 @@
 #!/usr/bin/perl -w
-my ($dev,$mp1, $partition,$mp2,$nmp2, $nmp3, $stick,%devhash,%roothash,%mphash,@parts,@cmd,$casperfile);
-
-open( PROC, qq(cat /proc/mounts | grep -e "^/dev/sd[c-p]"|)) or die qq(cannot read mounts\n) ;
+use strict;
+use warnings;
+my ($dev,$mp1, $partition,$mp2,$nmp2, $nmp3, $stick,%devhash,%roothash,%mphash,@parts,@cmd,$casperfile,$root,$rootmp,$partition2,$caspermp,$partition1,$homemp);
+my $first='d';
+my $last='q';
+open(PROC, qq(cat /proc/mounts | grep -e "^/dev/sd[d-q]"|)) or die qq(cannot read mounts\n) ;
 while(<PROC>) {
     chomp;
     #  assume devices found are mounted under /media/hom/XXXXyyy
