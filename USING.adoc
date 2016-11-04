@@ -1,6 +1,11 @@
 = USING SEBI Venlo Assessment Environment
 Pieter van den Hombergh <p.vandenhombergh@fontys.nl>
 Version 0.1 2016-11-04
+:toc: left
+:icons: font
+:keywords: USB Performance assessment SEBI Venlo
+
+toc::[]
 
 == Intro
 
@@ -54,9 +59,9 @@ $ svn co svn+ssh://osirix/fontysvenlo.org/home/modules/java1/svnroot/trunk/45_as
 ----
 
 Since many of the attributes or properties of the assessments for a
-course are the same, the conventions says that the properties are: 
+course are the same, the conventions say that the properties are: 
 
-* In a file called default.properties in the builds
+* In a file called `default.properties` in the builds
   directory. Typically this already is present when you check out as
   shown before. If not, create the file, make sure the content is
   correct and add and commit it to the module repository. 
@@ -64,7 +69,7 @@ course are the same, the conventions says that the properties are:
   exam. Here the convention is to use the exam data in short ISO-8601
   format, YYYYMMDD as in 20160104 (4th of November 2016) for the date
   this text is created.
-* In a file named setup.properties, per assessment date (sub directory).
+* In a file named `setup.properties`, per assessment date (sub directory).
 
 Both property files have the syntax of java property files, which can
 be consumed as shell (bash) source files, or parsed by perl. Because
@@ -89,7 +94,7 @@ is_netbeans_project=1
 module_repo=file:///home/modules/java1/svnroot
 ----
 
-setup.properties for JAVA1 assessment on 20161103 in dir …​/20161103:
+`setup.properties` for JAVA1 assessment on 20161103 in dir `…​/20161103`:
 
 [source,shell]
 ----
@@ -103,7 +108,7 @@ is_netbeans_project=true
 In the current setup, the directory that is used on the preparation
 server reflects the names and structure of the stick. This means that
 the scripts use a global directory /home/exam and steps below will
-DELETE ANY PREVIOUS SETUP OF OTHER ASSESSMENTS.
+*DELETE ANY PREVIOUS SETUP OF OTHER ASSESSMENTS*.
 
 === Preparing for one Assessment
 
@@ -238,14 +243,12 @@ sticknr;snummer
 ----
 
 [TIP]
-----
 To be on the safe side, and because of the warning before, make a
 (tar) backup of both the repositories under /home/exam named
 EXAMxyz-repo and all sandboxes under
 /home/exam/Desktop/examproject-EXAMxyz. Convention: name the tar files
 after the exam, e.g JAVA120161103-repo.tgz and
 JAVA120161103-sandboxes.tgz
-----
 
 === Harvesting Work.
 
@@ -262,7 +265,8 @@ assessment repos lying and or sandboxes around. Maybe it is time to
 save them.
 
 
-Elevate your rights, insert all sticks that have been used in batches and per batch execute `harvestSticks`.
+Elevate your rights, insert all sticks that have been used in batches
+and per batch execute `harvestSticks`.
 
 Example:
 [source,shell]
