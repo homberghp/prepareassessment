@@ -21,7 +21,7 @@ my $extension= $properties->getProperty('extension','c');
 my $exam_year = substr($exam_date,0,4);
 my $exam_id = $module_name.'-'.$exam_date;
 my $exam_web_dir="/home/examdoc/public_html/${exam_year}/${exam_id}";
-my $resources_dir='/usr/local/prepareassessment/resources';
+my $resources_dir='/home/prepareassessment/resources';
 
 my ($dir,$weight,$cand,$snipfile,$qdir,$filepath);
 my $on = 0;

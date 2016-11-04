@@ -22,7 +22,7 @@ my $exam_id = $module_name.'-'.$exam_date;
 my $exam_web_dir="/home/examdoc/public_html/${exam_year}/${exam_id}";
 my ($stick,$snummer);
 
-my $resources_dir='/usr/local/prepareassessment/resources';
+my $resources_dir='/home/prepareassessment/resources';
 my $event=$exam_id;
 $event =~ s/-//g;
 my $query= qq(begin work;

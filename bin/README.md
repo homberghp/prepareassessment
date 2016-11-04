@@ -49,7 +49,7 @@ SVN details:	      The script by default (and currently only) way of creating re
 		      a project within that trunk.
 
 ===== resources used ====
-In the directory /usr/local/prepareassessment/resources you find a few files that are used 
+In the directory /home/prepareassessment/resources you find a few files that are used 
 and copied to the exam specific website.
 
 index.php             The script that includes settings.php to set title etc and processes file 

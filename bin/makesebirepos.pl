@@ -69,7 +69,7 @@ my $extension= $properties->getProperty('extension','c');
 $allowed_from =~ s/"//g;
 my $noaccess_url = $properties->getProperty('noaccess_url','http://osirix.fontysvenlo.org/noaccess.html');
 my $isNetbeansProject = $properties->getProperty('is_netbeans_project',0);
-my $resources_dir='/usr/local/prepareassessment/resources';
+my $resources_dir='/home/prepareassessment/resources';
 my $repolist;
 my ($sticknr,$projdir);
 # if ( $isNetbeansProject != 0 &&  ! -f './project.xml_template' ) {
@@ -95,7 +95,7 @@ system ('validateProject') == 0 or die "\033[01;41;37mproject not suited for sho
 
 open(SETTINGSPHP,">paconfig/settings.php") or die "cannot open php settings file settings.php for write\n";
 open(SQL,">paconfig/filldb.sql") or die "cannot write to filldb.sql\n";
-#open(SCHEMA,"</usr/local/prepareassessment/resources/exampw.sql") or die "cannot read database schema\n";
+#open(SCHEMA,"</home/prepareassessment/resources/exampw.sql") or die "cannot read database schema\n";
 #open(TUTPW,"</home/svn/lecturerPass.exam") or die "cannot open tutor password file\n";
 my $sql_exam_id=$exam_id;
 $sql_exam_id =~ s/-//g;

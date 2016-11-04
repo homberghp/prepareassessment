@@ -61,6 +61,6 @@ fi
 # done
 
 # link to resources
-ln -sf /usr/local/prepareassessment/resources/{cwb,index2,left,process,resultmail,results,setactive,top,wb}.php ${webdir}
-ln -sf /usr/local/prepareassessment/resources/*.css ${webdir}
-ln -sf /usr/local/prepareassessment/resources/{images,js,css} ${webdir}
+ln -sf /home/prepareassessment/resources/{cwb,index2,left,process,resultmail,results,setactive,top,wb}.php ${webdir}
+ln -sf /home/prepareassessment/resources/*.css ${webdir}
+ln -sf /home/prepareassessment/resources/{images,js,css} ${webdir}

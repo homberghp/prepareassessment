@@ -38,7 +38,7 @@ my $allowed_from = $properties->getProperty('allowed_from','');
 $allowed_from =~ s/"//g;
 my $noaccess_url = $properties->getProperty('noaccess_url','http://osirix.fontysvenlo.org/noaccess.html');
 my $isNetbeansProject = $properties->getProperty('is_netbeans_project','true');
-my $resources_dir='/usr/local/prepareassessment/resources';
+my $resources_dir='/home/prepareassessment/resources';
 my $repolist;
 
 my $site_url=qq(https://osirix.fontysvenlo.org/examdoc/$exam_year/$exam_id/index.php);

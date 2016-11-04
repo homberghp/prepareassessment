@@ -67,7 +67,7 @@ my $extension= $properties->getProperty('extension','c');
 $allowed_from =~ s/"//g;
 my $noaccess_url = $properties->getProperty('noaccess_url','http://osirix.fontysvenlo.org/noaccess.html');
 my $isNetbeansProject = $properties->getProperty('is_netbeans_project',0);
-my $resources_dir='/usr/local/prepareassessment/resources';
+my $resources_dir='/home/prepareassessment/resources';
 my $repolist;
 my ($sticknr,$projdir);
 # if ( $isNetbeansProject != 0 &&  ! -f './project.xml_template' ) {
