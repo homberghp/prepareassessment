@@ -12,20 +12,20 @@ toc::[]
 The current way of working (as of October 2016) involves a number of steps:
 
 * Preparation
- 1. Preparing or updating the live image.
- 2. Installing the live image on the sticks: prepare sticks.
- 3. Preparing an exam, i.e. creating student repositories and initial checkout.
- 4. Inserting individual exams on the sticks for an exam
+  . Preparing or updating the live image.
+  . Installing the live image on the sticks: prepare sticks.
+  . Preparing an exam, i.e. creating student repositories and initial checkout.
+  . Inserting individual exams on the sticks for an exam
  session. prime sticks
 * taking/executing the exam.
- 1. Booting student laptops from the USB sticks.
+  . Booting student laptops from the USB sticks.
 
 * Post processing
- 1. harvest the exam work and commit the final student work.
- 2. move the student repositories to the correction server.
- 3. initialize the workbench.
+  . harvest the exam work and commit the final student work.
+  . move the student repositories to the correction server.
+  . initialize the workbench.
 
-Since the typical usage does not always use all steps, the arrangement
+Since the typical usage does _not_ always use _all_ steps, the arrangement
 has the most frequent steps first and the less frequent steps later in
 this text. In particular, the steps 1 and 2 in preparation only have
 to be taken to create the initial image or when an update of the image
@@ -41,43 +41,56 @@ An Assessment is composed of one or more projects in as many
 sub-directories. The assumptions is made that exam questions or
 variants thereof can be reused. Our These projects are placed under
 the directory questions. In our practice the assessment related
-resources are placed under 45_asssessment like in the case of JAVA1: 
+resources are placed under 45_asssessment like in the case of STA1:
 
 [source,shell]
 ----
-├── builds
-└── questions
+└── 45_assessment
+    ├── builds
+    │   ├── 20151216
+    │   ├── 20160115
+    │   ├── 20160129
+    │   ├── 20161110
+    │   ├── default.properties
+    │   └── doexports
+    ├── questions
+    .
+    .
+    .
 ----
 
 For SEBI, this means that you should check out the relevant part of the repository to a sandbox on the preparation workstation. For me (hom) and java1 that is:
 
 [source,shell]
 ----
-$ mkdir -p $HOME/sebi/java1/trunk/
-$ cd $HOME/sebi/java1/trunk/
-$ svn co svn+ssh://osirix/fontysvenlo.org/home/modules/java1/svnroot/trunk/45_assessment 
+$ mkdir -p ~/sebi/java1/trunk/
+$ cd ~/sebi/java1/trunk/
+$ svn co svn+ssh://osirix/fontysvenlo.org/home/modules/java1/svnroot/trunk/45_assessment
 ----
 
 Since many of the attributes or properties of the assessments for a
-course are the same, the conventions say that the properties are: 
+course are the same, the conventions say that the properties are either:
 
 * In a file called `default.properties` in the builds
   directory. Typically this already is present when you check out as
   shown before. If not, create the file, make sure the content is
-  correct and add and commit it to the module repository. 
+  correct and add and commit it to the module repository.
 * Derived from the name of the subdirectory for the specific
   exam. Here the convention is to use the exam data in short ISO-8601
   format, YYYYMMDD as in 20160104 (4th of November 2016) for the date
   this text is created.
 * In a file named `setup.properties`, per assessment date (sub directory).
 
+setup.properties is read last, so the definitions take precedence over
+those in default.properties.
+
 Both property files have the syntax of java property files, which can
 be consumed as shell (bash) source files, or parsed by perl. Because
 shell (bash) has the peculiarity of not accepting white space around
-the assignment operator, write the config declarations without
-these. If you need to add you own properties, prefer names and values
-without white space, because white space will cause more harm then
-good.
+the assignment operator, write the config declarations avoiding
+unnecessary  white space. If you need to add you own properties,
+prefer names and values without white space, because white space will
+cause more harm then good.
 
 Examples (for JAVA1, excerpt:)
 [source,shell]
@@ -114,7 +127,7 @@ the scripts use a global directory /home/exam and steps below will
 
 To make this all work, add the directory containing all scripts to
 your PATH variable,
-e.g. `PATH=$PATH:/home/prepareassessment/bin`. 
+e.g. `PATH=$PATH:/home/prepareassessment/bin`.
 
 Preparing for an assessment involves:
 
@@ -140,27 +153,27 @@ Preparing for an assessment involves:
   check that the examproject directory is complete on the one hand and
   is exactly what you want published on the stick. You could use the
   tools that students use in the assessment (netbeans, r-studio or
-  pgadmin) to verify that. 
+  pgadmin) to verify that.
 
 * Create the repositories. For that we have a script called
   makerepos.pl which uses the information described previously. The
   output of the script is a bash source text, which is conventionally
   redirected to doit.sh. Rationale is that the shell text is
   potentially destructive and must be executed with elevated (sudo)
-  rights. 
- 1. Do `makerepos.pl > doit.sh`
- 2. Then do `sudo bash doit.sh` and have a little patience, as doit.sh
+  rights.
+ . Do `makerepos.pl > doit.sh`
+ . Then do `sudo bash doit.sh` and have a little patience, as doit.sh
  will create a repository per stick, import the examproject in each of
  them and then will checkout siad repository in a sandbox per
  candidate on the "Desktop" of each stick. This can take a few
  thousand milliseconds.
-3. Create a sym-link in the assessment directory called skel.tgz which
-should point to a tar.gz file, which in turn should contain the
-initial content of the candidate home directory (/home/exam), such
-that personal preferences (NetBeans), links in browsers (e.g. javadoc,
-postgressql manual) and desktop (xfce) configuration are set up. This
-skeleton does NOT contain anything assessment specific. 
-4. With stampdesktop you invoke a script that creates a wallpaper per
+ . Create a sym-link in the assessment directory called skel.tgz which
+ should point to a tar.gz file, which in turn should contain the
+ initial content of the candidate home directory (/home/exam), such
+ that personal preferences (NetBeans), links in browsers (e.g. javadoc,	
+ postgressql manual) and desktop (xfce) configuration are set up. This
+ skeleton does NOT contain anything assessment specific.
+ . With stampdesktop you invoke a script that creates a wallpaper per
 stick, containing the id of the stick and date of the assessment
 (e.g. 2016-11-03). You must run this script with elevated rights, so
 
@@ -192,7 +205,7 @@ sudo -s, to elevate the rights. Then insert, *calmly*, the sticks into
 the USB-hubs. Each hub supports 7 sticks and you can prime the sticks
 in batches of 21 max. After all sticks are inserted and all leds on
 the hubs are lit, enter the primeSticks command and wait until the
-(red) prompt returns. 
+(red) prompt returns.
 
 We need to stress *insert calmly* because the OS on the preparation
 workstation needs some time to detect and recognize the stick and
@@ -233,7 +246,7 @@ a barcode reader. Now the trick is to hand out the sticks in numerical
 (or reversed) order and scan into a spreadsheet, in which the first
 column holds the sequence numbers of the sticks you are going to use
 and next will be the student number. Save it in a file sticks.csv and
-commit it to the build too. Format of the csv file: 
+commit it to the build too. Format of the csv file:
 [source,shell]
 ----
 sticknr;snummer
@@ -285,26 +298,28 @@ We use the *corrector’s workbench* to correct the students work. Preparing thi
 ==== Make the last commit and backup.
 On the Preparation workstation do the following:
 
-1. elevate your rights.
-2. login as exam user (su -l exam)
-3. directory-walk to the exam-user’s Desktop and for all repositories,
+. elevate your rights.
+. login as exam user (su -l exam)
+. directory-walk to the exam-user’s Desktop and for all repositories,
 do an `svn update` per repository and then a final harvesting `svn
 commit` per repository. This will ensure that all work is in the
 repositories.
-4. Make a tar of both the repos and the sandboxes.
-5. secure copy the tars to you home dir on the correction server (osirix). 
+. Make a tar of both the repos and the sandboxes.
+. secure copy the tars to you home dir on the correction server (osirix).
 
 ==== Init the corrector’s work bench.
 
 The corrector’s work bench uses a set of scripts and a database and
 php and html to create the UI. This needs to be configured per
-assessment.
+assessment. The contion is to keep this configuration in the
+assessment specif build directory, e.g. `.../builds/20161103`.
 
-1. Log in to the correction server.
-2. Check out or update the 45_assessment directory for the exam and
-walk to the directory for the specific date. Maybe mv the earlier
-scpied tar files here too.
-3. execute the scripts filldbquestions 4.
+. Log in to the correction server.
+. Check out or update the 45_assessment directory for the exam and
+walk to the directory for the specific date. Maybe `mv` the earlier
+`scp`-ied tar files there too.
+. 
+. execute the scripts filldbquestions 4.
 
 sticks.csv contents.
 
@@ -313,4 +328,3 @@ filldb
 connectsticks.
 
 web server restart
-
