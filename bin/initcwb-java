@@ -1,11 +1,5 @@
 #!/bin/bash
-source ../default.properties
-exam_date=$(d=$(pwd);d=${d: -8}; d1=${d:0:4}; d2=${d:4:2}; d3=${d:6:2}; echo ${d1}-${d2}-${d3})
-event_name=${module_name}-${exam_date}
-year=${exam_date:0:4}
-
-webdir=${index_file_grand_parent}/${year}/${module_name}-${exam_date}
-svnroot=${svn_location}/${year}/${event_name}
+eval $(confparams)
 #hvd 20131101 store filename of question as well
 rm -fr ${webdir}/harvest/sandbox
 harvester ${svnroot} 

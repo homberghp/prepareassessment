@@ -1,0 +1,32 @@
+#!/bin/bash
+if [ -e ../default.properties ] ; then
+    source ../default.properties
+else 
+    >&2 echo "cannot find settings '../default.properties', please got to proper dir."
+    exit 1
+fi
+subdir=$(basename $(pwd))
+if [[ ! $subdir =~ ^[0-9]{8}$ ]]; then
+    >&2 echo "subdir '$subdir' should be 8 digits, in iso 8601 short date format such as '20161103' for 3 November 2016"
+    exit 1
+fi
+exam_date=$(d=$(pwd);d=${d: -8}; d1=${d:0:4}; d2=${d:4:2}; d3=${d:6:2}; echo ${d1}-${d2}-${d3})
+event_id=${module_name}-${exam_date}
+event=$(echo -n $event_id | sed -e 's/-//g')
+year=${exam_date:0:4}
+webdir=${index_file_grand_parent}/${year}/${module_name}-${exam_date}
+site_url=${server_url}/examdoc/${year}/${module_name}-${exam_date}/index.php
+svn_root=${svn_location}/${year}/${event_name}
+
+echo "exam_date=${exam_date}"
+echo "event_id=${event_id}"
+echo "event=${event}"
+echo "year=${year}"
+echo "webdir=${webdir}"
+echo "svn_root=${svn_root}"
+echo "site_url=${site_url}"
+echo "module_name=${module_name}"
+echo export exam_date event event_id year webdir svn_root site_url module_name
+
+
+

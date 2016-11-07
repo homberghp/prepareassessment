@@ -1,0 +1,31 @@
+#!/bin/bash
+# link web resources 
+eval $(confparams)
+sortdate=$(basename $(pwd))
+mkdir -p paconfig
+event_name="Performance assessment ${module_name} $exam_date"
+cat<<EOF >paconfig/${event_id}.conf
+##v tag line identifies exam site.
+## examsite;$sortdate;$event_name;$site_url
+
+Use ExamSite $year $event_id $event
+
+EOF
+
+cat <<EOF > paconfig/settings.php
+<?php
+\$title='Progress performance assessment ${module_name} ${exam_date}';
+\$h1Title=\$title;
+\$javadocDir='./api';
+\$javadocTitle='$app_name';
+\$exam_id='$exam_id';
+\$exam_year='$exam_year';
+\$event='$event';
+\$catMap = array(1=>'T');
+EOF
+
+# ln -sf /home/prepareassessment/resources/{cwb,index2,left,process,resultmail,results,setactive,top,wb}.php ${webdir}
+# ln -sf /home/prepareassessment/resources/*.css ${webdir}
+# ln -sf /home/prepareassessment/resources/{images,js,css} ${webdir}
+# sudo cp paconfig/$exam_id.conf /etc/apache2/sslsites-available
+# sudo ln -sf /etc/apache2/sslsites-{available,enabled}/$exam_id.conf
