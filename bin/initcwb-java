@@ -2,7 +2,10 @@
 eval $(confparams)
 #hvd 20131101 store filename of question as well
 rm -fr ${webdir}/harvest/sandbox
-harvester ${svnroot} 
+harvester ${svn_root}
+filldb.pl
+# cat paconfig/filldb.sql | psql -X sebiassessment
+
 # echo continue work in ${webdir}
 # cd ${webdir}
 flag='editor-fold'
