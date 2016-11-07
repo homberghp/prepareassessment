@@ -24,8 +24,13 @@ cat <<EOF > paconfig/settings.php
 \$catMap = array(1=>'T');
 EOF
 
-# ln -sf /home/prepareassessment/resources/{cwb,index2,left,process,resultmail,results,setactive,top,wb}.php ${webdir}
-# ln -sf /home/prepareassessment/resources/*.css ${webdir}
-# ln -sf /home/prepareassessment/resources/{images,js,css} ${webdir}
-# sudo cp paconfig/$exam_id.conf /etc/apache2/sslsites-available
-# sudo ln -sf /etc/apache2/sslsites-{available,enabled}/$exam_id.conf
+rm -fr ${webdir}
+mkdir -p ${webdir}
+ln -sf /home/prepareassessment/resources/{cwb,index2,left,process,resultmail,results,setactive,top,wb}.php ${webdir}
+ln -sf /home/prepareassessment/resources/*.css ${webdir}
+ln -sf /home/prepareassessment/resources/{images,js,css} ${webdir}
+cp paconfig/settings.php ${webdir}
+
+sudo cp paconfig/${event_id}.conf /etc/apache2/sslsites-available
+sudo ln -sf /etc/apache2/sslsites-{available,enabled}/${event_id}.conf
+sudo service apache2 reload
