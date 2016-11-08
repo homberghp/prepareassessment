@@ -1,6 +1,7 @@
 = USING SEBI Venlo Assessment Environment
 Pieter van den Hombergh <p.vandenhombergh@fontys.nl>
 Version 0.1 2016-11-04
+:toclevels: 3
 :toc: left
 :icons: font
 :keywords: USB Performance assessment SEBI Venlo
@@ -173,25 +174,16 @@ Preparing for an assessment involves:
  that personal preferences (NetBeans), links in browsers (e.g. javadoc,	
  postgressql manual) and desktop (xfce) configuration are set up. This
  skeleton does NOT contain anything assessment specific.
- . With stampdesktop you invoke a script that creates a wallpaper per
-stick, containing the id of the stick and date of the assessment
-(e.g. 2016-11-03). You must run this script with elevated rights, so
-
-[source,shell]
-----
-$ sudo -s
-# stampdesktop
-.... some output
-# exit
-$
-----
-Stamping the desktop in this way make the desktop recognizable and identifies the stick at the same time.
 
 You are now set up to create the sticks.
 
 === Stick filling.
 
 The final step before the exam is putting the stick specific content on the sticks.
+This will also add a stamp to the Desktop directory on the stick.
+Stamping the desktop in this way make the desktop recognizable as
+being and exam environment for this particular exam, and identifies
+the stick at the same time.
 
 This step should be executed in the assessment builds sub-directory such as `…​/builds/20161103.`
 
@@ -319,12 +311,13 @@ assessment specif build directory, e.g. `.../builds/20161103`.
 walk to the directory for the specific date. Maybe `mv` the earlier
 `scp`-ied tar files there too.
 . 
-. execute the scripts filldbquestions 4.
+. execute the scripts:
+.. initcwb-xxx as in `initcwb-java, `initcwb-r`, or `initcwb-r`. Any
+of  these scripts will create a sql file `paconfig/filldb.sql`  to be put into the database.
+.. execute the script on the database with `cat paconfig/filldb.sql |
+psql -X sebiassessment`
+.. The same to associate student numbers and sticks:  
+`connectSti cks | psql -X sebiassessment`
+.. web server restart with `sudo service apache2 restart`
+and presto you should be done.
 
-sticks.csv contents.
-
-filldb
-
-connectsticks.
-
-web server restart
