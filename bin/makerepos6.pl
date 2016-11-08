@@ -167,6 +167,8 @@ while ($stickcount < $examcount) {
 # process questions by filtering by tag.
 print qq(# wait for svn import childs to complete
 wait
+# all owned by exam user
+chown -R exam:exam /home/exam
 echo created all repos
 echo -e"\t"            '$repolist'
 );
