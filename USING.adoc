@@ -1,6 +1,7 @@
 = USING SEBI Venlo Assessment Environment
 Pieter van den Hombergh <p.vandenhombergh@fontys.nl>
 Version 0.1 2016-11-04
+:toclevels: 3
 :toc: left
 :icons: font
 :keywords: USB Performance assessment SEBI Venlo
@@ -173,25 +174,16 @@ Preparing for an assessment involves:
  that personal preferences (NetBeans), links in browsers (e.g. javadoc,	
  postgressql manual) and desktop (xfce) configuration are set up. This
  skeleton does NOT contain anything assessment specific.
- . With stampdesktop you invoke a script that creates a wallpaper per
-stick, containing the id of the stick and date of the assessment
-(e.g. 2016-11-03). You must run this script with elevated rights, so
-
-[source,shell]
-----
-$ sudo -s
-# stampdesktop
-.... some output
-# exit
-$
-----
-Stamping the desktop in this way make the desktop recognizable and identifies the stick at the same time.
 
 You are now set up to create the sticks.
 
 === Stick filling.
 
 The final step before the exam is putting the stick specific content on the sticks.
+This will also add a stamp to the Desktop directory on the stick.
+Stamping the desktop in this way make the desktop recognizable as
+being and exam environment for this particular exam, and identifies
+the stick at the same time.
 
 This step should be executed in the assessment builds sub-directory such as `…​/builds/20161103.`
 
@@ -232,7 +224,21 @@ of the first batch to boot the test laptop, to see if indeed all that
 is needed, and no more, is on the sample stick. If not, revisit the
 previous steps. If that is okay, continue for the remaining batches.
 
+[TIP]
+To be on the safe side, and because of the warning before, make a
+(tar) backup of both the repositories under /home/exam named
+EXAMxyz-repo and all sandboxes under
+/home/exam/Desktop/examproject-EXAMxyz. Convention: name the tar files
+after the exam, e.g JAVA120161103-repo.tgz and
+JAVA120161103-sandboxes.tgz
+
 Once you have primed all sticks, you are ready to rock.
+
+==== Take the exam
+
+During the exam you will hand out the sticks to students in almost
+random order. To be able to associate a stick with a student, you
+should not who receive which stick.
 
 [NOTE]
 During exam you must somehow register which student got which
@@ -245,7 +251,7 @@ forward you want the student with this paper, so you can scan it with
 a barcode reader. Now the trick is to hand out the sticks in numerical
 (or reversed) order and scan into a spreadsheet, in which the first
 column holds the sequence numbers of the sticks you are going to use
-and next will be the student number. Save it in a file sticks.csv and
+and next will be the student number. Save it in a file `sticks.csv` and
 commit it to the build too. Format of the csv file:
 [source,shell]
 ----
@@ -255,16 +261,9 @@ sticknr;snummer
 102;2632683
 ----
 
-[TIP]
-To be on the safe side, and because of the warning before, make a
-(tar) backup of both the repositories under /home/exam named
-EXAMxyz-repo and all sandboxes under
-/home/exam/Desktop/examproject-EXAMxyz. Convention: name the tar files
-after the exam, e.g JAVA120161103-repo.tgz and
-JAVA120161103-sandboxes.tgz
+You should add and commit the sticks.csv file as part of the build directory.
 
 === Harvesting Work.
-
 Harvesting the work from the sticks uses one script, to be executed
 from the assessment relevant build directory. The script
 `harvestSticks` reverses the steps of priming the sticks: It copies
@@ -291,21 +290,43 @@ $ sudo -s
 # exit
 $
 ----
-=== Prepare for Correction
 
-We use the *corrector’s workbench* to correct the students work. Preparing this requires a few steps, some of them on the preparation workstation, some on the correction server, _osirix_.
+=== Collect Sandboxes and Repositories
+
+Once you have harvested all sticks, it is time to collect the work for
+correction. Since we allow students to use a repository, but do not
+want to make (im)proper use of said repository an issue for an exam,
+we need to make sure that the student repository is complete.
 
 ==== Make the last commit and backup.
 On the Preparation workstation do the following:
 
 . elevate your rights.
-. login as exam user (su -l exam)
-. directory-walk to the exam-user’s Desktop and for all repositories,
-do an `svn update` per repository and then a final harvesting `svn
-commit` per repository. This will ensure that all work is in the
+. To do that, log in as exam used (`sudo -s` followed by a `su -l exam`)
+and walk to the exam users Desktop. 
+. Then directory-walk to the exam-user’s Desktop and for all repositories,
+do an `svn update` per sandbox (examproject-EXAMxyz) and then a final harvesting `svn
+commit` per sandbox. This will ensure that all work is in the
 repositories.
 . Make a tar of both the repos and the sandboxes.
 . secure copy the tars to you home dir on the correction server (osirix).
+
+If you feel the urge, you may want to put that in a script:
+
+[source,shell]
+----
+for i in examproject-EXAM*; do svn up ${i}; svn ci -m'harvesting ' ${i}; done
+----
+
+Once that is done create tar archives from both the sandboxes and the
+repositories and copy them both to the correction server.
+
+
+=== Prepare for Correction
+
+We use the *corrector’s workbench* to correct the students
+work. Preparing this requires a few steps, some of them on the
+preparation workstation, some on the correction server, _osirix_.
 
 ==== Init the corrector’s work bench.
 
@@ -317,14 +338,15 @@ assessment specif build directory, e.g. `.../builds/20161103`.
 . Log in to the correction server.
 . Check out or update the 45_assessment directory for the exam and
 walk to the directory for the specific date. Maybe `mv` the earlier
-`scp`-ied tar files there too.
+`scp`-ied tar archives there too.
 . 
-. execute the scripts filldbquestions 4.
+. execute the scripts:
+.. initcwb-xxx as in `initcwb-java, `initcwb-r`, or `initcwb-r`. Any
+of  these scripts will create a sql file `paconfig/filldb.sql`  to be put into the database.
+.. execute the *sql script* on the database with `cat paconfig/filldb.sql |
+psql -X sebiassessment`
+.. The same to associate student numbers and sticks:  
+`connectSticks | psql -X sebiassessment`
+.. web server restart with `sudo service apache2 restart`
+and presto you should be done.
 
-sticks.csv contents.
-
-filldb
-
-connectsticks.
-
-web server restart

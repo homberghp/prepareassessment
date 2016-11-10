@@ -21,6 +21,13 @@ fi
 countSticks
 #rebind-usb.pl 
 mountSticks2.pl
+# for desktop stamp
+dir=$(basename $(pwd))
+datum=${dir:0:4}-${dir:4:2}-${dir:6:2}
+basetext="Fontys SEBI Venlo EXAM ${datum}"
+distro=U14.04
+pointsize=64
+imagein=/home/${distro}/FileSystem/usr/share/xfce4/backdrops/xubuntu-trusty.png
 # casper-rw mounted ad /media/usb/casper-rw-${STYPE}xxx
 # note that file system lives at /media/usb/casper-rw-${STYPE}xxx/upper/
 for i in /media/usb/home-rw-${STYPE}*; do 
@@ -56,7 +63,15 @@ EOF
 	    ${debug} tar -C ${rootfsmountpoint}/upper/ -xzf rootfs.tgz 
 	fi
 	${debug} mkdir -p ${rootfsmountpoint}/upper/usr/share/xfce4/backdrops/
-	${debug} cp /home/${stype}/Pictures/xubuntu-trusty-${stick}.jpg ${rootfsmountpoint}/upper/usr/share/xfce4/backdrops/fontys-backdrop.jpg
+	#	${debug} cp /home/${stype}/Pictures/xubuntu-trusty-${stick}.jpg ${rootfsmountpoint}/upper/usr/share/xfce4/backdrops/fontys-backdrop.jpg
+	text="${basetext}\n${stick}"
+	out=${rootfsmountpoint}/upper/usr/share/xfce4/backdrops/fontys-backdrop.jpg
+	convert -size 1250x250 -pointsize ${pointsize} xc:none -gravity north \
+		-stroke black -strokewidth 2 -annotate 0 "${text}" \
+		-background none -shadow 100x3+0+0 +repage \
+		-stroke none -fill white -pointsize ${pointsize} -annotate 0 "${text}" \
+		${imagein}  +swap -gravity north  -geometry +0+320 \
+		-composite ${out}
 	echo primed stick ${stick}
     ) &
     else
