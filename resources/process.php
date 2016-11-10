@@ -13,7 +13,7 @@ $kilroy='--';
 if ( isSet( $_POST['submit'] ) && isSet( $_POST['stick_event_repo_id'] ) && isSet( $_POST['quest']) && isSet( $_POST['score'] )) {
     $score = $_POST['score'];
     $quest = $_POST['quest'];
-    $question_remark=$_POST['question_remark'];
+    $question_remark=pg_escape_string( $_POST['question_remark']);
     $stick_event_repo_id = $_POST['stick_event_repo_id'];
     $remark = pg_escape_string( $_POST['remark'] );
     $operator = $_SERVER['PHP_AUTH_USER'];
