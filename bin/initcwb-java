@@ -3,7 +3,6 @@ eval $(confparams)
 #hvd 20131101 store filename of question as well
 rm -fr ${webdir}/harvest/sandbox
 harvester ${svn_root}
-filldb.pl
 # cat paconfig/filldb.sql | psql -X sebiassessment
 
 # echo continue work in ${webdir}
@@ -49,8 +48,6 @@ for i in $(find ${webdir}/harvest -name "*.xhtml"); do
     ( enscript --line-numbers -whtml --style=emacs_verbose -Ehtml -q  --color -p -  $i | stripsnip.pl > $i.html &); 
 done
 
-# link to resources
-ln -sf /home/prepareassessment/resources/{cwb,index2,left,process,resultmail,results,setactive,top,wb}.php ${webdir}
-ln -sf /home/prepareassessment/resources/*.css ${webdir}
-ln -sf /home/prepareassessment/resources/{images,js,css} ${webdir}
-cp paconfig/settings.php ${webdir}
+
+filldb.pl
+

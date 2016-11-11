@@ -4,7 +4,6 @@ eval $(confparams)
 #grep -rh  STUDENT_ID  examproject | filldbquestions.pl > paconfig/filldbquestions.sql 
 rm -fr ${webdir}/harvest/sandbox
 harvester ${svnroot}
-filldb.pl
 # echo continue work in ${webdir}
 # cd ${webdir}
 flag='editor-fold'
@@ -50,4 +49,4 @@ done
 #     ( enscript --line-numbers -whtml -E${extension} -q  --color -p -  $i | stripsnip.pl > $i.html &); 
 # done
 
-# link to resources
+filldb.pl
