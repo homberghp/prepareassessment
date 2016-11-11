@@ -10,6 +10,13 @@ toc::[]
 
 == Intro
 
+This document describes how to use the script collection to prepare
+and correct a SEBI Venlo performance assessment using USB sticks with
+a live Linux image. This document and the scripts described are
+maintained at github in the project
+link:https://github.com/homberghp/prepare-assessment[homberghp/prepare-assessment]
+and is covered by the *Artistic License 2.0*.
+
 The current way of working (as of October 2016) involves a number of steps:
 
 * Preparation
