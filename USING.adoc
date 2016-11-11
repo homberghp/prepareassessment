@@ -234,7 +234,7 @@ JAVA120161103-sandboxes.tgz
 
 Once you have primed all sticks, you are ready to rock.
 
-==== Take the exam
+== Take the exam
 
 During the exam you will hand out the sticks to students in almost
 random order. To be able to associate a stick with a student, you
@@ -262,6 +262,8 @@ sticknr;snummer
 ----
 
 You should add and commit the sticks.csv file as part of the build directory.
+
+== Correcting the  Assessment
 
 === Harvesting Work.
 Harvesting the work from the sticks uses one script, to be executed
@@ -318,9 +320,16 @@ If you feel the urge, you may want to put that in a script:
 for i in examproject-EXAM*; do svn up ${i}; svn ci -m'harvesting ' ${i}; done
 ----
 
-Once that is done create tar archives from both the sandboxes and the
+Once that is done, create tar archives from both the sandboxes and the
 repositories and copy them both to the correction server.
-
+If the exam is STA1 on 2016-11-10  the range of sticks is 100-148 then:
+[source,shell]
+----
+cd /home/exam
+tar czvf STA120161110-repo.tgz EXAM{100..148}-repo
+cd /home/exam/Desktop
+tar czvf STA120161110-sandboxes.tgz examproject-EXAM{100..148}
+----
 
 === Prepare for Correction
 
@@ -333,20 +342,35 @@ preparation workstation, some on the correction server, _osirix_.
 The corrector’s work bench uses a set of scripts and a database and
 php and html to create the UI. This needs to be configured per
 assessment. The contion is to keep this configuration in the
-assessment specif build directory, e.g. `.../builds/20161103`.
+assessment specif build directory, e.g. `.../builds/20161110`.
 
 . Log in to the correction server.
 . Check out or update the 45_assessment directory for the exam and
-walk to the directory for the specific date. Maybe `mv` the earlier
-`scp`-ied tar archives there too.
-. 
-. execute the scripts:
-.. initcwb-xxx as in `initcwb-java, `initcwb-r`, or `initcwb-r`. Any
-of  these scripts will create a sql file `paconfig/filldb.sql`  to be put into the database.
-.. execute the *sql script* on the database with `cat paconfig/filldb.sql |
-psql -X sebiassessment`
-.. The same to associate student numbers and sticks:  
-`connectSticks | psql -X sebiassessment`
-.. web server restart with `sudo service apache2 restart`
-and presto you should be done.
+walk to the directory for the specific date
+e.g. `.../builds/20161110`.
+Maybe `mv` the earlier `scp`-ied tar archives there too.
+. Unpack the repo tar file under `/home/svn/year`
+
+[source,shell]
+----
+eval $(confparams)
+mkdir -p ${svn_root}${event_id}
+pushd ${svn_root}${event_id}
+tar xzf ${builddir}/*-repo.tgz
+for i in EXAM*-repo; do mv $i ${i/-repo/}; done
+popd
+----
+
+. execute the scripts :
+.. initcwb-xxx as in `initcwb-java`, `initcwb-r`, or `initcwb-sql`. Any
+of  these scripts will create set of files in `paconfig/`.
+The remaining work is to run the scripts that are written in paconfig
+. You will prompted to run two scripts.
+.. Run `sudo bash paconfig/doitapache.sh`
+.. Run `bash doitconfig.sh`
+
+You are done.
+
+*Happy correcting*.
+
 
