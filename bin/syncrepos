@@ -1,0 +1,3 @@
+#!/bin/bash
+cd ~/Desktop
+for i in examproject-EXAM*; do svn up ${i}; svn ci -m'harvesting ' ${i}; done
