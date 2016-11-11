@@ -29,7 +29,10 @@ print qq(begin work;
 create temp table sticks_tmp (stick_nr integer, snummer integer);
 copy sticks_tmp from STDIN CSV HEADER DELIMITER ';' NULL 'NULL';\n);
 while(<STICKS>) {
-    print qq($_);
+    chomp;
+    if ($_ ne '') {
+	print qq($_\n);
+    }
 }
 print qq(\\.\n;
 select count(1) from sticks_tmp;
@@ -39,7 +42,7 @@ delete from candidate_stick cs
 
 insert into candidate_stick 
    with ser as (select stick_event_repo_id,stick_nr from stick_event_repo where event='$event') 
-      select ser.stick_event_repo_id,snummer from ser join sticks20161106 using(stick_nr);
+      select ser.stick_event_repo_id,snummer from ser join sticks_tmp using(stick_nr);
 select * from stick_event_repo join candidate_stick using(stick_event_repo_id) where event='$event';
 commit;\n
 
