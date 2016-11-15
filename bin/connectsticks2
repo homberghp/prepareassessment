@@ -27,11 +27,16 @@ my $event=$exam_id;
 $event =~ s/-//g;
 print qq(begin work;
 create temp table sticks_tmp (stick_nr integer, snummer integer);
-copy sticks_tmp from STDIN CSV HEADER DELIMITER ';' NULL 'NULL';\n);
+copy sticks_tmp from STDIN CSV DELIMITER ';' NULL 'NULL';\n);
 while(<STICKS>) {
     chomp;
+    $_ =~s/(\r|\n)//g;
     if ($_ ne '') {
-	print qq($_\n);
+	($stick,$snummer)=split/;/;
+#	print qq('$stick' => '$snummer'\n);
+	if ($stick =~ /\d+$/ && $snummer =~ m/^\d+$/ ) {
+	    print qq($_\n);
+	}
     }
 }
 print qq(\\.\n;
