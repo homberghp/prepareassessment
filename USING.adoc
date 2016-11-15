@@ -10,6 +10,13 @@ toc::[]
 
 == Intro
 
+This document describes how to use the script collection to prepare
+and correct a SEBI Venlo performance assessment using USB sticks with
+a live Linux image. This document and the scripts described are
+maintained at github in the project
+link:https://github.com/homberghp/prepare-assessment[homberghp/prepare-assessment]
+and is covered by the *Artistic License 2.0*.
+
 The current way of working (as of October 2016) involves a number of steps:
 
 * Preparation
@@ -44,6 +51,8 @@ variants thereof can be reused. Our These projects are placed under
 the directory questions. In our practice the assessment related
 resources are placed under 45_asssessment like in the case of STA1:
 
+[[source-tree-example]]
+.source  tree for STA1
 [source,shell]
 ----
 └── 45_assessment
@@ -62,6 +71,8 @@ resources are placed under 45_asssessment like in the case of STA1:
 
 For SEBI, this means that you should check out the relevant part of the repository to a sandbox on the preparation workstation. For me (hom) and java1 that is:
 
+[[checkout-for-java1]]
+.checkout for java1
 [source,shell]
 ----
 $ mkdir -p ~/sebi/java1/trunk/
@@ -93,7 +104,8 @@ unnecessary  white space. If you need to add you own properties,
 prefer names and values without white space, because white space will
 cause more harm then good.
 
-Examples (for JAVA1, excerpt:)
+[[default.properties]]
+.default.properties (for JAVA1, excerpt:)
 [source,shell]
 ----
 ## exam name
@@ -108,12 +120,14 @@ is_netbeans_project=1
 module_repo=file:///home/modules/java1/svnroot
 ----
 
-`setup.properties` for JAVA1 assessment on 20161103 in dir `…​/20161103`:
 
+[[setup.properties]]
+.setup.properties for JAVA1 assessment on 20161103 in dir `…​/20161103`:
 [source,shell]
 ----
 # safe number
 candidate_count=63
+# first stick number is 137
 stick_id=137
 is_netbeans_project=true
 ----
@@ -126,29 +140,30 @@ the scripts use a global directory /home/exam and steps below will
 
 === Preparing for one Assessment
 
+[NOTE]
 To make this all work, add the directory containing all scripts to
 your PATH variable,
 e.g. `PATH=$PATH:/home/prepareassessment/bin`.
 
 Preparing for an assessment involves:
 
-* Create an appropriately named sub-directory as in 20161103.
+* Create an appropriately named sub-directory as in `20161103`.
 * Inside said directory, copy and adapt the setup.properties file, in
   particular set the is_netbeans_project correctly, and the start
   number and count of the sticks to use. This determines the identity
   of the sticks to be used and therefor repositories and sandboxes to
   be created.
-* Add the exam solutions somehow. The convention is to put this
-  information in a script file called doexports to be executed as
-  normal user with ./doexports. For JAVA assessment this typically
+* Add the exam questions and solutions. The convention is to put this
+  information in a script file called *doexports* to be executed as
+  normal user with `./doexports`. For JAVA assessment this typically
   involves creating a somewhat complete sccript, for DBS and STA
   assessments, the question information is in a file called
-  questions.txt and makes this script reusable. Note that the script
+  _questions.txt_ and makes this script reusable. Note that the script
   does an svn checkout and does NOT use the local sandbox, to ensure
   that the exam questions as used in the exam are also versioned in
   the repository.
-* Execute the ./doexports`, which should result in an examsolution and
-  an examproject, the later being the sub-directory containing all the
+* Execute the ./doexports`, which should result in the folders *examsolution* and
+  an *examproject* , the later being the sub-directory containing all the
   information to be placed on the stick and imported into the
   student/stick specific repositories. Before you do the next steps,
   check that the examproject directory is complete on the one hand and
@@ -158,8 +173,9 @@ Preparing for an assessment involves:
 
 * Create the repositories. For that we have a script called
   makerepos.pl which uses the information described previously. The
-  output of the script is a bash source text, which is conventionally
-  redirected to doit.sh. Rationale is that the shell text is
+  script does not directly create the repositories, but rather outputs
+  a script that will. This script is a bash source text, which is conventionally
+  redirected to _doit.sh_. Rationale is that the shell text is
   potentially destructive and must be executed with elevated (sudo)
   rights.
  . Do `makerepos.pl > doit.sh`
@@ -168,12 +184,20 @@ Preparing for an assessment involves:
  them and then will checkout siad repository in a sandbox per
  candidate on the "Desktop" of each stick. This can take a few
  thousand milliseconds.
- . Create a sym-link in the assessment directory called skel.tgz which
+ . Create a sym-link in the assessment directory called *skel.tgz* which
  should point to a tar.gz file, which in turn should contain the
  initial content of the candidate home directory (/home/exam), such
  that personal preferences (NetBeans), links in browsers (e.g. javadoc,	
  postgressql manual) and desktop (xfce) configuration are set up. This
  skeleton does NOT contain anything assessment specific.
+ Typically the skelleton tar file is stored under _/home/prepareassessment/data_
+
+[[example-skel-link]]
+.example skelleton link
+[source,shell]
+----
+ln -sf /home/prepareassessment/data/skel20161018.tgz skel.tgz
+----
 
 You are now set up to create the sticks.
 
@@ -203,12 +227,15 @@ We need to stress *insert calmly* because the OS on the preparation
 workstation needs some time to detect and recognize the stick and
 its ID.
 
-The number-order in which you insert the sticks is irrelevant, but
-take care that you insert only sticks that are within the range you
+The number-order in which you insert the sticks is irrelevant, because
+the stick preparation adds an identification to the sticks that can be
+used to match a stick to an exam and the label on the stick.
+Take care that you insert only sticks that are within the range you
 declared in setup.properties., because only those will have a repo and
 sandbox prepared.
 
-Example run:
+[[Example-run]]
+.Example primeSticks run
 [source,shell]
 ----
 $ sudo -s
@@ -234,7 +261,7 @@ JAVA120161103-sandboxes.tgz
 
 Once you have primed all sticks, you are ready to rock.
 
-==== Take the exam
+== Take the exam
 
 During the exam you will hand out the sticks to students in almost
 random order. To be able to associate a stick with a student, you
@@ -263,6 +290,8 @@ sticknr;snummer
 
 You should add and commit the sticks.csv file as part of the build directory.
 
+== Correcting the  Assessment
+
 === Harvesting Work.
 Harvesting the work from the sticks uses one script, to be executed
 from the assessment relevant build directory. The script
@@ -280,7 +309,8 @@ save them.
 Elevate your rights, insert all sticks that have been used in batches
 and per batch execute `harvestSticks`.
 
-Example:
+[[Example-run-harvest]]
+.Example harvestSticks run
 [source,shell]
 ----
 $ sudo -s
@@ -293,34 +323,45 @@ $
 
 === Collect Sandboxes and Repositories
 
+
 Once you have harvested all sticks, it is time to collect the work for
-correction. Since we allow students to use a repository, but do not
+correction. We harvested a sandbox and a subversion repository per student.
+
+==== Make the last commit and backup.
+Since we allow students to use a repository, but do not
 want to make (im)proper use of said repository an issue for an exam,
 we need to make sure that the student repository is complete.
 
-==== Make the last commit and backup.
 On the Preparation workstation do the following:
 
-. elevate your rights.
-. To do that, log in as exam used (`sudo -s` followed by a `su -l exam`)
-and walk to the exam users Desktop. 
-. Then directory-walk to the exam-user’s Desktop and for all repositories,
-do an `svn update` per sandbox (examproject-EXAMxyz) and then a final harvesting `svn
+. elevate your rights. (sudo). To do that, log in as exam used
+(`sudo -s` followed by a `su -l exam`) and walk to the exam-user's Desktop. 
+. For all sandboxes do an `svn update` per sandbox (examproject-EXAMxyz) and then a final harvesting `svn
 commit` per sandbox. This will ensure that all work is in the
-repositories.
+repositories. There is a script form that, called `syncrepos`.
 . Make a tar of both the repos and the sandboxes.
-. secure copy the tars to you home dir on the correction server (osirix).
 
-If you feel the urge, you may want to put that in a script:
-
+[[create-tar-files]]
+.create tar files from repo and sandboxes.
 [source,shell]
 ----
-for i in examproject-EXAM*; do svn up ${i}; svn ci -m'harvesting ' ${i}; done
+cd /home/exam
+tar czvf STA120161110-repo.tgz EXAM*-repo
+cd /home/exam/Desktop
+tar czvf STA120161110-sandboxes.tgz examproject-EXAM*
 ----
+[start=4]
+. leave exam user and sudo shell (*exit* followed by *exit* or
+  two times *control-D*).
+  
+=== Secure Copy the Tars to server
 
-Once that is done create tar archives from both the sandboxes and the
-repositories and copy them both to the correction server.
-
+Secure Copy the tars to you home-dir on the correction server (osirix).
+[source,shell]
+----
+cd /home/exam
+scp STA120161110-repo.tgz Desktop/STA120161110-sandboxes.tgz osirix:~
+----
 
 === Prepare for Correction
 
@@ -332,21 +373,36 @@ preparation workstation, some on the correction server, _osirix_.
 
 The corrector’s work bench uses a set of scripts and a database and
 php and html to create the UI. This needs to be configured per
-assessment. The contion is to keep this configuration in the
-assessment specif build directory, e.g. `.../builds/20161103`.
+assessment. The convention is to keep this configuration in the
+assessment specif build directory, e.g. `.../builds/20161110`.
 
 . Log in to the correction server.
 . Check out or update the 45_assessment directory for the exam and
-walk to the directory for the specific date. Maybe `mv` the earlier
-`scp`-ied tar archives there too.
-. 
-. execute the scripts:
-.. initcwb-xxx as in `initcwb-java, `initcwb-r`, or `initcwb-r`. Any
-of  these scripts will create a sql file `paconfig/filldb.sql`  to be put into the database.
-.. execute the *sql script* on the database with `cat paconfig/filldb.sql |
-psql -X sebiassessment`
-.. The same to associate student numbers and sticks:  
-`connectSticks | psql -X sebiassessment`
-.. web server restart with `sudo service apache2 restart`
-and presto you should be done.
+walk to the directory for the specific date
+e.g. `.../builds/20161110`.
+Maybe `mv` the earlier `scp`-ied tar archives there too.
+. Unpack the repo tar file under `/home/svn/year`
+
+[source,shell]
+----
+eval $(confparams)
+mkdir -p ${svn_root}${event_id}
+pushd ${svn_root}${event_id}
+tar xzf ${builddir}/*-repo.tgz
+for i in EXAM*-repo; do mv $i ${i/-repo/}; done
+popd
+----
+
+. execute the scripts :
+.. initcwb-xxx as in `initcwb-java`, `initcwb-r`, or `initcwb-sql`. Any
+of  these scripts will create set of files in `paconfig/`.
+The remaining work is to run the scripts that are written in paconfig
+. You will prompted to run two scripts.
+.. Run `sudo bash paconfig/doitapache.sh`
+.. Run `bash doitconfig.sh`
+
+You are done.
+
+*Happy correcting*.
+
 
