@@ -86,6 +86,7 @@ my $simpledate=$exam_date;
 $simpledate =~ s/-//g;
 my $authz_svn_file = $repos_parent.'/conf/authz';
 my $site_url=qq(https://osirix.fontysvenlo.org/examdoc/$exam_year/$exam_id/index.php);
+my $webdir=qq(/home/examdoc/public_html/$exam_year/$exam_id);
 # cleanup from previous run
 print SQL qq(-- file created by script, do not modify, it will be overwritten
 begin work;
@@ -146,4 +147,54 @@ commit;
 );
 close(SQL);
 print STDERR qq(Wrote paconfig/filldb.sql\n);
+
+open(APACHECONF,">paconfig/$exam_id.conf") or die "cannot open apache conf file\n";
+print APACHECONF qq(
+##v tag line identifies exam site.
+## examsite;$sortdate;$exam_name;$site_url
+
+Use ExamSite $exam_year $exam_id $event
+);
+close(APACHECONF);
+print STDERR qq(Wrote paconfig/$exam_id.conf\n);
+
+open(SETTINGSPHP,">paconfig/settings.php") or die "cannot open php settings file settings.php for write\n";
+print SETTINGSPHP qq(<?php
+\$title='Progress performance assessment ${module_name} ${exam_date}';
+\$h1Title=\$title;
+\$javadocDir='./api';
+\$javadocTitle='$app_name';
+\$exam_id='$exam_id';
+\$exam_year='$exam_year';
+\$event='$event';
+\$catMap = array(1=>'T');
+);
+close(SETTINGSPHP);
+print STDERR qq(Wrote paconfig/settings.php\n);
+open(DOITA,">paconfig/doitconfig.sh") or die "cannot open file doitconfig.sh,\n";
+print DOITA qq(#/bin/bash
+connectsticks2 > paconfig/connectsticks.sql
+cat paconfig/filldb.sql | psql -X sebiassessment
+cat paconfig/connectsticks.sql | psql -X sebiassessment
+ln -sf /home/prepareassessment/resources/{cwb,index2,left,process,resultmail,results,setactive,top,wb}.php ${webdir}
+ln -sf /home/prepareassessment/resources/*.css ${webdir}
+ln -sf /home/prepareassessment/resources/{images,js,css} ${webdir}
+cp paconfig/settings.php ${webdir}
+cd /etc/apache2/sslsites-enabled
+);
+close(DOITA);
+print STDERR qq(Wrote \033\[32mpaconfig/doitconfig.sh\033\[0m, run with \033\[34mnormal user\033\[0m \n);
+
+open(DOITB,">paconfig/doitapache.sh") or die "cannot open file doitapache.sh,\n";
+
+print DOITB qq(#/bin/bash
+sudo cp paconfig/$exam_id.conf /etc/apache2/sslsites-available
+sudo ln -sf ../sslsites-available/$exam_id.conf
+sudo service apache2 restart
+);
+close(DOITB);
+
+print STDERR qq(Wrote \033[32mpaconfig/doitconfig.sh\033[0m, run with \033[31msudo\033[0m \n);
+
+
 #EOF

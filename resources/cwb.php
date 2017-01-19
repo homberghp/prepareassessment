@@ -59,7 +59,7 @@ if ( $quest == '' ) {
 }
 
 if ( !isSet($stick_event_repo_id) ) {
-    $sql = "select min(stick_event_repo_id) as stick_event_repo_id from stick_event_repo_id where event='{$event}'";
+    $sql = "select min(stick_event_repo_id) as stick_event_repo_id from stick_event_repo where event='{$event}'";
     $resultSet = $dbConn->Execute( $sql );
     if ( $resultSet === null ) {
         die( "query '$sql' failed with " . $dbConn->ErrorMsg() );
