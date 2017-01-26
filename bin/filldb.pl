@@ -188,13 +188,14 @@ print STDERR qq(Wrote \033\[32mpaconfig/doitconfig.sh\033\[0m, run with \033\[34
 open(DOITB,">paconfig/doitapache.sh") or die "cannot open file doitapache.sh,\n";
 
 print DOITB qq(#/bin/bash
-sudo cp paconfig/$exam_id.conf /etc/apache2/sslsites-available
-sudo ln -sf ../sslsites-available/$exam_id.conf
-sudo service apache2 restart
+cp paconfig/$exam_id.conf /etc/apache2/sslsites-available
+# ln -sf ../sslsites-available/$exam_id.conf
+a2ensite $exam_id.conf
+service apache2 restart
 );
 close(DOITB);
 
-print STDERR qq(Wrote \033[32mpaconfig/doitconfig.sh\033[0m, run with \033[31msudo\033[0m \n);
+print STDERR qq(Wrote \033[32mpaconfig/doitapache.sh\033[0m, run with \033[31msudo\033[0m \n);
 
 
 #EOF
