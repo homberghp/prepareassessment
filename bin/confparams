@@ -24,9 +24,9 @@ echo "event=${event}"
 echo "year=${year}"
 echo "webdir=${webdir}"
 echo "svn_root=${svn_root}"
+echo "svnroot=${svn_root}"
 echo "site_url=${site_url}"
 echo "module_name=${module_name}"
-echo export exam_date event event_id year webdir svn_root site_url module_name
-
-
+echo "database=${database}"
+echo export exam_date event event_id year webdir svn_root site_url module_name svnroot database
 
