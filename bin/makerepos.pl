@@ -96,7 +96,6 @@ if ($extension eq 'java') {
 
 system ('validateProject') == 0 or die "\033[01;41;37mproject not suited for show time, aborting\033[K\033[0m \n\n";
 
-open(SETTINGSPHP,">paconfig/settings.php") or die "cannot open php settings file settings.php for write\n";
 my $event=$exam_id;
 $event =~ s/-//g;
 my $sortdate=$exam_date;
@@ -106,35 +105,7 @@ my $simpledate=$exam_date;
 $simpledate =~ s/-//g;
 my $authz_svn_file = $repos_parent.'/conf/authz';
 my $site_url=qq(https://osirix.fontysvenlo.org/examdoc/$exam_year/$exam_id/index.php);
-# cleanup from previous run
 
-print SETTINGSPHP qq(<?php
-\$title='Progress performance assessment ${module_name} ${exam_date}';
-\$h1Title=\$title;
-\$javadocDir='./api';
-\$javadocTitle='$app_name';
-\$exam_id='$exam_id';
-\$exam_year='$exam_year';
-\$event='$event';
-\$catMap = array(1=>'T');
-?>
-);
-my $svn_groups=qq(# This file auto generated. Only change when you know what you are doing
-# and acept that your changes will be undone when the creating script is rerun.
-#
-# This version introduces the 'harvester' user, to be able to collect uncommitted files
-# from the usb-sticks. These uncommitted files will be committed by the harvester user
-# who has write access to all repos. Not that the svn log will show if harvester did
-# any commit on a repo.
-# This file is created by makerepos5.pl.
-[groups]
-tutors=$tutors
-);
-my $svn_rights=qq(
-[svnroot:/]
-\@tutors = rw
-* =
-);
 
 # start the script output
 print qq(#!/bin/bash
@@ -172,14 +143,6 @@ while ($stickcount < $examcount) {
   $nbprojectxml=$projdir.'/nbproject/project.xml';
   $repolist .= qq($reposurilocal\n);
   print qq(\t\(\n\t\tmkdir -p $projdir\n);
-  $svn_groups .= qq(g$sticknr=$uname\n);
-  $svn_rights .= qq([$uname:/]
-\@g$sticknr = rw
-harvester = rw
-\@tutors = r
-* =
-
-);
   #  dir to dir copy; target created  by cp
   if ( -d  'examproject' ) {
     print "\t\tcp -r -L examproject/* $projdir\n";
@@ -202,87 +165,11 @@ harvester = rw
   $stickcount++;
 }
 # process questions by filtering by tag.
-open(STREAM,"grep -r  STUDENT_ID  examproject|") or die qq(cannot open stream from examproject/*\n);
-my ($filepart,$tagpart,$question,$maxpoints,$filename);
-while(<STREAM>){
-    chomp;
-    ($filepart,$tagpart) = split/:\s*/;
-     if ($tagpart =~ m/.*?[\<\-]editor-fold\s+defaultstate=\"expanded\" desc=\"(\w+);.+?WEIGHT\s+(\d+)/){
-      $question=$1;
-      $maxpoints=$2;
-      $filename=$filepart;
-      $filename =~ s/.*?examproject\///;
-    }
-}
-close(STREAM);
 print qq(# wait for svn import childs to complete
 wait
+# all owned by exam user
+chown -R exam:exam /home/exam
 echo created all repos
 echo -e"\t"            '$repolist'
 );
 
-print "cat \<\<EOF \> $authz_svn_file\n";
-print $svn_groups;
-print $svn_rights;
-print "EOF\n";
-open(APACHECONF,">paconfig/$exam_id.conf") or die "cannot open apache conf file\n";
-print APACHECONF qq(
-##v tag line identifies exam site.
-## examsite;$sortdate;$exam_name;$site_url
-
-Use ExamSite $exam_year $exam_id $event
-);
-close(APACHECONF);
-close(SETTINGSPHP);
-print qq(
-# give apache access
-#chown -R www-data:www-data $local_repos_path
-
-
-# (re)create web dir
-
-# remove any old stuff for this exam
-rm -fr ${exam_web_dir}
-mkdir -p ${exam_web_dir}
-
-#any module/exam specific stuff for the web
-test -d ./web &&   cp -r web/* ${exam_web_dir}
-
-# copy template things plus anything from web subdir
-cp -f paconfig/settings.php ${exam_web_dir}
-ln -sf ${resources_dir}/index2.php ${exam_web_dir}/index.php
-ln -sf ${resources_dir}/index_template.html ${exam_web_dir}
-ln -sf ${resources_dir}/setactive.php ${exam_web_dir}
-
-# any jars should also be copied and made web accessible
-test -d ./jar &&   cp -r jar ${exam_web_dir}
-
-# unzip the api of the jars used.
-if [ -f api.zip ] ; then
-    mkdir -p ${exam_web_dir}/api
-    unzip -d ${exam_web_dir}/api api.zip
-fi
-#chown -R  \${SUDO_USER} ${exam_web_dir}
-chown -R exam:exam /home/exam
-export exam_id=${exam_id}
-bash ${scriptdir}/tailmanual.txt
-);
-
-print STDERR qq(
-    # now execute the script you saved (in doit.sh) with:
-    sudo bash doit.sh
-    # Do not forget to fill the database with:
-    cat paconfig/filldb.sql | psql -X assessment
-
-    # copy the config file apache and activate it:
-    sudo cp paconfig/$exam_id.conf /etc/apache2/sslsites-available
-    sudo ln -sf ../sslsites-available/$exam_id.conf /etc/apache2/sslsites-enabled
-    sudo service apache2 reload
-
-    # Once an exam site is visible under /etc/apache2/sites-available
-    # it is automatically picked up by the index.php file.
-    # so there is no need to edit the exam index file
-    # with the your_Editor_Of_Choice /home/examdoc/public_html/index.html
-);
-
-#EOF
