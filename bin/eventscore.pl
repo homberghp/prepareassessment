@@ -64,7 +64,7 @@ while ($row = $sth->fetchrow_arrayref) {
     print TEX qq(
 & \\textbf{summing up to} & $weightsum & & $weightscore \\\\\\hline
 & Maximum achievable score  & & & $maxscore\\\\\\hline
-& Grade &&& \\textbf{$grade}\\\\\\hline
+& \\textbf{Preliminary Grade} &&& \\textbf{$grade}\\\\\\hline
 & Report generated at &&& $gen\\\\\\hline
 );
 }
