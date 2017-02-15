@@ -13,7 +13,8 @@ $event=$ARGV[0];
 $stick=$ARGV[1];
 
 my $dbh= DBI->connect("dbi:Pg:dbname=sebiassessment");#);
-my ($file);
+my ($file,$count);
+$count=0;
 my $query = qq(select snummer, achternaam, roepnaam, stick, event, replace(question,'_','\\_') as question, filepath, weight, score, weight*score as weightedscore
  from event_scores where event='$event' and stick='$stick');
 
@@ -25,24 +26,34 @@ if ($row = $sth->fetchrow_arrayref) {
  ( $snummer, $achternaam, $roepnaam, $stick, $event, $question, $filepath, $weight, $score,$weightedscore) = @$row;
   print TEX qq(
 \\documentclass[12pt]{article}
-\\usepackage[scale={0.8,0.8}]{geometry}
+\\usepackage[landscape,scale={0.8,0.8}]{geometry}
+
+\\usepackage[usenames,dvipsnames]{xcolor}
+\\usepackage{colortbl}
+\\definecolor{light-gray}{gray}{0.95}
+\\setlength{\\parindent}{0pt}
+
 \\begin{document}
-\\centering
-score report for performance assessment $event, candidate \\\\
+
+Score report for performance assessment $event, candidate \\\\
 {\\large\\bfseries\\sffamily
 $snummer, $achternaam, $roepnaam, $stick\n
 }
 
 \\vfill
-{\\scriptsize
+{%\\scriptsize
 \\begin{tabular}{|l|l|r|r|r|}\\hline
-Question& File & Weight & score & weightedscore\\\\\\hline
+\\rowcolor{gray}{\\color{white}Question}& {\\color{white}File} & {\\color{white}Weight} & {\\color{white}Score} & {\\color{white}Weighted Score}\\\\\\hline
 );
   print TEX qq($question & $filepath &  $weight &  $score & $weightedscore\\\\\\hline\n);
 
 }
 while ($row = $sth->fetchrow_arrayref) {
  ( $snummer, $achternaam, $roepnaam, $stick, $event, $question, $filepath, $weight, $score,$weightedscore) = @$row;
+  $count++;
+   if ($count % 2) {
+print TEX qq(\\rowcolor{light-gray});
+}
   print TEX qq($question & $filepath &  $weight &  $score & $weightedscore\\\\\\hline\n);
 }
 
@@ -54,17 +65,10 @@ my ( $weightsum, $maxscore, $weightscore, $grade,$gen);
 $sth->execute( );
 while ($row = $sth->fetchrow_arrayref) {
  ( $weightsum, $maxscore, $weightscore, $grade,$gen) = @$row;
-#   print TEX qq(sum of weights = $weightsum\\\\
-# maximum achievable score= $maxscore\\\\
-# your score= $weightscore\\\\
-# your grade = \\textbf{$grade}\\\\
-# Report generated at = $gen\\\\
-
-# );
     print TEX qq(
 & \\textbf{summing up to} & $weightsum & & $weightscore \\\\\\hline
 & Maximum achievable score  & & & $maxscore\\\\\\hline
-& \\textbf{Preliminary Grade} &&& \\textbf{$grade}\\\\\\hline
+\\rowcolor{light-gray}& \\textbf{Preliminary Grade} &&& \\textbf{$grade}\\\\\\hline
 & Report generated at &&& $gen\\\\\\hline
 );
 }
@@ -80,7 +84,7 @@ print TEX qq(
 $dbh->disconnect;
 
 close(TEX);
- `pdflatex $stick`;
+ `pdflatex -interaction=batchmode $stick`;
 
 exit(0);
 
