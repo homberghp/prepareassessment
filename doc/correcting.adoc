@@ -1,0 +1,61 @@
+
+== Correcting the  Assessment
+
+The archives created in the previous section can be unpacked and examined with the appropriate programs, e.g. excel or libreoffice calc if you are a spreadsheet guru.
+However, the traditional way of correcting at SEBI Venlo is using the correctors workbench, CWB.
+
+
+To use CWB some additional steps are needed.
+
+=== Secure Copy the Tars to correction server (CWB)
+
+Secure Copy the tars to you home-dir on the correction server (osirix).
+[source,shell]
+----
+cd /home/exam
+scp STA120161110-repo.tgz Desktop/STA120161110-sandboxes.tgz osirix:~
+----
+
+When you now log in to the correction server (osirix in our case), you should find the archives in your home directory.
+
+=== Prepare for Correction
+
+We use the *corrector’s workbench* to correct the students
+work. Preparing this requires a few steps, all on the correction server, _osirix_.
+
+==== Init the corrector’s work bench.
+
+The corrector’s work bench uses a set of scripts and a database and
+php and html to create the CWB UI. This needs to be configured per
+assessment. The convention is to keep this configuration in the
+assessment specif build directory, e.g. `.../builds/20161110`.
+
+. Log in to the correction server.
+. Check out or update the 45_assessment directory for the exam and
+  walk (cd) to the directory for the specific date. This should now also
+  produce or update the file sticks.csv, created or completed during the exam session.
+e.g. `.../builds/20161110`.
+Maybe `mv` the earlier `scp`-ied tar archives there too.
+. Unpack the repo tar file under `/home/svn/year`
+
+[source,shell]
+----
+eval $(confparams)
+mkdir -p ${svn_root}${event_id}
+pushd ${svn_root}${event_id}
+tar xzf ${builddir}/*-repo.tgz
+for i in EXAM*-repo; do mv $i ${i/-repo/}; done
+popd
+----
+
+. execute the scripts :
+.. initcwb-xxx as in `initcwb-java`, `initcwb-r`, or `initcwb-sql`. Any
+ of  these scripts will create set of files in the directory `paconfig/`.
+The remaining work is to run the scripts that are written in paconfig
+. You will be prompted to run two scripts.
+.. Run `bash paconfig/doitconfig.sh`
+.. Run `sudo bash paconfig/doitapache.sh`
+
+You are done.
+
+*Happy correcting*.

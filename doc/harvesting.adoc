@@ -1,0 +1,73 @@
+
+== Harvesting Work.
+Harvesting the work from the sticks uses one script, to be executed
+from the assessment relevant build directory. The script
+`harvestSticks` reverses the steps of priming the sticks: It copies
+the sandbox and reposity from the stick back to their location on the
+preparation workstation. (/home/exam and /home/exam/Desktop)
+
+[TIP]
+You may have to restore the repositories and sandboxes your saved
+previously. You may also want to consult the colleague that left any
+assessment repositories lying and/or sandboxes around. Maybe it is time to
+save them.
+
+Elevate your rights (sudo), insert all sticks that have been used in batches
+and per batch execute `harvestSticks`.
+
+[[Example-run-harvest]]
+.Example harvestSticks run
+[source,shell]
+----
+$ sudo -s
+# harvestSticks # may have to do multiple times in batches
+
+....output omitted....
+# exit
+$
+----
+
+=== Collect Sandboxes and Repositories
+
+Once you have harvested all sticks, it is time to collect the work for
+correction. We harvested a sandbox and a subversion repository per student.
+
+==== Make the last commit and backup.
+Since we allow students to use a repository on the stick, but do not
+want to make (im)proper use of said repository an issue for an exam,
+we need to make sure that the student's repository is complete.
+
+On the Preparation workstation do the following:
+
+. Elevate your rights. (sudo). To do that, log in as exam used
+(`sudo -s` followed by a `su -l exam`) and walk  (cd) to the exam-user's Desktop.
+. For all sandboxes do an `svn update` per sandbox (examproject-EXAMxyz) and then a final harvesting `svn
+commit` per sandbox. This will ensure that all work is in the
+repositories. There is a script for that, called `syncrepos`, which boils down to:
+
+.syncrepos
+[source,bash]
+----
+#!/bin/bash
+cd /home/exam/Desktop
+for i in examproject-EXAM*; do svn up ${i}; svn ci -m'harvesting ' ${i}; done
+----
+
+It is the line starting with `for` that does the trick.
+
+. Make a tar (or zip, if that is what you prefer) archives of both the repos and the sandboxes.
+
+[[create-tar-files]]
+.create tar files from repo and sandboxes.
+[source,shell]
+----
+cd /home/exam
+tar czvf STA120161110-repo.tgz EXAM*-repo
+cd /home/exam/Desktop
+tar czvf STA120161110-sandboxes.tgz examproject-EXAM*
+----
+[start=4]
+. leave exam user and sudo shell (*exit* followed by *exit* or
+  two times *control-D*).
+
+If you are fine with the archives, copying them you your (desk|lap)-top and stop reading.

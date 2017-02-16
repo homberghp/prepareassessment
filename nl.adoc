@@ -1,0 +1,31 @@
+Collegae,
+
+Het gebruik van USB sticks in de SEBI Venlo variant tijdens examens wint aan populariteit.
+Dat heeft op dit moment het effect dat Mr Spof teveel in de lijn van de processing zit. Met name het voorbereiden, maar ook het nabewerken, of "harvesten"
+is bij sommige gevallen te weinig doordacht, waardoor ik zelf nog de nodige bewerkingen moet uitvoeren, hetzij vooraf, hetzij achteraf, die teveel van de ook bij mij beperkte tijd in met name toch al drukke periodes kost. 
+
+Het injecteren van opgaven en uitlezen na de sticks is een bijna triviale oefening, en is in 10 minuten gebeurd voor 60 sticks 
+ en kan door iedereen uitgevoerd worden.
+Daarvoor staat er onder mijn bureau  een computer met daaraan aangesloten 3 USB sticks. De computer is aangesloten aan de monitoren en altijd bedrijfsklaar.
+Iedere SEBI docent  heeft een account op deze computer met de naam "sticky". Mijn verantwoordelijkheid is dat het voor elke docent werkt. Gelieve deze laatste punt als zeer dik te lezen.
+
+De omgeving (Linux) is dezelfde als op de USB-sticks, met name in versie en inrichting.
+Ik zal iedere docent die sticky wil gebruiken bij het inrichten van de eerste set van sticks een korte instructie geven, over wat er moet gebeuren en hoe het beste te werk te gaan.
+Het voor- en nabewerken dient achter de eigen computer te gebeuren, eventueel gebruikmakend van een virtuele machine of osirix als test platform.
+De examens komen allemaal uit de repository van het vak. Iedereen kan gebruik maken van de beste (soms worst) practices bij de java/sen tentamens, dbs en statistiek. 
+
+Voor en nabewerken:
+Het is van belang dat elk bestand dat door de student te maken, c.q. te bewerken is een eigen ID heeft, gebaseerd op de stick die de student heeft.
+Rationale: Er staat géén naam of student  nummer in het bestand om unbiased nakijken te bevorderen.
+Het werken met een subdirectory die gekoppeld is aan de stick, bijvoorbeeld examproject-EXAM123 is voldoende om dit technisch mogelijke te maken, maar maakt het corrigeren foutgevoelig (bestanden hebben allemaal dezelfde naam en hebben geen unieke ID).
+Oplossing is de bestanden ook te oormerken met het stick-nummer.
+Voor tekst (java broncode, R-code, markdown,sql, umlet uxf, svg, html  of asciidoc) is dit eenvoudig te realiseren met een set van scripts en is de staande praktijk. Het oormerk bestaat dan in de meeste gevallen uit het scriptmatige aanpassen van een standaard tekst in het bronbestand naar het oormerk. Als voorbeeld:
+// __STUDENT_NUMMER__ wordt omgezet in // EXAM123. etc op elke plaats waar dit in de bronbestanden staat. geef dan ook de voorkeur aan een tekst gebaseerd formaat. In andere gevallen dient er per stick*vraag  een apart bestand aangemaakt te worden. Dat is dus aan de vakdocent(en) niet aan Mr. Spof.
+Tijdens het 'productproces' worden voor het aantal gewenste sticks zowel lokale (op de stick lokale) repos aangemaakt, in /home/exam en met namen als EXAM123-repos, die op de desktop van de stick worden uitgechecked in de zandbak met naam examproject-EXAM123. 
+Tijdens het harvesten worden de eventueel nog ongecommitte files alsnog gecommit naar de lokale repos.
+Alle Zandbakken en repos worden ingepakt en te beschikking gesteld aan de corrector.
+Voor daarvoor geschikte tentamens (sql, r, java) kan de correctors workbench (CWB) op osirix gebruikt worden.
+Vak/technologie specifieke scripts worden door de vakdocenten zelf onderhouden. Om dubbel werk, c.q. wiel opnieuw uitvinden zoveel mogelijk te voorkomen houden we die scripts het beste bij op één plaats.
+De configuratie per examen wordt ingereicht en onderhouden door de vakdocent.
+De scripts worden uitgevoerd door de vakdocent.
+
