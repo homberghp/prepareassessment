@@ -1,0 +1,41 @@
+
+== Take the exam
+
+During the exam you will hand out the sticks to the students, who will come in almost
+random order. To be able to associate a stick with a student, you
+should not who receive which stick. One option is to pre-associate the sticks, that is assign a stick to a particular student before the exam is taken. This however has the problem that you typically have to prepare more sticks then are really needed, in particular when the students are allowed to take a exam at will and do not have to register and be penalized when not appearing.
+
+=== Resister: Associate the sticks to the candidates.
+
+image::images/vouwvoorbeeld.png[Vouwvoorbeeld]
+
+During exam you must somehow register which student received which
+stick. This association can be done quite efficiently by making sure
+each student has some paper or ID with his *student-id* (fontys student number, available as bare code on the student ID card) in bar-code
+format. You could also use htts://peerweb.fontysvenlo.org/index.php[peerweb] table cards for that,
+which are produced by
+clicking the appropriate link in the https://peerweb.fontysvenlo.org/classtablecards.php?prjm_id=813https://peerweb.fontysvenlo.org/grouplist.php[peerweb grouplist view]. Put them
+on the tables to assign the students to tables, and when the time is ready, have them come
+forward with the id or table card, so you can scan that with
+a barcode reader.
+Open a new spreadsheet, add the column names as below and add the expected sequence of stick numbers in the first column.
+
+Now the trick is to hand out the sticks in fixed numerical
+(or reversed) order and scan that into a spreadsheet, in which the first
+column holds the sequence numbers of the sticks you are going to use
+and next will be the student number.
+Save it in a file `sticks.csv` and
+commit it to the build for the exam. Format of the csv file:
+
+.example csv file
+[source,csv]
+----
+sticknr;snummer
+100;2224053
+101;2524392
+102;2632683
+----
+
+Save the file as stcks.csv in csv format, dos or unix (not OS-X) line ending: cr-lf or just lf.
+
+You should *add* and *commit* the sticks.csv file as part of the build directory.
