@@ -1,0 +1,53 @@
+
+
+== How to make an exam(question) fit for USB-sticks
+
+_To make it work, you need some magic_
+
+Know your comment introducer or comment syntax.
+
+=== Every file needs an EXAM stick ID.
+It is important that every file that must be manipulated, completed, or in any other way is associated with the required student activities during the exam should have a *marker*, identifying the stick and by indirection the student. The files should *NOT* contain the student's name, to enable unbiased correction.
+The examiner is responsible for these markers in all the relevant files.
+
+To make this workable without having to manually created all the files the students need, it is time well spend to investigate a little bit in automation.
+If your file format is simple ascii or UTF-8, the automation task is simple and can be done with a small shell script, using sed (stream editor). that belongs to the standard repertoire of every UNIX (Linux, OS-X).
+
+For text (Java source code, or any other typical programming language, R-code, markdown,sql, umlet uxf, svg, html  or asciidoc) this easily done and is current practice.
+In most cases the some well know and unique text can be substituted with the required marker. Typically the marker is prefix with comment introducers like +
+ `// (Java)` or +
+ `-- (sql)` (two dashes) or wrapped in +
+  *`&lt;!--  --&gt;`* +
+  or a combination thereof.
+
+.example for DBS1:
+[source,sql]
+----
+-- <editor-fold defaultstate="expanded" desc="Q1; __STUDENT_ID__ ; WEIGHT 1 ">
+SELECT * FROM president ....
+----
+is turned into:
+
+.example for DBS1 after processing.
+[source,SQL]
+----
+-- <editor-fold defaultstate="expanded" desc="Q1; EXAM123 ; WEIGHT 1 ">
+SELECT * FROM president ....
+----
+
+From this you can infer that a text based (ascii, UTF-8) file format is the preferred format for exam tasks.
+
+Currently some reusable scripts exists, to be found in either this github repository or in the repositories of the modules that
+already use USB based exams, such as Java1, Java2+Sen1, DBS1 and STA1.
+
+These scripts are easily adapted for needs not yet covered, but only for text
+based formats. Script based creation or modification of office files is
+a dark art, and may take some serious basic for application programming.
+You are welcome to give it a try, might your need arise. Maybe it is something
+the teacher of advance office programming can solve easily, or have an idea about a howto.
+
+Any further configuration, required for a module and its exam, belongs to the duty of the examiner.
+
+Venlo, 2017-02-16 +
+
+Pieter van den Hombergh

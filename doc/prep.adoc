@@ -218,6 +218,8 @@ sandbox prepared.
 $
 ----
 
+There is also a youtube demo: image:images/youtube.png[alt="youtube", title="prime sticks demo" ,link="https://www.youtube.com/watch?v=3xv3IHg51xk"]
+
 It proved to be practical to use a random sample stick from the ones
 of the first batch to boot a test laptop, to see if indeed all that
 is needed, and no more, is on the sample stick. If not, revisit the
