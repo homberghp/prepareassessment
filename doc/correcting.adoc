@@ -50,9 +50,9 @@ popd
 
 . execute the scripts :
 .. initcwb-xxx as in `initcwb-java`, `initcwb-r`, or `initcwb-sql`. Any
- of  these scripts will create set of files in `paconfig/`.
+ of  these scripts will create set of files in the directory `paconfig/`.
 The remaining work is to run the scripts that are written in paconfig
-. You will prompted to run two scripts.
+. You will be prompted to run two scripts.
 .. Run `bash paconfig/doitconfig.sh`
 .. Run `sudo bash paconfig/doitapache.sh`
 
