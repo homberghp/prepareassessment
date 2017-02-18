@@ -11,10 +11,9 @@ at will and do not have to register and be penalized when not appearing.
 
 === Resister: Associate the sticks to the candidates.
 
-image::images/vouwvoorbeeld.png[Vouwvoorbeeld]
+image::images/tablecard-b.png[Table Card,role="related thumb left",title="table card with barcode"]
 
-During exam you must somehow register which student received which
-stick. This association can be done quite efficiently by making sure
+During exam you must somehow register which student received which stick. This association can be done quite efficiently by making sure
 each student has some paper or ID with his *student-id* (fontys student number, 7 digits,
   available as barcode on the student ID card).
 You could also use htts://peerweb.fontysvenlo.org/index.php[peerweb] table cards for that,
