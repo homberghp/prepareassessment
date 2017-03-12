@@ -126,7 +126,7 @@ Preparing for an assessment involves:
   an *examproject* , the later being the sub-directory containing all the
   information to be placed on the stick and imported into the
   student/stick specific repositories. The script not only checks out the exam exercises
-  to the examsolution directory, but can also strip out the solutions in the _copy-to-examproject_ step. This makes it possible to only have to maintain the complete R, SQL, or Java project, including the work exercises with known to be correct solutions. +
+  to the examsolution directory, but can also strip out the solutions in the _copy-to-examproject_ step. This makes it possible to *only* have to maintain the complete R, SQL, or Java project, including the work exercises with known to be correct solutions. +
   *Before* you do the next steps,
   check that the examproject directory is complete on the one hand, and
   is exactly what you want published on the stick. You could use the
@@ -172,7 +172,7 @@ You are now set up to create the sticks.
 The final step before the exam is putting the stick specific content on the sticks.
 This will also add a stamp to the Desktop directory on the stick.
 Stamping the desktop in this way make the desktop recognisable as
-being and exam environment for this particular exam, and identifies
+being an exam environment for this particular exam, and identifies
 the stick at the same time. Note that the examproject and the prompt in the terminal also will identify the stick. The sticky label on the stick is typically on the bottom when inserted in  the computer's USB port, alas.
 
 This step should be executed in the assessment builds sub-directory such as `…​/builds/20161103.`
