@@ -1,5 +1,7 @@
 == Intro
 
+image::images/SDCZ80.jpg[Table Card,200,role="related thumb left",title="default USB stick"]
+
 This document describes how to use the script collection to prepare
 and correct a SEBI Venlo performance assessment using USB sticks with
 a live Linux image. This document and the scripts described are
@@ -22,13 +24,13 @@ The current way of working (as of February 2016) involves a number of steps:
   . move the student repositories to the correction server.
   . initialize the workbench or correct any other way.
 
-Since the typical usage does _not_ always use _all_ steps, the arrangement
-has the most frequent steps first and the less frequent steps later in
-this text. In particular, the steps 1 and 2 in preparation only have
-to be taken to create the initial image or when an update of the image
-(e.g. new NetBeans or Java version) is required. The description below is
-based on a set of scripts and favors convention over configuration. In
-particular, a specific directory layout is part of the convention, and
-all scripts are to be executed from or within the assessment relevant
-sub-directory as the working directory, since the scripts will look
-for specifically named files relative to the working directory.
+Since the typical usage does _not_ always use _all_ steps, the arrangement in
+this documentation is such that it has the most frequent steps first and the
+less frequent steps later in this text. In particular,  the steps 1 and 2 in
+preparation only have to be taken to create the initial image or when an update
+of the image (e.g. new NetBeans or Java version) is required. The description
+below is based on a set of scripts and favors convention over configuration. In
+particular, a specific directory layout is part of the convention, and all
+scripts are to be executed from or within the assessment relevant sub-directory
+as the working directory, since the scripts will look for specifically named
+files relative to the working directory.

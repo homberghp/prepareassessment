@@ -4,7 +4,6 @@
 The archives created in the previous section can be unpacked and examined with the appropriate programs, e.g. excel or libreoffice calc if you are a spreadsheet guru.
 However, the traditional way of correcting at SEBI Venlo is using the correctors workbench, CWB.
 
-
 To use CWB some additional steps are needed.
 
 === Secure Copy the Tars to correction server (CWB)

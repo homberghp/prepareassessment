@@ -26,7 +26,7 @@ resources are placed under `45_asssessment` like in the case of STA1:
 ----
 
 For SEBI, this means that you should check out the relevant part of the
-repository to a sandbox on the preparation workstation. For me (hom on my locval machines)
+repository to a sandbox on the preparation workstation. For me (*hom* on my local machines)
  and *java1* that is:
 
 [[checkout-for-java1]]
@@ -51,17 +51,16 @@ course are the same, the conventions say that the properties are either:
   this text was created.
 * In a file named `setup.properties`, per assessment date (sub directory).
 
-setup.properties is read last, meaning that the definitions in that file take precedence over
-those in default.properties.
+`setup.properties` is read last, meaning that the definitions in that file take precedence over
+those in `default.properties`.
 
-Both property files have the syntax of Java property files, which can
-be consumed as shell (bash) source files, or parsed by perl. Because
-shell (bash) has the peculiarity of not accepting white space around
-the assignment operator (=), write the config declarations avoiding
-unnecessary  white space. If you need to add you own properties,
-prefer names and values without white space, because white space will
-cause more harm then good. However, text that should be used verbatim for
-insertion into files will typically cause no problems.
+Both property files have the syntax of Java property files, which can be
+consumed as shell (bash) source files, or parsed by perl. Because shell (bash)
+has the peculiarity of not accepting white space around the assignment operator (=),
+write the config declarations avoiding unnecessary white space. If you need to
+add you own properties, prefer names and values without white space, because
+white space will cause more harm then good. However, text that should be used
+verbatim for insertion into files will typically cause no problems.
 
 [[default.properties]]
 .default.properties (example for JAVA1, excerpt:)
@@ -127,8 +126,7 @@ Preparing for an assessment involves:
   an *examproject* , the later being the sub-directory containing all the
   information to be placed on the stick and imported into the
   student/stick specific repositories. The script not only checks out the exam exercises
-  to the examsolution directory, but also can strip out the solutions in the copy
-  to examproject step. This makes it possible to only have to maintain the complete R, SQL, or Java project, including the work exercises with known to be correct solutions. +
+  to the examsolution directory, but can also strip out the solutions in the _copy-to-examproject_ step. This makes it possible to only have to maintain the complete R, SQL, or Java project, including the work exercises with known to be correct solutions. +
   *Before* you do the next steps,
   check that the examproject directory is complete on the one hand, and
   is exactly what you want published on the stick. You could use the
@@ -158,7 +156,7 @@ Preparing for an assessment involves:
  that personal preferences (NetBeans), links in browsers (e.g. javadoc,
  postgressql manual) and desktop (xfce) configuration are set up. This
  skeleton does NOT contain anything assessment specific.
- Typically the skeleton tar file is stored under _/home/prepareassessment/data_ and will have a name revealing its creation data. Typically, using the latest is just fine.
+ Typically the skeleton tar file is stored under _/home/prepareassessment/data_ and will have a name revealing its creation date. Typically, using the latest is just fine.
 
 [[example-skel-link]]
 .example skelleton link
@@ -173,7 +171,7 @@ You are now set up to create the sticks.
 
 The final step before the exam is putting the stick specific content on the sticks.
 This will also add a stamp to the Desktop directory on the stick.
-Stamping the desktop in this way make the desktop recognizable as
+Stamping the desktop in this way make the desktop recognisable as
 being and exam environment for this particular exam, and identifies
 the stick at the same time. Note that the examproject and the prompt in the terminal also will identify the stick. The sticky label on the stick is typically on the bottom when inserted in  the computer's USB port, alas.
 
