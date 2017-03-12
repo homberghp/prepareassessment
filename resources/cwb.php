@@ -42,7 +42,9 @@ $snippets = $_SESSION['snippets'];
 if ( isSet($_REQUEST['snippets'] ) ) {
     $snippets =$_SESSION['snippets'] = $_REQUEST['snippets'];
 }
-$rremarks = $_SESSION['rremarks']; 
+if (isSet($_SESSION['rremarks'])){
+   $rremarks = $_SESSION['rremarks']; 
+}
 if ( isSet($_REQUEST['rremarks'] ) ) {
     $rremarks =$_SESSION['rremarks'] = $_REQUEST['rremarks'];
 }
