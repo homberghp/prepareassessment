@@ -9,7 +9,7 @@ This however has the problem that you typically have to prepare more sticks then
 are really needed, in particular when the students are allowed to take a exam
 at will and do not have to register and be penalized when not appearing.
 
-=== Resister: Associate the sticks to the candidates.
+=== Register: Associate the sticks to the candidates.
 
 image::images/tablecard-b.png[Table Card,role="related thumb left",title="table card with barcode"]
 

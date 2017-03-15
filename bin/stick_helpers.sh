@@ -80,6 +80,23 @@ labelParts(){
     mlabel -i /dev/${d}1 ::${LABEL} 
     e2label /dev/${d}2 home-rw
 }
+
+##
+# Clean the work partitions.
+# After multiple exams the casper-rw file system (which is in a file) 
+# could have filled up or be corrupted. Casper-rw contains /var which in turn contains
+# the log files, many dyynamic settings and the data persistens stuff of the database (postgres)
+# When the file system appears empty, the init sequence of linux should reinitialize it on first boot.
+# Pre
+# @param disk label like EXAM123
+cleanCasperRW(){
+    local LABEL=$1
+    local MOUNTPOINT=/media/usb/${LABEL}
+    echo creating casper-rw file space for stick ${LABEL}
+    ${debug} dd if=/dev/zero of=${MOUNTPOINT}/casper-rw bs=1M count=1024
+    echo initializing casper-rw file-system for stick ${LABEL}
+    mkfs.ext4 -q -F ${MOUNTPOINT}/casper-rw
+}
 # install a linux live exam environment 
 # @param $1 disk like sdc or sdd
 # @param $2 disk label like EXAM123
