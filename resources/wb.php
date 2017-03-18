@@ -21,7 +21,7 @@ function remarkTableCand($dbConn,$event,$stick_event_repo_id){
   $sql_remarks="select s.remark,s.question,stick_event_repo_id\n"
     ." from assessment_scores s join stick_event_repo cr using(stick_event_repo_id)\n"
     ." where s.event='{$event}' and cr.stick_event_repo_id='{$stick_event_repo_id}' and  remark <>'' order by s.question";
-  echo $sql;
+//  echo $sql_remarks;
   $resultSet = $dbConn->Execute( $sql_remarks );
   $remarks="<b>Remarks for stick_id {$stick_event_repo_id}</b><br/>";
   if ( $resultSet === false ) {
@@ -74,6 +74,9 @@ $resultSet = $dbConn->Execute( $sql );
 if ( $resultSet === null ) {
     die( 'query failed with ' . $dbConn->ErrorMsg() );
 }
-extract( $resultSet->fields );
+$question_remark='';
+if (isSet($resultSet->fields)) {
+  extract( $resultSet->fields );
+}
 $correctionRemark = "<textarea rows='6' cols='220' name='question_remark' style='background:#ddF;font-family:verdana;font-size:8pt'>{$question_remark}</textarea>";
 include_once '/usr/local/prepareassessment/resources/wb_html.html';
