@@ -89,7 +89,7 @@ $resultSet = $dbConn->Execute( $sql );
 //echo $sql;
 $divs='';
 $tabs='';
-$headScript='';
+$headScripts='';
 $categries=array();
 while(!$resultSet->EOF) {
   $tweight=$resultSet->fields['tweight'];
