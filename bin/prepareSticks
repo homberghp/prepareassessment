@@ -11,7 +11,7 @@
 debug=
 export stickclass=EXAM
 if [ -z $stickclass ] ; then
-    export stickclass=SEBI
+    export stickclass=EXAM
 fi
 source stick_helpers.sh
 scriptdir=$(dirname $(readlink -f $0))

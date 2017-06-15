@@ -1,14 +1,14 @@
 #!/bin/bash
 # steps: 
 # 1. enumerated inserted sticks using /proc/mounts and regex
-# 4. label vfat to name stick, e.g. EXAM100 and ext3 part to casper-rw
+# 4. label vfat to name stick, e.g. EXAM100 and ext3 part to home-rw
 source stick_helpers.sh
 if [ -z $stickclass ] ; then
-    export stickclass=SEBI
+    export stickclass=EXAM
 fi
 scriptdir=$(dirname $(readlink -f $0))
 ininum=100
-if [ $# -ge 1 ]; then ininum=$1; shift; fi 
+if [ $# -gt 0 ]; then ininum=$1; shift; fi 
 disks=$(enumerateSticks)
 echo $disks
 IFS=','
@@ -20,8 +20,13 @@ for d in $disks; do
     printf -v LABEL "${stickclass}%3.3d" ${num}
     echo labeling stick ${d}1 to ${LABEL}
     ${debug} mlabel -i /dev/${d}1 ::${LABEL}  
-    e2label /dev/${d}2 home-rw
-    num=$((num+1))
+    ${debug} e2label /dev/${d}2 home-rw
+    if [[ $# -gt 0 ]]; then
+	num=$1
+	shift
+    else
+	num=$((num+1))
+    fi
 done
 sync
 echo next num=${num}

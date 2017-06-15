@@ -39,7 +39,10 @@ if (! -d './examsolution' ) {
 if ($extension eq 'java' || $extension eq 'sql' || $extension eq 'R' ) {
     $validRegex='.+?\<editor-fold\s+defaultstate=\"expanded\"\s+desc=\"(\w+);.+?WEIGHT\s+(\d+)';
 #    $validRegex='.+?\<editor-fold\s+defaultstate=\"expanded\"\s+desc=\"(\w+);\s+MAX\s+(\d+)';
-} else {
+} elsif ( $extension eq 'odt'){
+    # all is well for candidate generated odt files
+    exit 0;
+}else {
     die "do not yet understand extension $extension\n";
 }
 # if ( $isNetbeansProject != 0  && !-f 'project.xml_template' ) {

@@ -1,7 +1,7 @@
 #!/bin/bash
 # first enumerate sticks
 scriptdir=$(dirname $(readlink -f $0))
-for i in /sys/block/sd{c..p}; do 
+for i in /sys/block/sd{d..q}; do 
     if [ -e ${i} ] ; then
 	disk=/dev/$(basename ${i})
 	size=$(cat ${i}/size)

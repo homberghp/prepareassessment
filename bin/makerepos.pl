@@ -90,6 +90,8 @@ if ($extension eq 'java') {
   symlink ($scriptdir.'/transform_sql', 'transform');
 } elsif ($extension eq 'R') {
   symlink ($scriptdir.'/transform_r', 'transform');
+} elsif ($extension eq 'odt') {
+  symlink ($scriptdir.'/transform_sql', 'transform');
 } else {
   die "do not yet understand extension $extension\n";
 }
