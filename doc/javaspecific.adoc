@@ -1,0 +1,10 @@
+
+=== Java specific project preparation.
+TODO
+
+javadoc of test stuff, private and pack private methods.
+javadoc link to jdk doc.
+
+external libraries.
+
+Add to `${HOME}/Libraries` and create NetBeans-IDE Library with well known name.

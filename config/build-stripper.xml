@@ -21,7 +21,7 @@
 
     <target name="info">
       <echo message="properties read"/>
-      <echoproperties/>
+      <!-- <echoproperties/> -->
     </target>
 
     <target name="cpsolution" depends="info">
