@@ -173,7 +173,7 @@ close(SETTINGSPHP);
 print STDERR qq(Wrote paconfig/settings.php\n);
 open(DOITA,">paconfig/doitconfig.sh") or die "cannot open file doitconfig.sh,\n";
 print DOITA qq(#/bin/bash
-connectsticks2 > paconfig/connectsticks.sql
+connectsticks > paconfig/connectsticks.sql
 cat paconfig/filldb.sql | psql -X sebiassessment
 cat paconfig/connectsticks.sql | psql -X sebiassessment
 ln -sf /home/prepareassessment/resources/{cwb,index2,left,process,resultmail,results,setactive,top,wb}.php ${webdir}
@@ -189,8 +189,8 @@ open(DOITB,">paconfig/doitapache.sh") or die "cannot open file doitapache.sh,\n"
 
 print DOITB qq(#/bin/bash
 cp paconfig/$exam_id.conf /etc/apache2/sslsites-available
-# ln -sf ../sslsites-available/$exam_id.conf
-a2ensite $exam_id.conf
+cd /etc/apache2/sslsites-enabled
+ln -sf ../sslsites-available/$exam_id.conf .
 service apache2 restart
 );
 close(DOITB);
