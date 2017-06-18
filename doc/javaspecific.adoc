@@ -1,10 +1,60 @@
+== Java Specific Project Preparation.
 
-=== Java specific project preparation.
-TODO
+=== Javadoc Preparation and Generation
+It is common to have the exam documentation, i.e. the details tio the tasks, included in the code, in particular in javadoc style. The students can generate the javadoc from the initial code and study it in a nicer format thah java source code and without then distraction of too much detail.
+To make this work:
 
-javadoc of test stuff, private and pack private methods.
-javadoc link to jdk doc.
+* Make sure you java doc conforms the standard and is acceptable by the javadoc tool. Try to generate the javadoc yourselves. Any warning and error shown will also be seen by the students, so it is best to avoid non-conformance. In particular, the first sentence should end in a '.' or '?' and is used as the synopsis of the field documentation. Also add proper @param, @returns and @trhows tags, to make the info complete. If you start with `/**` then netbeans will typically add these tags, if the signature is at least complete. +
+If you add example code in the doc, enclose it in `{@code ...}` and optionally in `<pre></pre>` html tags to get the formatting right.
+* You may want to include (package) private members too, because they might have tasks as well. Set this in the documentation options (netbeans) of the project. The settings will be reflected in `nbproject/project.properties`. Same goes for javadoc window title  and linking the source code to the JDK classes. +
+  e.g. `javadoc.windowtitle=Simple Collection SEBI assessment javadoc` and +
+  `javadoc.additionalparam=-Xdoclint:none -linkoffline  file:///usr/share/doc/oracle-java-8-doc/docs/api file:///usr/share/doc/oracle-java-8-doc/docs/api`. Note that on the exam stick `file:///usr/share/doc/oracle-java-8-doc/docs/api` is the path of the javadoc.
 
-external libraries.
+* If you _javadoced_ the test code, make sure its javadoc is also included in the generation, which is not the case by default. (Why should it, it is not the public API). To make that work, you need to adapt the `nbproject/build-impl.xml` and add a few lines.
 
+.. In the section `<javadoc additional` add the test classpath to the javadoc classpath section.
+[addclasspath]
+----
+````
+ <path path="${javac.test.classpath}"/>
+````
+----
+
+In the directories to include in the generation  add the `test.src.dir`
+----
+````
+<fileset dir="${test.src.dir}" excludes="${bug5101868workaround},${excludes}" includes="${includes}">
+        <filename name="**/*.java"/>
+</fileset>
+
+````
+----
+In fact you are duplicating the path or dir declaration with *test* added.
+
+
+=== External Libraries.
 Add to `${HOME}/Libraries` and create NetBeans-IDE Library with well known name.
+
+In some projects, external (non standard to the NetBeans instalation) libraries are needed, examples are
+Mockito for testing or a modern postgresql jdbc driver like version 42. It is best practice to declare well known names for these 'NetBeans' libraries and install them on the stick, such that the definition on the stick lets these well known names refer to the installed libs.
+
+The convention is to use `S{HOME}/Libraries` as the installation directory.
+If for instance you need to add PostgreSQL42 as a Library,  add to following
+----
+````
+/home/exam/Library/postgresql
+├── postgresql-42.1.1.jar
+├── postgresql-42.1.1-javadoc.jar
+└── postgresql-42.1.1-sources.jar
+
+````
+----
+, then in netbeans, make the Library refer to those elements. Note that Netbeans requires absolute paths here, so if you are preparing, you may want to use */home/exam* as the parent of Library instead of your own home dir.+
+Avoid spaces in library names, they cause problems with portability.
+
+The updated Libary should then be merged into the skeleton file, so that that Library is available to the exam user.
+Typically: unpack the skel, rsync the library stuff and repack (with new name).
+
+
+
+
