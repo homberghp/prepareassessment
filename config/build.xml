@@ -7,10 +7,11 @@ $Id: exambuild.xml 311 2010-10-30 05:52:04Z hom $
 @author Richard van den Ham
 Fontys Hogeschool voor Techniek en Logistiek, Venlo
 -->
-<project name="bluejbuild" default="dobluej" basedir=".">
+<project name="exaprojectbuild" default="donetbeans" basedir=".">
   <!-- most, if not all properties can be set in build.properties
        Must read them before any override. -->
   <property environment="env"/>
+  <property file="${env.PWD}/../default.properties"/>
   <property file="${env.PWD}/build.properties"/>
   <property name="solutiondir" 
 	    location="${env.PWD}/examsolution"/>
@@ -20,6 +21,10 @@ Fontys Hogeschool voor Techniek en Logistiek, Venlo
   <!-- Get the work done:
        These are the targets to be executed.
   -->
+    <target name="info">
+      <echo message="properties read"/>
+      <echoproperties/>
+    </target>
 
   <target name="preparetarget"
 	  description="create clean target directories"
@@ -28,6 +33,23 @@ Fontys Hogeschool voor Techniek en Logistiek, Venlo
     <echo message="Old target dir removed"/>
     <mkdir dir="${targetdir}"/>
     <echo message="New target dir created"/>
+  </target>
+
+  <target name="cpsolution" description="copy all to examproject" depends="info">
+    <delete dir="${targetdir}"/>
+    <echo message="Old target dir ${targetdir} removed"/>
+    <!-- <mkdir dir="${targetdir}"/> -->
+    <!-- <echo message="New target dir ${targetdir} created"/> -->
+    <!-- <copy todir="${targetdir}" verbose="true"> -->
+    <!--   <fileset dir="${solutiondir}"> -->
+    <!-- 	<exclude name="**/*.java"/> -->
+    <!--   </fileset> -->
+    <!-- </copy>  -->
+    <exec executable="cp">
+      <arg line="-R ${solutiondir} ${targetdir}"/>
+    </exec>
+
+    <echo message="Files copied"/>
   </target>
 
   <target name="cpbluej" 
@@ -47,7 +69,7 @@ Fontys Hogeschool voor Techniek en Logistiek, Venlo
 	  description="copy netbeans project files">
     <copy todir="${targetdir}">
       <fileset dir="${solutiondir}">
-	<include name="**"/>
+	<include name="**/*"/>
       </fileset>
     </copy> 
     <echo message="netbeans files copied"/>
@@ -57,7 +79,7 @@ Fontys Hogeschool voor Techniek en Logistiek, Venlo
 	  description="copy r project files">
     <copy todir="${targetdir}">
       <fileset dir="${solutiondir}">
-	<include name="**"/>
+	<include name="**/*"/>
       </fileset>
     </copy> 
     <echo message="r files copied"/>
@@ -130,9 +152,14 @@ Fontys Hogeschool voor Techniek en Logistiek, Venlo
 	  depends="preparetarget,strip-sql"
 	  />
 
+  <!-- <target name="donetbeans" -->
+  <!-- 	  description="do the work required for a netbeans exam; project may have xhtml sources." -->
+  <!-- 	  depends="preparetarget,cp-nb,strip-java,strip-jsf" -->
+  <!-- 	  /> -->
+
   <target name="donetbeans"
 	  description="do the work required for a netbeans exam; project may have xhtml sources."
-	  depends="preparetarget,cp-nb,strip-java,strip-jsf"
+	  depends="info,cpsolution,strip-java,strip-jsf"
 	  />
 
   <target name="doR"

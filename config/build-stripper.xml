@@ -21,8 +21,9 @@
 
     <target name="info">
       <echo message="properties read"/>
-      <echoproperties/>
+      <!-- <echoproperties/> -->
     </target>
+
     <target name="cpsolution" depends="info">
       <delete dir="${targetdir}"/>
         <echo message="Old target dir ${targetdir} removed"/>
