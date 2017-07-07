@@ -1,17 +1,20 @@
 == Java Specific Project Preparation.
 
 === Javadoc Preparation and Generation
-It is common to have the exam documentation, i.e. the details to the tasks, included in the code, in particular in javadoc style. The students can generate the javadoc from the initial code and study it in a nicer format than Java source code and without then distraction of too much detail. +
+It is common to have the exam documentation, i.e. the details to the tasks, included in the code, in particular in javadoc style. The students can generate the javadoc from the initial code and study it in a nicer format than Java source code and without then distraction of too much detail.
+
 To make this work:
 
-* Make sure you java doc conforms the standard and is acceptable by the `javadoc` tool. Try to generate the javadoc yourselves. Any warning and error shown will also be seen by the students, so it is best to avoid non-conformance. Note that the Java 8  javadoc is particularly fussy about the syntax allowed, such as the use of html entities (> or &) and closing of tags and links that cannot be resolved.+
+* Make sure you java doc conforms the standard and is acceptable by the `javadoc` tool. Try to generate the javadoc yourselves. Any warning and error shown will also be seen by the students, so it is best to avoid non-conformance. Note that the Java 8  javadoc is particularly fussy about the syntax allowed, such as the use of html entities (like > or &) and closing of tags and links that cannot be resolved. +
 * In particular, the first sentence should end in a '.' or '?' and is used as the synopsis of the field documentation.
-* Also add proper @param, @returns and @trhows tags, to make the info complete. +If you start typing with `/**` then netbeans will typically add these tags and keys, if the signature is at least complete. To each key (param name) you must a description or purpose, the value of the tag. +
+* Also add proper `@param`, `@returns` and `@throws` tags, to make the info complete. +
+If you start typing with `/**` then netbeans will typically add these tags and keys, if the signature is complete. To avoid warnings, each key (param name) must have a description or purpose, the value of the tag. +
 If you add example code in the doc, enclose it in `{@code ...}` and optionally in `<pre></pre>` html tags to get the formatting right.
-* You may want to include (package) private members too, because they might have tasks as well. Set this in the documentation options (netbeans) of the project. The settings will be reflected in `nbproject/project.properties`. Same goes for javadoc window title  and linking the source code to the JDK classes. +
+* You may want to include (package) private members too, because they might have tasks as well. Set this in the documentation options (NetBeans) of the project. The settings will be reflected in `nbproject/project.properties`. The same goes for javadoc window title  and linking the source code to the JDK classes. +
   e.g. `javadoc.windowtitle=Simple Collection SEBI assessment javadoc` and +
-  `javadoc.additionalparam=-Xdoclint:none -linkoffline  file:///usr/share/doc/oracle-java-8-doc/docs/api file:///usr/share/doc/oracle-java-8-doc/docs/api`. Note that on the exam stick `file:///usr/share/doc/oracle-java-8-doc/docs/api` is the path of the javadoc.
-
+  `javadoc.additionalparam=-Xdoclint:none -linkoffline  file:///usr/share/doc/oracle-java-8-doc/docs/api file:///usr/share/doc/oracle-java-8-doc/docs/api`. +
+Note that on the exam stick `file:///usr/share/doc/oracle-java-8-doc/docs/api` is the path
+f the javadoc.
 * If you _javadoced_ the test code, make sure its javadoc is also included in the generation, which is not the case by default. (Why should it, it is not the public API). To make that work, you need to adapt the `nbproject/build-impl.xml` and add a few lines.
 
 .. In the section `<javadoc additional` add the test classpath to the javadoc classpath section.
@@ -35,12 +38,12 @@ In fact you are duplicating the path or dir declaration with *test* added.
 
 
 === External Libraries.
-Add to `${HOME}/Libraries` and create NetBeans-IDE Library with well known name.
+Add to `${HOME}/Library` and create NetBeans-IDE Library with a well known name.
 
-In some projects, external (non standard to the NetBeans instalation) libraries are needed, examples are
-Mockito for testing or a modern postgresql jdbc driver like version 42. It is best practice to declare well known names for these 'NetBeans' libraries and install them on the stick, such that the definition on the stick lets these well known names refer to the installed libs.
+In some projects, external (non standard to the NetBeans installation) libraries are needed, examples are
+Mockito for testing or a modern PostgreSQL jdbc driver like version 42. It is best practice to declare well known names for these 'NetBeans' libraries and install them on the stick, such that the definition on the stick lets these well known names refer to the installed libs.
 
-The convention is to use `S{HOME}/Libraries` as the installation directory.
+The convention is to use `S{HOME}/Library` as the installation directory.
 If for instance you need to add PostgreSQL42 as a Library,  add to following
 ----
 ````
@@ -55,4 +58,4 @@ If for instance you need to add PostgreSQL42 as a Library,  add to following
 Avoid spaces in library names, they cause problems with portability.
 
 The updated Libary should then be merged into the skeleton file, so that that Library is available to the exam user. +
-Typically: unpack the skel, rsync the library stuff and the netbeans config directory and repack (with new name). In the exam build dierctory, sym-link to the proper skel.tgz file and version. 
+Typically: unpack the skel, rsync the library stuff and the netbeans config directory and repack (with new name). In the exam build dierctory, sym-link to the proper skel.tgz file and version.
