@@ -34,7 +34,7 @@ sync
 num=${ininum}
 for d in $disks; do 
     printf -v LABEL "${stickclass}%3.3d" ${num}
-     ( prepapeStick ${d} ${LABEL} )& 
+     ( prepareStick ${d} ${LABEL} )& 
     num=$((num+1))
 done
 wait

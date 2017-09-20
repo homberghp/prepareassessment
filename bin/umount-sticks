@@ -35,4 +35,9 @@ for i in /media/hom/{EXAM,SEBI}*; do
     fi
 done
 # last resort
-umount /dev/sd{d..x}1
+for i in  /dev/sd{d..x}1; do
+    if [[ -b  $i ]]; then
+	umount $i
+    fi
+done
+

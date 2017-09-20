@@ -16,5 +16,13 @@ for i in /media/usb/home-rw-${STYPE}*; do
 done
 wait
 sync
+for i in /dev/sd{d..x}2; do 
+    ( umount $i && \
+	(checkHomeRW $i || echo -e "\033[31;1mfs problems with $(dev2Label $i)\033[m" ) ) &
+done
+wait
+sync
 # unmount all
 umount-sticks
+paplay ${scriptdir}/tng-picard-engage.ogg
+
