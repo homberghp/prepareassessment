@@ -15,3 +15,5 @@ include::takeexam.adoc[]
 include::harvesting.adoc[]
 include::correcting.adoc[]
 include::examfitforusb.adoc[]
+
+include::javaspecific.adoc[]
