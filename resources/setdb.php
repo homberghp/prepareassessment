@@ -8,7 +8,7 @@ $proto = 'pgsql';
 $pass='apache4ever';
 
 $include_path=ini_get('include_path');
-$include_path='/home/hom/peerweb/peer/peerlib/:'.$include_path.':/usr/share/php/PHPExcel/';
+$include_path='/home/hom/peerweb/peerlib/:'.$include_path.':/usr/share/php/PHPExcel/';
 $include_path=ini_set('include_path',$include_path);
 
 require_once('peerpgdbconnection.php');

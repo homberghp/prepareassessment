@@ -1,7 +1,7 @@
 <?php
 include_once 'settings.php';
 include_once '/usr/local/prepareassessment/resources/setdb.php';
-require_once 'simplequerytable.inc';
+require_once 'simplequerytable.php';
 require_once 'SpreadSheetWriter.php';
 $spreadSheetWriter= array();
 

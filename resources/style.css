@@ -2,6 +2,8 @@ div.sol { overflow: auto;}
 li {display:inline; padding-right:5px;}
 /*li.quest {border-style: outset;}*/
 body{ background:#ddd; font-family:verdana; }
+html,body{ max-width: 100%;
+    overflow-x: hidden; max-height: 100vh;}
 table {border-collapse:collapse;}
 td{padding:0;}
 .ln{ width:1em;font-size:8pt;}
