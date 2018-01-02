@@ -46,6 +46,7 @@ li.selected{ background:white; font-weight:bold;
        background:smoke;
        }
 .number { text-align:right; }
+#top{ }
 #gradebox{ background:whitesmoke; }
 #top{ grid-column:1/span 2;grid-row:1; }
 #formbox{ gridcolumn:2;grid-row:2; }
