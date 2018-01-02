@@ -88,7 +88,7 @@ if ( !isSet($stick_event_repo_id) ) {
         <title>Fontys Venlo Corrector&#8217;s work bench</title>
         <meta http-equiv='Window-target' content='top'/>
     </head>
-    <body style='padding:0' onload='setFocus()' >
+    <body style='padding:0;margin:0' onload='setFocus()' >
 	    
         <form name="noofcommits" method="get" action="cwb.php" style='background:#ccf;display:inline'>
 					      Show: <input type='Radio' name='snippets' value=1 onclick="submit()" <?=(($_SESSION['snippets']!=0)? 'checked="checked"' : '')?>/>Snippets
@@ -97,20 +97,15 @@ if ( !isSet($stick_event_repo_id) ) {
 	  <input type='hidden' name='quest' value='<?=$quest?>' />
         </form>&nbsp;&nbsp;&nbsp;&nbsp;
         <a href='http://osirix.fontysvenlo.org'><img src='images/home.png' border=0/>&nbsp;osirix home</a>
-        &nbsp;<strong><a href='results.php'>results</a></strong> oper=<?=$_SESSION['operator']?>
-        <table width="100%">
-            <tr><td colspan='3'>
-	      <?php require 'top.php'; ?>
-                </td>
-            </tr>
-            <tr>
-                <td width='220px' valign='top'>
-                    <?php include 'left.php' ?>
-                </td>
-                <td width='1600px'valign='top'>
-                    <?php include 'wb.php' ?>
-                </td>
-            </tr>
-        </table>
-    </body>
+        &nbsp;<strong><a href='results.php'>results</a></strong> oper=<?=$_SESSION['operator']?>&nbsp;  <strong><a href='results.php'>results</a> </strong>
+<div id='box'>
+<div id='top'>
+<?php require 'top.php'; ?>
+</div>
+<div id='left'>
+  <?php include 'left.php' ?>
+</div>
+<?php include 'wb.php' ?>
+</div>
+</body>
 </html>

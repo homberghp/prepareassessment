@@ -52,8 +52,8 @@ function leftMenu($dbConn,$event,$quest,$stick){
 $table=leftMenu($dbConn,$event,$quest,$stick_event_repo_id);
 
 ?>
-<table style='border-collapse: collapse; font-family:verdana;font-size:10pt;' border='1' width="220px">
-  <caption>Corrector: <?=$_SERVER['PHP_AUTH_USER']?></caption>
-    <tr><th><?=$quest?></th><th>USB Stick</th><th>R</th><th>fin</th></tr>
+<table style='border-collapse: collapse; font-family:verdana;font-size:10pt;' border='1' >
+  <caption><b><?=$quest?></b></caption>
+    <tr><th>grd</td><th>USB Stick</th><th>R</th><th>fin</th></tr>
     <?= $table ?>
 </table>

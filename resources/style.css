@@ -3,8 +3,12 @@ li {display:inline; padding-right:5px;}
 /*li.quest {border-style: outset;}*/
 body{ background:#ddd; font-family:verdana; }
 html,body{ max-width: 100%;
-    overflow-x: hidden; max-height: 100vh;}
+    overflow-x: auto; max-height: 100vh;}
 table {border-collapse:collapse;}
+#formbox{ width:100%; display: grid; grid-template-columns:3fr 1fr;
+
+}
+#box{ width:100vh; display: grid; grid-template-columns:1fr 6fr}
 td{padding:0;}
 .ln{ width:1em;font-size:8pt;}
 li.quest, legend { border-top: 1px solid black;
@@ -23,19 +27,38 @@ li.selected{ background:white; font-weight:bold;
              border-top: 2px solid grey;
              border-left: 2px solid grey;
              border-right: 2px solid grey;}
+#task-legend{ background:#ddF;font-family:verdana;font-size:10pt;  }
+#stick-q-id{ font-size:140%;
+             font-weight:bold;background-color:#FFF
+             }
 .scroll{   
-         overflow:scroll;
-         overflow-x:hidden;
+         overflow-y:auto;
+         overflow-x:auto;
          }
 
 .sol{
       background-color: #e5F5e5;
-      height:320px;
+      height:25vh;
       }
 .task{
        background-color: #F5F5F5;
-       height:420px;
+       height:25vh;
+       background:smoke;
        }
+.number { text-align:right; }
+#gradebox{ background:whitesmoke; }
+#top{ grid-column:1/span 2;grid-row:1; }
+#formbox{ gridcolumn:2;grid-row:2; }
+#left{ grid-column:1; grid-row:2; }
+#task{ grid-column:1; grid-row:2;}
+#gradebox{ grid-column:1;grid-row:3 }
+#solution{ grid-column:1; grid-row:4 }
+#correctors-key{ grid-column:1;grid-row:5;} 
+#remarks-list{ grid-column:2; grid-row:1 /span 12; } 
+/*#correctors-remark{ grid-column:1; grid-row:3} */
+#remark-text{ width:100%;height:75%; }
+#solution{ background:#dFd;font-family:verdana;font-size:10pt; }
+#correctors-key{ background:#ddF;font-family:verdana;font-size:9pt;}
 .odd{ background:#FFF; }
 .even{ background:#ccF; }
 .pulse1 {
