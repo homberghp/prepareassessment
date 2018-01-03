@@ -3,9 +3,10 @@ div.sol { overflow: auto;}
 li {display:inline; padding-right:5px;}
 /*li.quest {border-style: outset;}*/
 body{ background:#ddd; font-family:verdana; }
-html,body{ max-width: 100%;
+html,body{ max-width: 100vw;
            overflow-x: auto; max-height: 100vh;}
 table {border-collapse:collapse;}
+button{ padding:1px;}
 td{padding:0;}
 .ln{ width:1em;font-size:8pt;}
 li.quest, legend { border-top: 1px solid black;
@@ -53,13 +54,13 @@ li.selected{ background:white; font-weight:bold;
         "left task  task   rlist"
         "left grade rules  rlist"
         "left sol   sol   rlist";
-/*    grid-column-gap: 1em;
-    grid-row-gap: 1em;*/
+    /*    grid-column-gap: 1em;
+        grid-row-gap: 1em;*/
 }
 
 #top{ grid-area: top; }
 #grade{ grid-area: grade;position:relative; display:flex; flex-direction:column;justify-content: space-around;}
-#remark{height: 70%;}
+#remark{height: 75%;}
 #grader{ display:flex;flex-direction: row;flex-wrap: nowrap;justify-content: space-between;}
 #rules{ grid-area: rules;} 
 #left{ grid-area: left; }
@@ -76,7 +77,9 @@ li.selected{ background:white; font-weight:bold;
 .odd{ background:#FFF; }
 .even{ background:#ccF; }
 #rules{background:#ddF;font-family:verdana;font-size:8pt; height: 100%}
-#rules > textarea{width:100%;height:80%;resize: none;font-size:9pt;}
+#rules > textarea{width:100%; height:70%; resize: none;font-size:9pt;}
+#rules > div{display:flex;flex-direction: row;flex-wrap: nowrap;justify-content: flex-end;}
+
 .pulse1 {
     webkit-animation: pulse1 1.2s linear infinite;
     moz-animation: pulse1 1.2s linear infinite;

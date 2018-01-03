@@ -74,9 +74,6 @@ $resultSet = $dbConn->Execute( $sql );
 if ( $resultSet === null ) {
     die( 'query failed with ' . $dbConn->ErrorMsg() );
 }
-$question_remark='';
-if (isSet($resultSet->fields)) {
-  extract( $resultSet->fields );
-}
-$correctionRemark = "{$question_remark}";
+$question_remark=$resultSet->fields['question_remark'];
+
 include_once '/usr/local/prepareassessment/resources/wb_html.html';

@@ -28,6 +28,6 @@ $out= topMenu($dbConn,$event,$quest,$stick_event_repo_id);
 
 ?>
 <ul>
-    <li><strong>Scoring event <?= $event ?> question <?=$quest?></strong></li>
+    
     <?= $out?>
 </ul>
