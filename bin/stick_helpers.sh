@@ -56,10 +56,21 @@ partitionStickalt(){
     partprobe /dev/${disk}
 }
 
+dev2Label(){
+    local d=$1
+    if [[ ${#d} > 8 ]]; then  
+	d=${d:0:8}
+    fi
+    echo disk $d
+    local label=$(blkid ${d}1)
+    label=${label:18:7}
+    echo -n $label
+}
+
 # partition and make file system
 # @param $1 disk like sdc or sdd
 # @param $2 disk label like EXAM123
-prepapeStick() {
+prepareStick() {
     local d=$1
     local LABEL=$2
     ${debug} partitionStickalt ${d}
@@ -95,7 +106,19 @@ cleanCasperRW(){
     echo creating casper-rw file space for stick ${LABEL}
     ${debug} dd if=/dev/zero of=${MOUNTPOINT}/casper-rw bs=1M count=1024
     echo initializing casper-rw file-system for stick ${LABEL}
-    mkfs.ext4 -q -F ${MOUNTPOINT}/casper-rw
+    mkfs.ext2 -q -F ${MOUNTPOINT}/casper-rw
+}
+
+checkHomeRW(){
+    local d=$1
+    echo checking fs on ${d}
+    fsck.ext2 -fp ${d} || echo -e "\033[31;1mpersistent errors on $(dev2Label $d)\033[m"
+}
+
+createHomeRW(){
+    local d=$1
+    echo checking fs on ${d}
+    ${debug} mkfs.ext2 -q -L home-rw /dev/${d}2
 }
 # install a linux live exam environment 
 # @param $1 disk like sdc or sdd
