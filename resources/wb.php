@@ -11,7 +11,7 @@ function remarkTableQuest($dbConn,$event,$quest){
   }
   while (!$resultSet->EOF){
     extract( $resultSet->fields );
-    $remarks .="<b><a href='cwb.php?stick_event_repo_id={$stick_event_repo_id}&quest={$question}'>EXAM{$stk}</a></b>:\n<pre>{$remark}</pre>\n";
+    $remarks .="<b><a href='cwb.php?stick_event_repo_id={$stick_event_repo_id}&quest={$question}'>EXAM{$stk}</a></b>:\n{$remark}<br/>\n";
     $resultSet->moveNext();
   }
   return $remarks;
@@ -29,7 +29,7 @@ function remarkTableCand($dbConn,$event,$stick_event_repo_id){
   }
   while (!$resultSet->EOF){
     extract( $resultSet->fields );
-    $remarks .="<b><a href='cwb.php?stick_event_repo_id={$stick_event_repo_id}&quest={$question}'>{$question}</a></b>:\n<pre>{$remark}</pre>\n";
+    $remarks .="<b><a href='cwb.php?stick_event_repo_id={$stick_event_repo_id}&quest={$question}'>{$question}</a></b>:\n{$remark}<br/>\n";
     $resultSet->moveNext();
   }
   return $remarks;
@@ -78,5 +78,5 @@ $question_remark='';
 if (isSet($resultSet->fields)) {
   extract( $resultSet->fields );
 }
-$correctionRemark = "<textarea rows='6' cols='220' name='question_remark' style='background:#ddF;font-family:verdana;font-size:8pt'>{$question_remark}</textarea>";
+$correctionRemark = "{$question_remark}";
 include_once '/usr/local/prepareassessment/resources/wb_html.html';

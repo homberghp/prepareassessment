@@ -1,48 +1,48 @@
-<form id='formbox' method='post' name='scoreForm' id='scoreForm' action='process.php'>
 
-<fieldset id='task-id'>
-<legend id='task-legend'><span id='stick-q-id' ><?= $quest ?>
-(<?= 'EXAM'.$stick_nr ?>)</span> <?= $snippetfile?>&nbsp;<a href="<?=$workdir?>" target="_blank"><img
-src='images/workbench-22x22.png' alt='workdir'
-border='0'/>Workdir</a>
-</legend>
-<div id='task' class='scroll task' height='320px'>
+<fieldset id='task'>
+    <legend id='task-legend'><span id='stick-q-id' ><?= $quest ?>
+            (<?= 'EXAM'.$stick_nr ?>)</span> <?= $snippetfile?>&nbsp;<a href="<?=$workdir?>" target="_blank"><img
+                src='images/workbench-22x22.png' alt='workdir'
+                border='0'/>Workdir</a>
+    </legend>
+    <?php include "$snippetfile"; ?>
+</fieldset>
 
-  <?php include "$snippetfile"; ?>
-  </fieldset>
 
-  
-  <fieldset id='remarks-list'>
-  Remarks by <a href='cwb.php?rremarks=1'>quest</a>
-  <a href='cwb.php?rremarks=0'>cand</a>.<br/>
-  <?=$remarks?>
-  </fieldset>
-  
-<div id='gradebox'>
-  <fieldset id='correctors-remark'><legend>Corrector&#39;s Remark per candidate*answer</legend>
-  <textarea id='remark-text' name='remark'><?= $remark ?></textarea>
-  </fieldset>
-  <div id='grader'>
-  <label style='font-weight:bold' for='score'>Score </label>
-  <input type='hidden' name='quest' value='<?= $quest ?>'/>
-  <input type='hidden' name='stick_event_repo_id' value='<?= $stick_event_repo_id ?>'/>
-  <input type='hidden' name='id' value='<?= $id ?>'/>
-  <?= $radio ?>
-  <input type='number' class='number'
-  placeholder='6.5' min="0" max="10.0" step="0.1" size='4' value='<?= $score ?>'
-  name='score' id='score' onchange="setScore(this.value)"/>
-  <button id='submitbutton' name ='submit'  type='submit'>Check</button>
-  <input type='reset'/></div>
-</div>
+<form  id='grade' method='post' name='scoreForm' action='process.php'>
+    <fieldset id='remark'><legend>Corrector&#39;s Remark per candidate*answer</legend>
+        <textarea id='remark-text' name='remark'><?= $remark ?></textarea>
+    </fieldset>
+    <div id='grader'>
+        <label style='font-weight:bold' for='score'>Score </label>
+        <input type='hidden' name='quest' value='<?= $quest ?>'/>
+        <input type='hidden' name='stick_event_repo_id' value='<?= $stick_event_repo_id ?>'/>
+        <input type='hidden' name='id' value='<?= $id ?>'/>
+        <?= $radio ?>
+        <input type='number' class='number'
+               placeholder='6.5' min="0" max="10.0" step="0.1" size='4' value='<?= $score ?>'
+               name='score' id='score' onchange="setScore(this.value)"/>
+        <button id='submitbutton' name ='submit'  type='submit'>Check</button>&nbsp;
+        <input type='reset'/>
+    </div>
+</form>
+
+<form>
+    <fieldset id='rules'><legend>Grading rules and remarks on question</legend>
+        <textarea id='rules-text'><?=$correctionRemark?></textarea>
+    </fieldset>
+</form>
+
 <fieldset id='solution'>
-<legend>Solution: <?= $solsnippetfile ?>
-</legend>
-<div class='scroll sol' height='320px' >
-  <?php include "$solsnippetfile"; ?></div>
-  </fieldset>
-  <fieldset id='correctors-key'><legend>Grading rules and remarks on question</legend>
-  <?=$correctionRemark?>
-  </fieldset>
+    <legend>Solution: <?= $solsnippetfile ?>
+    </legend>
+    <div class='scroll sol' >
+        <?php include "$solsnippetfile"; ?></div>
+</fieldset>
 
-  </form>
+<fieldset id='remarks-list'>
+    <h3 style='background-color: white;margin:0;padding:0;'>Remarks by <a href='cwb.php?rremarks=1'>quest</a>
+        <a href='cwb.php?rremarks=0'>cand</a>.<br/></h3>
+    <?=$remarks?>
+</fieldset>
 

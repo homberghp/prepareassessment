@@ -96,16 +96,16 @@ if ( !isSet($stick_event_repo_id) ) {
 	  <input type='hidden' name='stick_event_repo_id' value='<?=$stick_event_repo_id?>' />
 	  <input type='hidden' name='quest' value='<?=$quest?>' />
         </form>&nbsp;&nbsp;&nbsp;&nbsp;
-        <a href='http://osirix.fontysvenlo.org'><img src='images/home.png' border=0/>&nbsp;osirix home</a>
+        <a href='/'><img src='images/home.png' border=0/>&nbsp;osirix home</a>
         &nbsp;<strong><a href='results.php'>results</a></strong> oper=<?=$_SESSION['operator']?>&nbsp;  <strong><a href='results.php'>results</a> </strong>
 <div id='box'>
 <div id='top'>
 <?php require 'top.php'; ?>
-</div>
+</div><!-- top -->
 <div id='left'>
   <?php include 'left.php' ?>
-</div>
-<?php include 'wb.php' ?>
-</div>
+</div><!--left-->
+    <?php include 'wb.php' ?>
+</div> <!-- box -->
 </body>
 </html>
