@@ -17,6 +17,7 @@ if (!isSet($_SESSION['snippets'])) {
   $snippets = $_SESSION['snippets'] = 1;
 }
 $rremarks=0;
+$stick_event_repo_id=0;
 if (!isSet($_SESSION['stick_event_repo_id']) || !isSet($_SESSION['quest']) || ! isSet($_SESSION['event']) || $event !== $_SESSION['event']) {
   $sql = "select min(question||':'||stick_event_repo_id) as next_qs from assessment_scores join candidate_stick using(stick_event_repo_id)\n"
       ."where event='{$event}' and question||':'||stick_event_repo_id > '{$quest}:{$stick_event_repo_id}'";
