@@ -3,7 +3,7 @@ div.sol { overflow: auto;}
 li {display:inline; padding-right:5px;}
 /*li.quest {border-style: outset;}*/
 body{ background:#ddd; font-family:verdana; }
-html,body{ max-width: 100vw;
+html,body{ max-width: 100vw; max-height:100vh;
            overflow-x: auto; }
 table {border-collapse:collapse;}
 button{ padding:1px;}
@@ -48,7 +48,7 @@ li.selected{ background:white; font-weight:bold;
 
 #box{ 
     display: grid; background:#CDCDCD;
-    grid-template-columns: 1fr 4fr 3fr 2fr;
+    grid-template-columns: auto 4fr 3fr 2fr;
     grid-template-rows: 1fr 8fr auto 8fr;
 
     grid-template-areas:
