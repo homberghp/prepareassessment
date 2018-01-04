@@ -1,11 +1,12 @@
 
-<fieldset id='task' class='task scroll'>
+<fieldset id='task' class='task'>
     <legend id='task-legend' class='task' ><span id='stick-q-id' ><?= $quest ?>
             (<?= 'EXAM'.$stick_nr ?>)</span> <?= $snippetfile?>&nbsp;<a href="<?=$workdir?>" target="_blank"><img
                 src='images/workbench-22x22.png' alt='workdir'
                 border='0'/>Workdir</a>
     </legend>
-    <?php include "$snippetfile"; ?>
+    <div id='task-text' class='task scroll'>
+    </div>
 </fieldset>
 
 
@@ -47,3 +48,11 @@
     <?=$remarks?>
 </fieldset>
 
+<script type='text/javascript' src='js/getsnippet.js'></script>
+<script>
+    (function() {
+        var domtarget=document.getElementById("task-text");
+        var path='harvest/snippets/TASK_1A_JAVA2/EXAM101.java.snippet.html';
+        getsnippet(domtarget,path);
+    })();
+</script>
