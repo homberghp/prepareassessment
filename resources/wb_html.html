@@ -10,7 +10,7 @@
 
 
 <form  id='grade' method='post' name='scoreForm' action='process.php'>
-    <fieldset id='remark'><legend>Corrector&#39;s Remark per candidate*answer</legend>
+    <fieldset id='remark'><legend>Corrector&#39;s notes for <b>EXAM<?=$stick_nr?></b>&nbsp;q&nbsp;<b><?=$quest?></b></legend>
         <textarea id='remark-text' name='remark'><?= $remark ?></textarea>
     </fieldset>
     <div id='grader'>
@@ -27,9 +27,10 @@
     </div>
 </form>
 
-<form id='rule-form' method='post' name='ruleForm' action='process.php'>
+<form id='rule-form' method='post' name='ruleForm' action='processrules.php'>
     <input type='hidden' name='quest' value='<?= $quest ?>'/>
-    <fieldset id='rules'><legend>Grading rules and remarks on question</legend>
+    <input type='hidden' name='stick_event_repo_id' value='<?= $stick_event_repo_id ?>'/>
+    <fieldset id='rules'><legend>Grading rules for question <b><i><?=$quest?></i></b></legend>
         <textarea id='rules-text' name='question_remark'><?=$question_remark?></textarea><br/>
         <div><button type='submit' name='rulesubmit'>Set Rule</button>&nbsp;<button type='reset'>reset</button></div>
     </fieldset>

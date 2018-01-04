@@ -26,7 +26,7 @@ EOF
 
 rm -fr ${webdir}
 mkdir -p ${webdir}
-ln -sf /home/prepareassessment/resources/{cwb,index2,left,process,resultmail,results,setactive,top,wb}.php ${webdir}
+ln -sf /home/prepareassessment/resources/{cwb,index2,left,process,processrules,resultmail,results,setactive,top,wb}.php ${webdir}
 ln -sf /home/prepareassessment/resources/*.css ${webdir}
 ln -sf /home/prepareassessment/resources/{images,js,css} ${webdir}
 cp paconfig/settings.php ${webdir}

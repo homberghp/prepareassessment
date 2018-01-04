@@ -17,43 +17,30 @@ if (isSet($_POST['submit']) && isSet($_POST['stick_event_repo_id']) && isSet($_P
     $stick_event_repo_id = $_POST['stick_event_repo_id'];
     $remark = pg_escape_string($_POST['remark']);
     $operator = $_SERVER['PHP_AUTH_USER'];
-    $sql = "begin work;\n"
-            . "update assessment_scores set score = {$score},"
-            . "operator='{$operator}',remark='$remark',update_ts=now()\n"
-            . " where stick_event_repo_id={$stick_event_repo_id} and question='{$quest}';\n";
-    $resultSet = $dbConn->Execute($sql);
-    if ($resultSet === null) {
-        die("query '$sql' failed with " . $dbConn->ErrorMsg());
-    }
+    $sql = <<<'SQL'
+update assessment_scores set score = $1,
+operator=$2,remark=$3,update_ts=now()
+where stick_event_repo_id=$4 and question=$5
+SQL;
+    $nsql = <<<'NSQL'
+select min(question||':'||stick_event_repo_id) as next_qs from assessment_scores 
+    join candidate_stick using(stick_event_repo_id)
+where event=$1 and question||':'||stick_event_repo_id > $2
+NSQL;
 
-    $query = "select min(question||':'||stick_event_repo_id) as next_qs from assessment_scores join candidate_stick using(stick_event_repo_id)\n"
-            . "where event='{$event}' and question||':'||stick_event_repo_id > '{$quest}:{$stick_event_repo_id}'";
     try {
-        $resultSet = $dbConn->Execute($query);
+        $stkq = "{$quest}:{$stick_event_repo_id}";
+        $resultSet = $dbConn->Prepare($sql)->execute([$score, $operator, $remark, $stick_event_repo_id, $quest]);
+        $resultSet = $dbConn->Prepare($nsql)->execute([$event, $stkq]);
         if (!$resultSet->EOF) {
             list($q, $stk) = explode(':', $resultSet->fields['next_qs']);
             $_SESSION['quest'] = $q;
             $_SESSION['stick_event_repo_id'] = $stk;
             $_SESSION['next_qs'] = $resultSet->fields['next_qs'];
         }
-    } catch (SQLExecuteException $se) {
-        die("query '$query' failed with " . $dbConn->ErrorMsg());
+    } catch (Exception $ex) {
+        echo("query failed with " . $dbConn->ErrorMsg());
     }
 }
 
-if (isSet($_POST['rulesubmit']) && isSet($_POST['question_remark']) && isSet($_POST['quest'])) {
-    $q = $quest = $_POST['quest'];
-    $stk = $_SESSION['stick_event_repo_id'];
-    $question_remark = pg_escape_string($_POST['question_remark']);
-    $sql = <<<'SQL'
-insert into question_remark (event,question,remark) values($1,$2,$3) 
-on conflict(event,question) do update set remark=EXCLUDED.remark 
-returning *
-SQL;
-    try {
-        $resultSet = $dbConn->Prepare($sql)->execute(array($event, $quest, $question_remark));
-    } catch (Exception $ex) {
-        die($ex->getMessage());
-    }
-}
 header("Location: " . "cwb.php?stick_event_repo_id={$stk}&quest={$q}");
