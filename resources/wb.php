@@ -53,10 +53,12 @@ if ( $resultSet === null ) {
 extract( $resultSet->fields );
 $id = "$cand-$quest";
 $fext= substr(strrchr($filepath,'.'),1);
+$tasksnippetpath="harvest/snippets/$quest/{$cand}.{$fext}.snippet.html";
+$taskpath="harvest/sandbox/EXAM{$stick_nr}/{$filepath}.html";
 if ($snippets == 1) {
-    $snippetfile = "harvest/snippets/$quest/{$cand}.{$fext}.snippet.html";
+    $snippetfile = $tasksnippetpath;
 } else {
-  $snippetfile = "harvest/sandbox/EXAM{$stick_nr}/{$filepath}.html";
+  $snippetfile = $taskpath;
 }
 $workdir=dirname("harvest/sandbox/EXAM{$stick_nr}/{$filepath}.html");
 //echo "<pre>$sql</pre>";

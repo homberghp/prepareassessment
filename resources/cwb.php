@@ -92,8 +92,9 @@ if ( !isSet($stick_event_repo_id) ) {
     <body style='padding:0;margin:0' onload='setFocus()' >
 	    
         <form name="noofcommits" method="get" action="cwb.php" style='background:#ccf;display:inline'>
-					      Show: <input type='Radio' name='snippets' value=1 onclick="submit()" <?=(($_SESSION['snippets']!=0)? 'checked="checked"' : '')?>/>Snippets
-          <input type='Radio' name='snippets' value=0 onclick="submit()" <?=(($_SESSION['snippets']!=0)?'': 'checked="checked"')?>/>Complete files
+					      Show: <input type='Radio' name='snippets' id='snippet' value=1 onclick="getMySnippet()" <?=(($_SESSION['snippets']!=0)? 'checked="checked"' : '')?>/>Snippets
+          <input type='Radio' name='snippets' id='complete'  value=0 onclick="getMySnippet()" <?=(($_SESSION['snippets']!=0)?'': 'checked="checked"')?>/>
+          Complete files
 	  <input type='hidden' name='stick_event_repo_id' value='<?=$stick_event_repo_id?>' />
 	  <input type='hidden' name='quest' value='<?=$quest?>' />
         </form>&nbsp;&nbsp;&nbsp;&nbsp;<strong>Scoring event <?= $event ?> question <?=$quest?></strong>

@@ -47,12 +47,20 @@
         <a href='cwb.php?rremarks=0'>cand</a>.<br/></h3>
     <?=$remarks?>
 </fieldset>
-
+<input type='hidden' id='tasksnippetpath' value='<?=$tasksnippetpath?>'/>
+<input type='hidden' id='taskpath' value='<?=$taskpath?>'/>
 <script type='text/javascript' src='js/getsnippet.js'></script>
 <script>
     (function() {
-        var domtarget=document.getElementById("task-text");
-        var path='harvest/snippets/TASK_1A_JAVA2/EXAM101.java.snippet.html';
-        getsnippet(domtarget,path);
+        getMySnippet();
+//        var domtarget=document.getElementById("task-text");
+//        var sp;
+//        if (document.getElementById('complete').checked) {
+//            sp='taskpath';
+//        } else{
+//            sp='tasksnippetpath';
+//        }
+//        var path=document.getElementById(sp).value;//'harvest/snippets/TASK_1A_JAVA2/EXAM101.java.snippet.html';
+//        getsnippet(domtarget,path);
     })();
 </script>
