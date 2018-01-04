@@ -1,6 +1,6 @@
 
 <fieldset id='task' class='task scroll'>
-    <legend id='task-legend'><span id='stick-q-id' ><?= $quest ?>
+    <legend id='task-legend' class='task' ><span id='stick-q-id' ><?= $quest ?>
             (<?= 'EXAM'.$stick_nr ?>)</span> <?= $snippetfile?>&nbsp;<a href="<?=$workdir?>" target="_blank"><img
                 src='images/workbench-22x22.png' alt='workdir'
                 border='0'/>Workdir</a>
@@ -30,17 +30,15 @@
 <form id='rule-form' method='post' name='ruleForm' action='processrules.php'>
     <input type='hidden' name='quest' value='<?= $quest ?>'/>
     <input type='hidden' name='stick_event_repo_id' value='<?= $stick_event_repo_id ?>'/>
-    <fieldset id='rules'><legend>Grading rules for question <b><i><?=$quest?></i></b></legend>
+    <fieldset id='rules' class='rules'><legend class='rules'>Grading rules for question <b><i><?=$quest?></i></b></legend>
         <textarea id='rules-text' name='question_remark'><?=$question_remark?></textarea><br/>
         <div><button type='submit' name='rulesubmit'>Set Rule</button>&nbsp;<button type='reset'>reset</button></div>
     </fieldset>
 </form>
 
 <fieldset id='solution' class='sol scroll'>
-    <legend>Solution: <?= $solsnippetfile ?>
-    </legend>
-    <div class='scroll sol' >
-        <?php include "$solsnippetfile"; ?></div>
+    <legend class='sol'>Solution: <?= $solsnippetfile ?></legend>
+    <?php include "$solsnippetfile"; ?>
 </fieldset>
 
 <fieldset id='remarks-list'>
