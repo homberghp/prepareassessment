@@ -1,5 +1,5 @@
 
-<fieldset id='task'>
+<fieldset id='task' class='task scroll'>
     <legend id='task-legend'><span id='stick-q-id' ><?= $quest ?>
             (<?= 'EXAM'.$stick_nr ?>)</span> <?= $snippetfile?>&nbsp;<a href="<?=$workdir?>" target="_blank"><img
                 src='images/workbench-22x22.png' alt='workdir'
@@ -36,7 +36,7 @@
     </fieldset>
 </form>
 
-<fieldset id='solution'>
+<fieldset id='solution' class='sol scroll'>
     <legend>Solution: <?= $solsnippetfile ?>
     </legend>
     <div class='scroll sol' >
