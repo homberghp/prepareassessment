@@ -30,7 +30,7 @@
 <form id='rule-form' method='post' name='ruleForm' action='process.php'>
     <input type='hidden' name='quest' value='<?= $quest ?>'/>
     <fieldset id='rules'><legend>Grading rules and remarks on question</legend>
-        <textarea id='rules-text' name='question_remark'><?=$correctionRemark?></textarea><br/>
+        <textarea id='rules-text' name='question_remark'><?=$question_remark?></textarea><br/>
         <div><button type='submit' name='rulesubmit'>Set Rule</button>&nbsp;<button type='reset'>reset</button></div>
     </fieldset>
 </form>
