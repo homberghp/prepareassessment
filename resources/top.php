@@ -18,7 +18,7 @@ function topMenu($dbConn,$event,$quest,$stick) {
     $snip=$_SESSION['snippets'];
 #    $linkText= "{$catMap[$category]}".str_replace('TASK_','',$qst);
     $linkText= str_replace('TASK_','',$qst);
-    $out .="<li {$css}><a href='cwb.php?quest={$qst}&stick_event_repo_id={$stick}&snippets={$snip}'>{$linkText}</a><sup style='font-size:50%'>{$weight}</sup></li>\n";
+    $out .="<li {$css}><a href='cwb.php?quest={$qst}&stick_event_repo_id={$stick}&snippets={$snip}'>{$linkText}</a><sup style='font-size:80%'>{$weight}</sup></li>\n";
     $resultSet->moveNext();
   }
   return $out;

@@ -78,6 +78,7 @@ if ( !isSet($stick_event_repo_id) ) {
      <link rel='stylesheet' type='text/css' href='css/style.css'/>
      <link rel='stylesheet' type='text/css' href='css/layout.css'/>
      <link rel='stylesheet' type='text/css' href='css/pulse.css'/>
+     <link rel='stylesheet' type='text/css' href='css/buttons.css'/>
         <script language='javascript'>
             function setScore( score ) {
                 document.getElementById('score').value=score;

@@ -5,7 +5,7 @@ textarea{resize:none; overflow: auto;padding:2px;margin:2px;}
 .scroll > textarea {height: 70%; width:100%;}
 .container{}
 .solution{}
-.task{background-color: #fdd;}
+
 #left{grid-area:left; }
 #task{grid-area:task; }
 #task-text{height: 100%;}
@@ -18,10 +18,10 @@ textarea{resize:none; overflow: auto;padding:2px;margin:2px;}
 #grader{ position:relative; display:flex; flex-direction:column;justify-content: space-between;}
 #remark-text{width:100%; height:7vh;}
 
-#grader-control{ heigth:2vh;display:flex;flex-direction: row;flex-wrap: nowrap;justify-content: space-between;}
+#grader-control{ display:flex;flex-direction: row;flex-wrap: nowrap;justify-content: flex-start;}
 
 #rule-text {width:100%; height:8vh; font-size:9pt;resize: none;font-size:9pt;}
-#rules-controls {display:flex;flex-direction: row;flex-wrap: nowrap;justify-content: flex-end;}
+#rules-controls {display:flex;flex-direction: row;flex-wrap: nowrap;justify-content: center;}
 
 #container{
     display:grid;

@@ -27,8 +27,8 @@
         <input type='number' class='number'
                placeholder='6.5' min="0" max="10.0" step="0.1" size='4' value='<?= $score ?>'
                name='score' id='score' onchange="setScore(this.value)"/>
-        <button id='submitbutton' name ='submit'  type='submit'>Check</button>&nbsp;
-        <input type='reset'/>
+        <button id='submitbutton' name ='submit'  type='submit' class='myButton'>Check</button>&nbsp;
+        <button type='reset' class='myReset'>reset</button>
     </div>
 </form>
 
@@ -39,7 +39,7 @@
         <legend class='rules'>Grading rules for question <b><i><?=$quest?></i></b></legend>
         <textarea id='rule-text' name='question_remark' clas='rules'><?=$question_remark?></textarea><br/>
         <div id='rules-controls' class='rules'>
-            <button type='submit' name='rulesubmit'>Set Rule</button>&nbsp;<button type='reset'>reset</button>
+            <button type='submit' name='rulesubmit' class='myButton'>Set Rule</button>&nbsp;<button type='reset' class='myReset'>reset</button>
         </div>
     </fieldset>
 </form>

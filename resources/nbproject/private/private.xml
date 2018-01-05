@@ -7,13 +7,16 @@
             <file>file:/usr/local/prepareassessment/resources/index2.php</file>
         </group>
         <group>
-            <file>file:/home/prepareassessment/resources/style.css</file>
-            <file>file:/home/prepareassessment/resources/top.php</file>
+            <file>file:/home/prepareassessment/resources/css/style.css</file>
             <file>file:/home/prepareassessment/resources/cwb.php</file>
-            <file>file:/home/prepareassessment/resources/process.php</file>
+            <file>file:/home/prepareassessment/resources/css/buttons.css</file>
+            <file>file:/home/prepareassessment/resources/js/getsnippet.js</file>
+            <file>file:/home/prepareassessment/resources/getfile.php</file>
             <file>file:/home/prepareassessment/resources/wb_html.html</file>
-            <file>file:/home/prepareassessment/resources/processrules.php</file>
-            <file>file:/home/prepareassessment/resources/wb.php</file>
+            <file>file:/home/prepareassessment/resources/p.html</file>
+            <file>file:/home/prepareassessment/resources/css/layout.css</file>
+            <file>file:/home/prepareassessment/resources/css/pulse.css</file>
+            <file>file:/home/prepareassessment/resources/left.php</file>
         </group>
     </open-files>
 </project-private>
