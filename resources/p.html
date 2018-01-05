@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel='stylesheet' type='text/css' href='css/layout.css'/>
+        <link rel='stylesheet' type='text/css' href='css/style.css'/>
+    </head>
+    <body>
+        <div id='container' class='container'>
+            <div id='top'>
+                <h1>Some header stuff here</h1>
+            </div>
+            <div id='left' class='ĺeft'>
+
+                <p>In tegenstelling tot wat algemeen aangenomen wordt is Lorem Ipsum niet zomaar 
+                    willekeurige tekst. het heeft zijn wortels in een stuk klassieke latijnse literatuur 
+                    uit 45 v.Chr. en is dus meer dan 2000 jaar oud. 
+                    Richard McClintock, een professor latijn aan de Hampden-Sydney College in Virginia, 
+                    heeft één van de meer obscure latijnse woorden, consectetur, uit een Lorem Ipsum passage opgezocht, 
+                    en heeft tijdens het zoeken naar het woord in de klassieke literatuur de onverdachte bron ontdekt. 
+                    Lorem Ipsum komt uit de secties 1.10.32 en 1.10.33 van "de Finibus Bonorum et Malorum" 
+                    (De uitersten van goed en kwaad) door Cicero, geschreven in 45 v.Chr. Dit boek is een verhandeling over de theorie der ethiek,
+                    erg populair tijdens de renaissance. De eerste regel van Lorem Ipsum, "Lorem ipsum dolor sit amet..", 
+                    komt uit een zin in sectie 1.10.32.</p>
+            </div>
+            <div id='task' class='task'>
+                <input type='Radio' name='snippets' id='snippet' value=1 onclick="getMySnippetBy('snippet')" checked="checked"/>Snippets
+                <input type='Radio' name='snippets' id='complete'  value=0 onclick="getMySnippetBy('complete')" />Complete.
+                <span id='taskpathlabel'>some file name</span><br/>
+                <div id='task-text' class='task scroll'>
+                </div>
+            </div>
+            <div id='grader' class='grader scroll'>Grade<textarea>puk</textarea></div>
+            <div id='rules' class='rules scroll'>rule<textarea>rule</textarea></div>
+            <div id='solution' class='solution scroll'>
+                In tegenstelling tot wat algemeen aangenomen wordt is Lorem Ipsum niet zomaar 
+                willekeurige tekst. het heeft zijn wortels in een stuk klassieke latijnse literatuur 
+                uit 45 v.Chr. en is dus meer dan 2000 jaar oud. 
+                Richard McClintock, een professor latijn aan de Hampden-Sydney College in Virginia, 
+                heeft één van de meer obscure latijnse woorden, consectetur, uit een Lorem Ipsum passage opgezocht, 
+                en heeft tijdens het zoeken naar het woord in de klassieke literatuur de onverdachte bron ontdekt. 
+                Lorem Ipsum komt uit de secties 1.10.32 en 1.10.33 van "de Finibus Bonorum et Malorum" 
+                (De uitersten van goed en kwaad) door Cicero, geschreven in 45 v.Chr. Dit boek is een verhandeling over de theorie der ethiek,
+                erg populair tijdens de renaissance. De eerste regel van Lorem Ipsum, "Lorem ipsum dolor sit amet..", 
+                komt uit een zin in sectie 1.10.32.
+            </div>
+            <div id='rlist' class='rlist'>
+                I was interested to see if I could make a scroll indicator like this with just CSS.
+                You can! But maybe you shouldn't. This is an interesting consequence of a bunch of hacks held together with duct tape. It uses z-index hacks, gradient hacks and tricks with calc and viewport units.
+
+                Having said that, hacks are not always bad. I love hacks and many of us have made quite a good living selling floats and clearfixes.
+
+                The techniques used here are well supported, if not conventional. If you can read the CSS, understand how it works, and how to change it, and you think this works better for you than JavaScript, feel free to implement it. Just be aware of the z-index behaviour and possible conflict with other CSS using negative z-index.
+
+
+            </div>
+
+        </div>
+        <input type='hidden' id='tasksnippetpath' value='harvest/snippets/TASK_5D_SEN1/EXAM102.java.snippet.html'/>
+        <input type='hidden' id='taskpath' value='harvest/sandbox/EXAM102/phoneclienttest/test/nl/fontys/sen1/ClientTest.java.html'/>
+        <input type='hidden' id='mysnippet' value='snippet'/>
+        <script type='text/javascript' src='js/getsnippet.js'></script>
+        <script>
+                    (function () {
+                        getMySnippet();
+                    })();
+        </script>
+    </body>
+</html>

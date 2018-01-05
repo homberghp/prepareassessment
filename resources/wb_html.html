@@ -1,7 +1,10 @@
 
 <fieldset id='task' class='task'>
     <legend id='task-legend' class='task' ><span id='stick-q-id' ><?= $quest ?>
-            (<?= 'EXAM'.$stick_nr ?>)</span> <?= $snippetfile?>&nbsp;<a href="<?=$workdir?>" target="_blank"><img
+            (<?= 'EXAM'.$stick_nr ?>)</span> 
+        <input type='Radio' name='snippets' id='snippet' value=1 onclick="getMySnippetBy('snippet')" checked="checked"/>Snippet
+        <input type='Radio' name='snippets' id='complete'  value=0 onclick="getMySnippetBy('complete')" />Complete.
+        <span id='taskpathlabel'>some file text</span><a href="<?=$workdir?>" target="_blank"><img
                 src='images/workbench-22x22.png' alt='workdir'
                 border='0'/>Workdir</a>
     </legend>
@@ -10,11 +13,12 @@
 </fieldset>
 
 
-<form  id='grade' method='post' name='scoreForm' action='process.php'>
-    <fieldset id='remark'><legend>Corrector&#39;s notes for <b>EXAM<?=$stick_nr?></b>&nbsp;q&nbsp;<b><?=$quest?></b></legend>
-        <textarea id='remark-text' name='remark'><?= $remark ?></textarea>
+<form  id='grader' method='post' name='scoreForm' action='process.php'>
+    <fieldset id='grader-remark' class='grader'>
+        <legend>Corrector&#39;s notes for <b>EXAM<?=$stick_nr?></b>&nbsp;q&nbsp;<b><?=$quest?></b></legend>
+        <textarea id='remark-text' name='remark' class='garder scroll'><?= $remark ?></textarea>
     </fieldset>
-    <div id='grader'>
+    <div id='grader-control' class='grader'>
         <label style='font-weight:bold' for='score'>Score </label>
         <input type='hidden' name='quest' value='<?= $quest ?>'/>
         <input type='hidden' name='stick_event_repo_id' value='<?= $stick_event_repo_id ?>'/>
@@ -28,39 +32,35 @@
     </div>
 </form>
 
-<form id='rule-form' method='post' name='ruleForm' action='processrules.php'>
+<form  method='post' name='ruleForm' action='processrules.php' class='rules'>
     <input type='hidden' name='quest' value='<?= $quest ?>'/>
     <input type='hidden' name='stick_event_repo_id' value='<?= $stick_event_repo_id ?>'/>
-    <fieldset id='rules' class='rules'><legend class='rules'>Grading rules for question <b><i><?=$quest?></i></b></legend>
-        <textarea id='rules-text' name='question_remark'><?=$question_remark?></textarea><br/>
-        <div><button type='submit' name='rulesubmit'>Set Rule</button>&nbsp;<button type='reset'>reset</button></div>
+    <fieldset id='rules' class='rules'>
+        <legend class='rules'>Grading rules for question <b><i><?=$quest?></i></b></legend>
+        <textarea id='rule-text' name='question_remark' clas='rules'><?=$question_remark?></textarea><br/>
+        <div id='rules-controls' class='rules'>
+            <button type='submit' name='rulesubmit'>Set Rule</button>&nbsp;<button type='reset'>reset</button>
+        </div>
     </fieldset>
 </form>
 
-<fieldset id='solution' class='sol scroll'>
-    <legend class='sol'>Solution: <?= $solsnippetfile ?></legend>
+<fieldset id='solution' class='solution scroll'>
+    <legend class='solution'>Solution: <?= $solsnippetfile ?></legend>
     <?php include "$solsnippetfile"; ?>
 </fieldset>
 
-<fieldset id='remarks-list'>
+<fieldset id='rlist' class='rlist'>
     <h3 style='background-color: white;margin:0;padding:0;'>Remarks by <a href='cwb.php?rremarks=1'>quest</a>
         <a href='cwb.php?rremarks=0'>cand</a>.<br/></h3>
     <?=$remarks?>
 </fieldset>
 <input type='hidden' id='tasksnippetpath' value='<?=$tasksnippetpath?>'/>
 <input type='hidden' id='taskpath' value='<?=$taskpath?>'/>
+<input type='hidden' id='mysnippet' value='snippet'/>
+
 <script type='text/javascript' src='js/getsnippet.js'></script>
 <script>
-    (function() {
-        getMySnippet();
-//        var domtarget=document.getElementById("task-text");
-//        var sp;
-//        if (document.getElementById('complete').checked) {
-//            sp='taskpath';
-//        } else{
-//            sp='tasksnippetpath';
-//        }
-//        var path=document.getElementById(sp).value;//'harvest/snippets/TASK_1A_JAVA2/EXAM101.java.snippet.html';
-//        getsnippet(domtarget,path);
-    })();
+                   (function () {
+                       getMySnippet();
+                   })();
 </script>

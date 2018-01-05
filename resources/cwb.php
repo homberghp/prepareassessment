@@ -75,7 +75,9 @@ if ( !isSet($stick_event_repo_id) ) {
 <html>
     <head>
 
-     <link rel='stylesheet' type='text/css' href='style.css'/>
+     <link rel='stylesheet' type='text/css' href='css/style.css'/>
+     <link rel='stylesheet' type='text/css' href='css/layout.css'/>
+     <link rel='stylesheet' type='text/css' href='css/pulse.css'/>
         <script language='javascript'>
             function setScore( score ) {
                 document.getElementById('score').value=score;
@@ -91,23 +93,17 @@ if ( !isSet($stick_event_repo_id) ) {
     </head>
     <body style='padding:0;margin:0' onload='setFocus()' >
 	    
-        <form name="noofcommits" method="get" action="cwb.php" style='background:#ccf;display:inline'>
-					      Show: <input type='Radio' name='snippets' id='snippet' value=1 onclick="getMySnippet()" <?=(($_SESSION['snippets']!=0)? 'checked="checked"' : '')?>/>Snippets
-          <input type='Radio' name='snippets' id='complete'  value=0 onclick="getMySnippet()" <?=(($_SESSION['snippets']!=0)?'': 'checked="checked"')?>/>
-          Complete files
-	  <input type='hidden' name='stick_event_repo_id' value='<?=$stick_event_repo_id?>' />
-	  <input type='hidden' name='quest' value='<?=$quest?>' />
-        </form>&nbsp;&nbsp;&nbsp;&nbsp;<strong>Scoring event <?= $event ?> question <?=$quest?></strong>
+<strong>Scoring event <?= $event ?> question <?=$quest?></strong>
         <a href='/'><img src='images/home.png' border=0/>&nbsp;osirix home</a>
         &nbsp;<strong><a href='results.php'>results</a></strong> oper=<?=$_SESSION['operator']?>&nbsp;  <strong><a href='results.php'>results</a> </strong>
-<div id='box'>
+<div id='container'>
 <div id='top'>
-<?php require 'top.php'; ?>
+<?php require_once 'top.php'; ?>
 </div><!-- top -->
 <div id='left'>
-  <?php include 'left.php' ?>
+  <?php require_once 'left.php' ?>
 </div><!--left-->
-    <?php include 'wb.php' ?>
-</div> <!-- box -->
+    <?php require_once 'wb.php' ?>
+</div> <!-- container -->
 </body>
 </html>

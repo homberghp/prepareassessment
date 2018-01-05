@@ -1,0 +1,49 @@
+div.sol { overflow: auto;}
+*{padding:2px;margin:0;}
+li {display:inline; padding-right:5px;}
+/*li.quest {border-style: outset;}*/
+body{ background:#ddd; font-family:verdana; }
+fieldset{padding: 1px;}
+textarea{}
+table {border-collapse:collapse;}
+button{ padding:1px;}
+td{padding:0;}
+.ln{ width:1em;font-size:8pt;}
+li.quest, legend { border-top: 1px solid black;
+                   border-left: 1px solid black;
+                   border-right: 1px solid black;
+                   padding: 0 8px 0 8px;
+                   margin: 2px 2px 2px 2px;
+                   box-shadow: rgba(0,0,80,0.3) 3px -3px 3px;
+                   text-shadow: 1px 1px 1px #FFF;
+
+                   z-index: 2;
+}
+li.selected{ background:white; font-weight:bold;
+             border-top: 2px solid grey;
+             border-left: 2px solid grey;
+             border-right: 2px solid grey;}
+#task-legend{font-family:verdana;font-size:10pt;  }
+#stick-q-id{ font-size:140%;
+             font-weight:bold;background-color:#FFF
+}
+
+.sol{
+    background-color: #e5F5e5;
+}
+.number { text-align:right; }
+#top{ }
+
+#top{ }
+.rlist{ background-color: beige;  } 
+#remark-text{  }
+ .task{background-color: #ffffff;}
+
+ #grader{ background-color: #eeeeff;}
+#garder> textarea{}
+.solution{ background:#dFd;font-family:verdana; }
+.odd{ background:#FFF; }
+.even{ background:#ccF; }
+.rules{background:#cfc;font-family:verdana;}
+#taskpathlabel{font-weight: bold;}
+

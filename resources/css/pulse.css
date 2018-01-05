@@ -1,0 +1,36 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Jan 5, 2018, 1:34:28 PM
+    Author     : hom
+*/
+
+.pulse1 {
+    webkit-animation: pulse1 1.2s linear infinite;
+    moz-animation: pulse1 1.2s linear infinite;
+    ms-animation: pulse1 1.2s linear infinite;
+    animation: pulse1 1.2s linear infinite;
+}
+@keyframes "pulse1" {
+    0% {color: rgba(165, 25, 25, 1);}
+    90% {color: rgba(255,0,0,0.0);}
+    100% {color: rgba(255,0,0,1.0);}
+}
+@-moz-keyframes "pulse1" {
+    0% {color: rgba(165, 25, 25, 1);}
+    90% {color: rgba(255,0,0,0.0);}
+    100% {color: rgba(255,0,0,1.0);}
+}
+@-webkit-keyframes "pulse1" {
+    0% {color: rgba(165, 25, 25, 1);}
+    90% {color: rgba(255,0,0,0.0);}
+    100% {color: rgba(255,0,0,1.0);}
+}
+@-ms-keyframes "pulse1" {
+    0% {color: rgba(165, 25, 25, 1);}
+    90% {color: rgba(255,0,0,0.0);}
+    100% {color: rgba(255,0,0,1.0);}
+}
