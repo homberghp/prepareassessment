@@ -45,11 +45,12 @@ li.selected{
 .task{background-color: #fee;}
 
 /*#grader{ background-color: #eeeeff;}*/
-#garder> textarea{}
-.solution{ margin-top:5px;background-color:#eFe;font-family:verdana;z-index: 2; }
-.odd{ background:#FFF; }
-.even{ background:#ccF; }
-.rules{background:#cef;font-family:verdana;}
+.garder{z-index: 2;}
+legend.grader{background-color: #fee;}
+.solution{ margin-top:0px;background-color:#eFe;font-family:verdana; }
+.odd{ background:#FFF; font-size:12px; }
+.even{ background:#ccF; font-size:12px; }
+.rules{background:#cef;font-family:verdana;z-index: 2;}
 #taskpathlabel{font-weight: bold;}
 
 .ungraded{background-color: rgb(190,190,190);}
