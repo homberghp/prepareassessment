@@ -15,7 +15,7 @@
 
 <form  id='grader' method='post' name='scoreForm' action='process.php'>
     <fieldset id='grader-remark' class='grader'>
-        <legend>Corrector&#39;s notes for <b>EXAM<?=$stick_nr?></b>&nbsp;q&nbsp;<b><?=$quest?></b></legend>
+        <legend>Notes on <b>EXAM<?=$stick_nr?></b>:<b><?=$quest?></b></legend>
         <textarea id='remark-text' name='remark' class='garder scroll'><?= $remark ?></textarea>
     </fieldset>
     <div id='grader-control' class='grader'>
@@ -36,7 +36,7 @@
     <input type='hidden' name='quest' value='<?= $quest ?>'/>
     <input type='hidden' name='stick_event_repo_id' value='<?= $stick_event_repo_id ?>'/>
     <fieldset id='rules' class='rules'>
-        <legend class='rules'>Grading rules for question <b><i><?=$quest?></i></b></legend>
+        <legend class='rules'>Rules for <b><i><?=$quest?></i></b></legend>
         <textarea id='rule-text' name='question_remark' clas='rules'><?=$question_remark?></textarea><br/>
         <div id='rules-controls' class='rules'>
             <button type='submit' name='rulesubmit' class='myButton'>Set Rule</button>&nbsp;<button type='reset' class='myReset'>reset</button>

@@ -94,9 +94,9 @@ if ( !isSet($stick_event_repo_id) ) {
     </head>
     <body style='padding:0;margin:0' onload='setFocus()' >
 	    
-<strong>Scoring event <?= $event ?> question <?=$quest?></strong>
+<strong><?= $event ?> question <?=$quest?></strong>
         <a href='/'><img src='images/home.png' border=0/>&nbsp;osirix home</a>
-        &nbsp;<strong><a href='results.php'>results</a></strong> oper=<?=$_SESSION['operator']?>&nbsp;  <strong><a href='results.php'>results</a> </strong>
+        &nbsp;<strong><a href='results.php'>results</a></strong> oper=<?=$_SESSION['operator']?>&nbsp;</strong>
 <div id='container'>
 <div id='top'>
 <?php require_once 'top.php'; ?>
