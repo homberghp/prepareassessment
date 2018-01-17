@@ -26,7 +26,7 @@
         <input type='hidden' name='id' value='<?= $id ?>'/>
         <?= $radio ?>
         <input type='number' class='number'  style='width:3em;' 
-               placeholder='6.5' min="0" max="10.0" step="0.1" size='3' value='<?= $score ?>'
+               min="0" max="10.0" step="0.1" size='3' value='<?= $score ?>'
                name='score' id='score' onchange="setScore(this.value)"/>
         <button id='submitbutton' name ='submit'  type='submit' class='myButton'>Check</button>&nbsp;
         <button type='reset' class='myReset'>reset</button>
