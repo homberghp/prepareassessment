@@ -10,7 +10,7 @@ function enumerateSticks(){
 	v=$(cat $d/device/vendor); v=${v// /} # trim spaces
 	m=$(cat $d/device/model); m=${m// /} # trim spaces
 	vm="$v $m"
-	if [[ $vm == 'SanDisk Extreme' ]] ; then 
+	if [[ $vm == ^'SanDisk Extreme'* ]] ; then 
 #	    echo "'${vm}'"
 	    disk=$(basename $d)
 	    if [[ ${disks}a == a ]]; then disks="$disk"; else disks="$disks,$disk"; fi

@@ -1,8 +1,10 @@
 #!/bin/bash
 for i in examsolution/*.sql;  do 
+    echo "sql file ${i}" >&2
     echo "-- <expectedresult>" > rommel
     (echo "begin work;" ; cat $i; echo ";rollback;")  | psql presidentDB | grep -v "^Pager" | grep -P -v '(BEGIN|ROLLBACK)'  | sqlcomment  >> rommel
     echo "-- </expectedresult>" >>  rommel
     cat rommel >> $i
     rm rommel
+    echo "sql file ${i} done" >&2
 done
