@@ -77,5 +77,6 @@ if ( $resultSet === null ) {
     die( 'query failed with ' . $dbConn->ErrorMsg() );
 }
 $question_remark=$resultSet->fields['question_remark'];
+$task_text=file_get_contents($solsnippetfile, false);
 
 include_once '/usr/local/prepareassessment/resources/wb_html.html';

@@ -133,7 +133,7 @@ $(function() {
     <link rel='stylesheet' type='text/css' href='/examdoc/css/tablesorterstyle.css'/>
 </head>
     <body style='margin:.5em; font-family:verdana'>
-        <h3>Scores for event <?=$title?>  or back to <a href='cwb.php'>CWB</a></h3>
+        <h3>Scores for event <?=$title?> back to <a href='cwb.php'>CWB</a> or <a href='/'><img src='/images/home.png' border=0 alt='home'>Osirix home</a></h3>
 <div id='tabs'><ul>
   <?=$tabs?>
   <?=$divs?>

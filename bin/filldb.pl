@@ -177,7 +177,6 @@ connectsticks > paconfig/connectsticks.sql
 cat paconfig/filldb.sql | psql -X sebiassessment
 cat paconfig/connectsticks.sql | psql -X sebiassessment
 ln -sf /home/prepareassessment/resources/{cwb,index2,left,process,processrules,getfile,resultmail,results,setactive,top,wb}.php ${webdir}
-ln -sf /home/prepareassessment/resources/*.css ${webdir}
 ln -sf /home/prepareassessment/resources/{images,js,css} ${webdir}
 cp paconfig/settings.php ${webdir}
 cd /etc/apache2/sslsites-enabled
