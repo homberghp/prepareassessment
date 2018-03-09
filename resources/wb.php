@@ -11,7 +11,7 @@ function remarkTableQuest($dbConn,$event,$quest){
   }
   while (!$resultSet->EOF){
     extract( $resultSet->fields );
-    $remarks .="<b><a href='cwb.php?stick_event_repo_id={$stick_event_repo_id}&quest={$question}'>EXAM{$stk}</a></b>:\n{$remark}\n<br/>\n";
+    $remarks .="<b><a href='cwb.php?stick_event_repo_id={$stick_event_repo_id}&quest={$question}'>EXAM{$stk}</a></b>:\n{$remark}<br/>\n";
     $resultSet->moveNext();
   }
   return $remarks;
@@ -29,7 +29,7 @@ function remarkTableCand($dbConn,$event,$stick_event_repo_id){
   }
   while (!$resultSet->EOF){
     extract( $resultSet->fields );
-    $remarks .="<b><a href='cwb.php?stick_event_repo_id={$stick_event_repo_id}&quest={$question}'>{$question}</a></b>:\n{$remark}\n<br/>\n";
+    $remarks .="<b><a href='cwb.php?stick_event_repo_id={$stick_event_repo_id}&quest={$question}'>{$question}</a></b>:\n{$remark}<br/>\n";
     $resultSet->moveNext();
   }
   return $remarks;
@@ -53,10 +53,12 @@ if ( $resultSet === null ) {
 extract( $resultSet->fields );
 $id = "$cand-$quest";
 $fext= substr(strrchr($filepath,'.'),1);
+$tasksnippetpath="harvest/snippets/$quest/{$cand}.{$fext}.snippet.html";
+$taskpath="harvest/sandbox/EXAM{$stick_nr}/{$filepath}.html";
 if ($snippets == 1) {
-    $snippetfile = "harvest/snippets/$quest/{$cand}.{$fext}.snippet.html";
+    $snippetfile = $tasksnippetpath;
 } else {
-  $snippetfile = "harvest/sandbox/EXAM{$stick_nr}/{$filepath}.html";
+  $snippetfile = $taskpath;
 }
 $workdir=dirname("harvest/sandbox/EXAM{$stick_nr}/{$filepath}.html");
 //echo "<pre>$sql</pre>";
@@ -74,9 +76,7 @@ $resultSet = $dbConn->Execute( $sql );
 if ( $resultSet === null ) {
     die( 'query failed with ' . $dbConn->ErrorMsg() );
 }
-$question_remark='';
-if (isSet($resultSet->fields)) {
-  extract( $resultSet->fields );
-}
-$correctionRemark = "<textarea rows='6' cols='220' name='question_remark' style='background:#ddF;font-family:verdana;font-size:8pt'>{$question_remark}</textarea>";
+$question_remark=$resultSet->fields['question_remark'];
+$task_text=file_get_contents($solsnippetfile, false);
+
 include_once '/usr/local/prepareassessment/resources/wb_html.html';

@@ -1,0 +1,41 @@
+body,html{padding:0;margin:0; }
+div{display:block;padding-left:2px;margin:0;}
+textarea{resize:none; overflow: auto;padding:2px;margin:2px;}
+.scroll{ overflow-y: scroll;overflow-x:scroll; }
+
+.scroll > textarea {top:0;left:0;right:0;bottom:0;}
+.container{}
+.solution{ }
+
+#left{grid-area:left; overflow-y:auto;}
+#task{grid-area:task; }
+#task-text{height: 90%;}
+#solution-text{height: 90%;}
+#solution{grid-area:solu;}
+#rlist{grid-area:rlist; }
+#top{grid-area:top;}
+#grader{grid-area:grad;}
+#rules{grid-area:rule;}
+
+#grader{ position:relative; display:flex; flex-direction:column;justify-content: space-between;}
+#remark-text{width:98%; height:8vh;}
+
+#grader-control{ display:flex;flex-direction: row;flex-wrap: nowrap;justify-content: flex-start;}
+
+#rule-text {width:98%; height:8vh; font-size:9pt;resize: none;font-size:9pt;}
+#rules-controls {display:flex;flex-direction: row;flex-wrap: nowrap;justify-content: center;}
+
+#container{
+    display:grid;
+    /*grid-template-rows: 40vh 40vh;*/
+    grid-template-columns: 12vw 38vw 30vw 20vw;
+    grid-template-rows: auto 36vh  15vh 36vh;
+    /*grid-row-gap: 20px;*/ 
+    grid-column-gap: 0px; 
+    grid-template-areas:
+        "top  top top   top"
+        "left task task rlist"
+        "left grad rule rlist"
+        "left solu solu rlist"
+        ;
+}

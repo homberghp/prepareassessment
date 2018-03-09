@@ -1,53 +1,70 @@
-<form method='post' name='scoreForm' id='scoreForm' action='process.php'>
-<table width='100%'>
-  <tr>
-    <td valign='top' width='65%'><fieldset style='background:#ddF;font-family:verdana;font-size:10pt'>
-      <!--legend><?= $quest ?> (<?= $cand ?>) <?= $snippetfile ?></legend-->
-      <legend><span style='font-size:140%; font-weight:bold;background-color:#FFF'><?= $quest ?> (<?= 'EXAM'.$stick_nr ?>)</span> <?= $snippetfile
-      ?>&nbsp;<a href="<?=$workdir?>" target="_blank"><img
-      src='images/workbench-22x22.png' alt='workdir' border='0'/>Workdir</a></legend>
-    <div class ='scroll task' height='320px' >
-      <?=$snippetfile?>
-      <?php include "$snippetfile"; ?>
+
+<fieldset id='task' class='task'>
+    <legend id='task-legend' class='task' ><span id='stick-q-id' ><?= $quest ?>
+            (<?= 'EXAM'.$stick_nr ?>)</span> 
+        <input type='Radio' name='snippets' id='snippet' value=1 onclick="getMySnippetBy('snippet')" checked="checked"/>Snippet
+        <input type='Radio' name='snippets' id='complete'  value=0 onclick="getMySnippetBy('complete')" />Complete.
+        <span id='taskpathlabel'>some file text</span><a href="<?=$workdir?>" target="_blank"><img
+                src='images/workbench-22x22.png' alt='workdir'
+                border='0'/>Workdir</a>
+    </legend>
+    <div id='task-text' class='task scroll'>
+      <?=$task_text?>
     </div>
+    <br/>
+</fieldset>
+
+
+<form  id='grader' method='post' name='scoreForm' action='process.php'>
+    <fieldset id='grader-remark' class='grader'>
+        <legend>Notes on <b>EXAM<?=$stick_nr?></b>:<b><?=$quest?></b></legend>
+        <textarea id='remark-text' name='remark' class='grader scroll'><?= $remark ?></textarea>
     </fieldset>
-    </td>
-    <td rowspan='4' valign='top' >
-      <fieldset ><legend>Corrector&#39;s Remark per candidate*answer</legend>
-      <textarea name='remark' rows='10' cols='60'><?= $remark ?></textarea>
-      </fieldset>
-      <fieldset class='remarks'>
-      Remarks by <a href='cwb.php?rremarks=1'>quest</a>
-      <a href='cwb.php?rremarks=0'>cand</a>.<br/>
-      <?=$remarks?></fieldset>
-    </td>
-  </tr>
-  <tr>
-    <td valign='top'>
-    <div style='background:whitesmoke'>
-      <label style='font-weight:bold' for='score'>Score </label>
-      <input type='hidden' name='quest' value='<?= $quest ?>'/>
-      <input type='hidden' name='stick_event_repo_id' value='<?= $stick_event_repo_id ?>'/>
-      <input type='hidden' name='id' value='<?= $id ?>'/>
-      <?= $radio ?>
-      <input type='number' style='text-align:right;' 
-      placeholder='6.5' min="0" max="10.0" step="0.1" size='4' value='<?= $score ?>'
-      name='score' id='score' onchange="setScore(this.value)"/>
-      <button id='submitbutton' name ='submit'  type='submit'>Check</button>
-      <input type='reset'/><br/>
+    <div id='grader-control' class='grader'>
+        <label style='font-weight:bold' for='score'>Score </label>
+        <input type='hidden' name='quest' value='<?= $quest ?>'/>
+        <input type='hidden' name='stick_event_repo_id' value='<?= $stick_event_repo_id ?>'/>
+        <input type='hidden' name='id' value='<?= $id ?>'/>
+        <?= $radio ?>
+        <input type='number' class='number'  style='width:3em;' 
+               min="0" max="10.0" step="0.1" size='3' value='<?= $score ?>'
+               name='score' id='score' onchange="setScore(this.value)"/>
+        <button id='submitbutton' name ='submit'  type='submit' class='myButton'>Check</button>&nbsp;
+        <button type='reset' class='myReset'>reset</button>
     </div>
-    </td>
-  </tr>
-  <tr><td valign='top'><fieldset style='background:#dFd;font-family:verdana;font-size:10pt'><legend>Solution: <?= $solsnippetfile ?></legend>
-  <div class='scroll sol' height='320px'><?php include "$solsnippetfile"; ?></div>
-  </fieldset>
-  </td>
-</tr>
-<tr><td valign='top'><fieldset
-  style='background:#ddF;font-family:verdana;font-size:8pt'><legend>Grading
-  rules and remarks on question</legend>
-  <?=$correctionRemark?>
-  </fieldset></td></tr>
-</table>
 </form>
 
+<form  method='post' name='ruleForm' action='processrules.php' class='rules'>
+    <input type='hidden' name='quest' value='<?= $quest ?>'/>
+    <input type='hidden' name='stick_event_repo_id' value='<?= $stick_event_repo_id ?>'/>
+    <fieldset id='rules' class='rules'>
+        <legend class='rules'>Rules for <b><i><?=$quest?></i></b></legend>
+        <textarea id='rule-text' name='question_remark' class='scroll'><?=$question_remark?></textarea><br/>
+        <div id='rules-controls' class='rules'>
+            <button type='submit' name='rulesubmit' class='myButton'>Set Rule</button>&nbsp;<button type='reset' class='myReset'>reset</button>
+        </div>
+    </fieldset>
+</form>
+
+<fieldset id='solution' class='solution scroll'>
+    <legend class='solution'>Solution: <?= $solsnippetfile ?></legend>
+    <div id='solution-text' class='solution'>
+    <?php include "$solsnippetfile"; ?>
+    </div>
+</fieldset>
+
+<fieldset id='rlist' class='rlist'>
+    <h3 style='background-color: white;margin:0;padding:0;'>Remarks by <a href='cwb.php?rremarks=1'>quest</a>
+        <a href='cwb.php?rremarks=0'>cand</a>.<br/></h3>
+    <?=$remarks?>
+</fieldset>
+<input type='hidden' id='tasksnippetpath' value='<?=$tasksnippetpath?>'/>
+<input type='hidden' id='taskpath' value='<?=$taskpath?>'/>
+<input type='hidden' id='mysnippet' value='snippet'/>
+
+<script type='text/javascript' src='js/getsnippet.js'></script>
+<script>
+                   (function () {
+                       getMySnippet();
+                   })();
+</script>

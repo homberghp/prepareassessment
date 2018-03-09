@@ -1,0 +1,59 @@
+div.sol { overflow: auto;}
+*{padding:2px;margin:0;}
+li {display:inline; padding-right:5px;}
+/*li.quest {border-style: outset;}*/
+body{ background:white; font-family:verdana; }
+fieldset{padding: 1px;}
+td{padding:0;}
+.ln{ width:1em;font-size:8pt;}
+ul{}
+li.quest, legend { 
+    border-top: 1px solid black;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+    padding: 2px 3px 0 3px;
+    margin: 2px 2px 2px 2px;
+    text-shadow: 1px 1px 1px #FFF;
+    font-size:14px;
+   
+    z-index: -2;
+}
+li.quest{
+    background:#eee; border-bottom: 1px solid black;
+    float:left;
+}
+li.selected{ 
+    background:white; font-weight:bold;
+    border-top: 2px solid grey;
+    border-left: 2px solid grey;
+    box-shadow: rgba(0,0,80,0.3) 3px -3px 3px;
+    border-right: 2px solid grey;
+    border-bottom: 5px solid white;
+    margin-bottom: -3px;
+    z-index: 2;
+}
+.rlist{margin-top:15px;}
+#task-legend{font-family:verdana;font-size:10pt;  }
+#stick-q-id{ font-size:120%;
+             font-weight:bold;background-color:#FFF
+}
+
+.number { text-align:right; }
+#top{ border-bottom: 1px solid black; }
+/*.rlist{ background-color: beige;  }*/ 
+#remark-text{  }
+.task{background-color: #fee;}
+
+/*#grader{ background-color: #eeeeff;}*/
+.garder{z-index: 2;}
+legend.grader{background-color: #fee;}
+.solution{ margin-top:0px;background-color:#eFe;font-family:verdana; }
+.odd{ background:#FFF; font-size:12px; }
+.even{ background:#ccF; font-size:12px; }
+.rules{background:#cef;font-family:verdana;z-index: 2;}
+#taskpathlabel{font-weight: bold;}
+
+.ungraded{background-color: rgb(190,190,190);}
+.pass{background-color: rgb(200,255,200);}
+.fail{background-color: rgb(255,200,200);}
+.current{background-color: white;}

@@ -17,6 +17,7 @@ if (!isSet($_SESSION['snippets'])) {
   $snippets = $_SESSION['snippets'] = 1;
 }
 $rremarks=0;
+$stick_event_repo_id=0;
 if (!isSet($_SESSION['stick_event_repo_id']) || !isSet($_SESSION['quest']) || ! isSet($_SESSION['event']) || $event !== $_SESSION['event']) {
   $sql = "select min(question||':'||stick_event_repo_id) as next_qs from assessment_scores join candidate_stick using(stick_event_repo_id)\n"
       ."where event='{$event}' and question||':'||stick_event_repo_id > '{$quest}:{$stick_event_repo_id}'";
@@ -74,7 +75,10 @@ if ( !isSet($stick_event_repo_id) ) {
 <html>
     <head>
 
-     <link rel='stylesheet' type='text/css' href='style.css'/>
+     <link rel='stylesheet' type='text/css' href='css/style.css'/>
+     <link rel='stylesheet' type='text/css' href='css/layout.css'/>
+     <link rel='stylesheet' type='text/css' href='css/pulse.css'/>
+     <link rel='stylesheet' type='text/css' href='css/buttons.css'/>
         <script language='javascript'>
             function setScore( score ) {
                 document.getElementById('score').value=score;
@@ -88,29 +92,19 @@ if ( !isSet($stick_event_repo_id) ) {
         <title>Fontys Venlo Corrector&#8217;s work bench</title>
         <meta http-equiv='Window-target' content='top'/>
     </head>
-    <body style='padding:0' onload='setFocus()' >
+    <body style='padding:0;margin:0' onload='setFocus()' >
 	    
-        <form name="noofcommits" method="get" action="cwb.php" style='background:#ccf;display:inline'>
-					      Show: <input type='Radio' name='snippets' value=1 onclick="submit()" <?=(($_SESSION['snippets']!=0)? 'checked="checked"' : '')?>/>Snippets
-          <input type='Radio' name='snippets' value=0 onclick="submit()" <?=(($_SESSION['snippets']!=0)?'': 'checked="checked"')?>/>Complete files
-	  <input type='hidden' name='stick_event_repo_id' value='<?=$stick_event_repo_id?>' />
-	  <input type='hidden' name='quest' value='<?=$quest?>' />
-        </form>&nbsp;&nbsp;&nbsp;&nbsp;
-        <a href='http://osirix.fontysvenlo.org'><img src='images/home.png' border=0/>&nbsp;osirix home</a>
-        &nbsp;<strong><a href='results.php'>results</a></strong> oper=<?=$_SESSION['operator']?>
-        <table width="100%">
-            <tr><td colspan='3'>
-	      <?php require 'top.php'; ?>
-                </td>
-            </tr>
-            <tr>
-                <td width='220px' valign='top'>
-                    <?php include 'left.php' ?>
-                </td>
-                <td width='1600px'valign='top'>
-                    <?php include 'wb.php' ?>
-                </td>
-            </tr>
-        </table>
-    </body>
+<strong><?= $event ?> question <?=$quest?></strong>
+        <a href='/'><img src='images/home.png' border=0/>&nbsp;osirix home</a>
+        &nbsp;<strong><a href='results.php'>results</a></strong> oper=<?=$_SESSION['operator']?>&nbsp;</strong>
+<div id='container'>
+<div id='top'>
+<?php require_once 'top.php'; ?>
+</div><!-- top -->
+<div id='left'>
+  <?php require_once 'left.php' ?>
+</div><!--left-->
+    <?php require_once 'wb.php' ?>
+</div> <!-- container -->
+</body>
 </html>

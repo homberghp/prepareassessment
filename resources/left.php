@@ -20,31 +20,26 @@ function leftMenu($dbConn,$event,$quest,$stick){
   $left_idx=0;
   while ( !$resultSet->EOF ) {
     extract( $resultSet->fields );
-    $r=180; $g=180; $b=180;
+    $sclass='ungraded';
     $fweight='medium';
     if ( $score > 5.5 ) {
-      $g =255;
+      $sclass='pass';
     } else if ( $score >= 1.0 ) {
-      $r =255;
+      $sclass='fail';
     }
     if ( $stick == $stick_event_repo_id ) {
-      $r =255; $g=255; $b =255; 
+      $sclass='current';
       $fweight='bold';
     }
-    $style = "background-color:rgb({$r},{$g},{$b});font-weight:{$fweight};";
-    $gradestyle = 'font-weight:bold;';
-    if ( $grade < 5.5 ) {
-      $gradestyle .='color:c00;';
-    }
+    $style = "font-weight:{$fweight};";
     $remark_title ='';
     if ($remark && $remark !== '') {
       $remark_title =" title='{$remark}' style='background:white' class='pulse1'";
     }
     $snip=$_SESSION['snippets'];
-    $out .= "<tr style='$style'><td align='right' style='width:3em' title='{$operator}'>{$score}</td>"
+    $out .= "<tr style='{$style}' class='{$sclass}'><td align='right' style='width:3em' title='{$operator}'>{$score}</td>"
       . "<td><a href='cwb.php?stick_event_repo_id={$stick_event_repo_id}&quest={$quest}&snippets={$snip}'>" 
-      //         .   "$lastname, $firstname ($username)</a></td><th {$remark_title}>{$has_remark}</th><td style='$gradestyle'>{$grade}</td></tr>\n";
-      ."{$cand}</a>({$stick_event_repo_id})</td><th {$remark_title}>{$has_remark}</th><td style='$gradestyle'>{$grade}</td></tr>\n";
+      ."{$cand}</a>({$stick_event_repo_id})</td><th {$remark_title}>{$has_remark}</th><td >{$grade}</td></tr>\n";
     $resultSet->moveNext();
     $left_idx++;
   } return $out;
@@ -52,8 +47,8 @@ function leftMenu($dbConn,$event,$quest,$stick){
 $table=leftMenu($dbConn,$event,$quest,$stick_event_repo_id);
 
 ?>
-<table style='border-collapse: collapse; font-family:verdana;font-size:10pt;' border='1' width="220px">
-  <caption>Corrector: <?=$_SERVER['PHP_AUTH_USER']?></caption>
-    <tr><th><?=$quest?></th><th>USB Stick</th><th>R</th><th>fin</th></tr>
+<table style='border-collapse: collapse; font-family:verdana;font-size:10pt;' border='1' >
+  <caption><b><?=$quest?></b></caption>
+    <tr><th>grd</td><th>USB Stick</th><th>R</th><th>fin</th></tr>
     <?= $table ?>
 </table>

@@ -62,6 +62,7 @@ add you own properties, prefer names and values without white space, because
 white space will cause more harm then good. However, text that should be used
 verbatim for insertion into files will typically cause no problems.
 
+
 [[default.properties]]
 .default.properties (example for JAVA1, excerpt:)
 [source,shell]
@@ -79,6 +80,11 @@ module_repo=file:///home/modules/java1/svnroot
 finish_text=When ready, save all files, make a final commit, close the IDE and SHUTDOWN the computer BEFORE you unplug the stick.
 ----
 
+[IMPORTANT]
+====
+Make sure you commit the setup files to the repository too. While you are creating the sticks on one machine, the correction
+takes place on another, so the information on what sticks are being used is relevant in all phases of pre- and prost-processing.
+====
 
 [[setup.properties]]
 .setup.properties for JAVA1 assessment on 20161103 in dir `…​/20161103`:
@@ -92,10 +98,12 @@ is_netbeans_project=true
 ----
 
 [IMPORTANT]
+====
 In the current setup, the directory that is used on the preparation
 server reflects the names and structure of the stick. This means that
 the scripts use a global directory /home/exam and steps below will
 *DELETE ANY PREVIOUS SETUP OF OTHER ASSESSMENTS*.
+====
 
 === Preparing for one Assessment
 
