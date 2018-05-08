@@ -7,6 +7,12 @@ variants thereof can be reused. Such projects are placed under
 the directory `questions`. In our practice the assessment related
 resources are placed under `45_asssessment` like in the case of STA1:
 
+
+[NOTE]
+----
+All the command and scripts  below assume that you have an up to date `teambin` as well as `/home/prepareassessment/bin` in your PATH. This should be configured in your `.bashrc` file or the equivalent on your OS. On osirix, this done autmagically in the `/etc/bash.bashrc.local` file which included on every bash startup. 
+----
+
 [[source-tree-example]]
 .source  tree for STA1
 [source,shell]
