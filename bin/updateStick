@@ -8,8 +8,8 @@
 # 5. unmount
 
 debug=
-if [ -z $stickclass ] ; then
-    export stickclass=EXAM
+if [ -z $STICK_CLASS ] ; then
+    export STICK_CLASS=EXAM
 fi
 source stick_helpers.sh
 scriptdir=$(dirname $(readlink -f $0))
@@ -21,7 +21,7 @@ IFS=','
 
 num=${ininum}
 for d in $disks; do 
-    printf -v LABEL "${stickclass}%3.3d" ${num}
+    printf -v LABEL "${STICK_CLASS}%3.3d" ${num}
      ( updateDistro ${d} ${LABEL} )& 
     num=$((num+1))
 done

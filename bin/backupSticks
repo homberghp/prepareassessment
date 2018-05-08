@@ -1,0 +1,31 @@
+#!/bin/bash
+# harvest work from usb stick.
+# this script does not and should not clean the exam home dir.
+#
+# The logged in user, for who he sticks are auto mounted by udev.
+scriptdir=$(dirname $(readlink -f $0))
+me=${SUDO_USER}
+debug=
+if [ "root"  != "$USER" ]; then
+    echo must be root or sudo
+    exit 1
+fi
+backupdir=/home/exam/StickBackup-$(date +%Y%m%d)
+countSticks
+# mount all sticks
+mountSticks2.pl
+for i in /media/usb/home-rw-EXAM*; do 
+    stick=$(basename $i)
+    stick=${stick:8:7}
+    ${debug} mkdir -p ${backupdir}/${stick}
+	(
+	    ${debug} rsync -aq   ${i}/exam/ ${backupdir}/${stick}/
+	    echo backup $stick done 
+	) &
+done
+wait # for all children to return home
+sync # flush to disk
+# unmount all
+umount-sticks
+paplay ${scriptdir}/tng-picard-engage.ogg
+

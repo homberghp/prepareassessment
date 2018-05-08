@@ -10,7 +10,7 @@ function enumerateSticks(){
 	v=$(cat $d/device/vendor); v=${v// /} # trim spaces
 	m=$(cat $d/device/model); m=${m// /} # trim spaces
 	vm="$v $m"
-	if [[ $vm == 'SanDisk Extreme' ]] ; then 
+	if [[ $vm =~ ^'SanDisk Extreme'.* ]] ; then 
 #	    echo "'${vm}'"
 	    disk=$(basename $d)
 	    if [[ ${disks}a == a ]]; then disks="$disk"; else disks="$disks,$disk"; fi
@@ -25,8 +25,7 @@ partitionStick(){
     local parttablefile=${scriptdir}/part-16GB
     disk=$1
     local size=$(cat /sys/block/$disk/size)
-    size=$((512*${size}))
-    sizeid=${size:0:2}GB
+    local sizeid=$((512*${size}/(1000*1000*1000)))
     local parttablefile=${scriptdir}/part-16GB
     echo using ${sizeid} partition on device ${disk}
     echo \# zapping ${disk} size ${sizeid}
@@ -34,7 +33,7 @@ partitionStick(){
     echo done zapping
     sync
     sleep 1
-    parttablefile=${scriptdir}/part-${sizeid}
+    parttablefile=${scriptdir}/part-${sizeid}GB
     echo using part table ${parttablefile}
     cat ${parttablefile} | sfdisk -q --force /dev/${disk} # 2&>> sfdisk.log
     sync
@@ -47,10 +46,9 @@ partitionStick(){
 # @param disk id such as sdc 
 partitionStickalt(){
     disk=$1
-    size=$(cat /sys/block/$disk/size)
-    size=$((512*${size}))
-    sizeid=${size:0:2}GB
-    local bootblokfile=${scriptdir}/bootblk-${sizeid}.bin-new
+    local size=$(cat /sys/block/$disk/size)
+    local sizeid=$((512*${size}/(1000*1000*1000)))
+    local bootblokfile=${scriptdir}/bootblk-${sizeid}GB.bin-new
     ${debug} dd conv=fsync if=${bootblokfile} bs=1M of=/dev/${disk}
     sleep 1
     partprobe /dev/${disk}

@@ -8,8 +8,8 @@
 # 5. syslinux --install  /dev/sd?1
 # 6. mount vfat part to /media/hom/STICK-ID
 # 7. cp -r /home/ISO/. /media/hom/STICK-ID
-if [ -z $stickclass ] ; then
-    export stickclass=EXAM
+if [ -z $STICK_CLASS ] ; then
+    export STICK_CLASS=EXAM
 fi
 scriptdir=$(dirname $(readlink -f $0))
 ininum=100
@@ -75,7 +75,7 @@ sync
 
 num=${ininum}
 for d in $disks; do 
-    printf -v LABEL "${stickclass}%3.3d" $((${EXAMBASE}+${num}))
+    printf -v LABEL "${STICK_CLASS}%3.3d" $((${EXAMBASE}+${num}))
      ( prepaperStick ${d} ${LABEL} )& 
     num=$((num+1))
 done
@@ -85,7 +85,7 @@ echo done partioning sticks $disks
 # sync
 # num=${ininum}
 # for d in $disks; do 
-#     printf -v LABEL "${stickclass}%3.3d" $((${EXAMBASE}+${num}))
+#     printf -v LABEL "${STICK_CLASS}%3.3d" $((${EXAMBASE}+${num}))
 #      ( installToStick ${d} ${LABEL} )& 
 #     num=$((num+1))
 # done
