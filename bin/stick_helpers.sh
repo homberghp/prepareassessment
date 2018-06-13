@@ -102,7 +102,7 @@ cleanCasperRW(){
     local LABEL=$1
     local MOUNTPOINT=/media/usb/${LABEL}
     echo creating casper-rw file space for stick ${LABEL}
-    ${debug} dd if=/dev/zero of=${MOUNTPOINT}/casper-rw bs=1M count=1024
+    ${debug} dd if=/dev/zero of=${MOUNTPOINT}/casper-rw bs=1M count=1536
     echo initializing casper-rw file-system for stick ${LABEL}
     mkfs.ext2 -q -F ${MOUNTPOINT}/casper-rw
 }
@@ -128,19 +128,17 @@ installToStick() {
     local HOMEMOUNTPOINT=/media/usb/home-rw-${LABEL}
     local BOOTPART=/dev/${d}1
     local HOMEPART=/dev/${d}2
+
     ${debug} mkdir -p ${MOUNTPOINT} ${HOMEMOUNTPOINT}
     # mount partition 1
     ${debug} mount ${BOOTPART}  ${MOUNTPOINT}
     ${debug} mount ${HOMEPART}  ${HOMEMOUNTPOINT}
-    echo  start copy of ISO files to stick ${LABEL}
-    ${debug} cp -r /home/U14.04/ISO/{boot,casper,.disk,dists,EFI,install,md5sum.txt,pics,pool,preseed,README.diskdefines} ${MOUNTPOINT}
-    ${debug} cp -r /home/U14.04/ISO/isolinux ${MOUNTPOINT}/syslinux
+    cleanCasperRW ${LABEL} 
+    echo  start copy of ISO files to stick ${LABEL} using image from ${IMAGE_DIR}
+    ${debug} cp -r ${IMAGE_DIR}/ISO/{boot,casper,.disk,dists,EFI,install,md5sum.txt,pics,pool,preseed,README.diskdefines} ${MOUNTPOINT}
+    ${debug} cp -r ${IMAGE_DIR}/ISO/isolinux ${MOUNTPOINT}/syslinux
     echo  rename syslinux.cfg for stick ${LABEL}
     ${debug} mv ${MOUNTPOINT}/syslinux/{iso,sys}linux.cfg
-    echo creating casper-rw file space for stick ${LABEL}
-    ${debug} dd if=/dev/zero of=${MOUNTPOINT}/casper-rw bs=1M count=1024
-    echo initializing casper-rw file-system for stick ${LABEL}
-    mkfs.ext4 -q -F ${MOUNTPOINT}/casper-rw
 #    ${debug} syslinux --install /dev/${d}1
     ${debug} syslinux --stupid ${BOOTPART}
     echo installation for stick ${LABEL} done
@@ -148,7 +146,7 @@ installToStick() {
 	rm -fr  ${HOMEMOUNTPOINT}/{exam,sebi}
 	mkdir -p  ${HOMEMOUNTPOINT}/{exam,sebi}
 	tar -C ${HOMEMOUNTPOINT}/sebi -xzf skel.tgz
-	chown -R sebi:sebi ${HOMEMOUNTPOINT}/sebi
+	chown -R 1002:1002 ${HOMEMOUNTPOINT}/sebi
 	tar -C ${HOMEMOUNTPOINT}/exam -xzf skel.tgz
 	chown -R exam:exam ${HOMEMOUNTPOINT}/exam
     fi
