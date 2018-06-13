@@ -45,7 +45,7 @@ function score_by_category($event,$category,$tweight){
     ." from {$resultSet->fields['query']}\n"
     /* ." join candidate_stick cs using(stick_event_repo_id)\n" */
     /* ." join stick_event_repo using(stick_event_repo_id)\n" */
-    ." join student s using(snummer) \n"
+    ." left join student s using(snummer) \n"
     ." join assessment_final_score3 fs using(stick_event_repo_id) where category='{$category}' order by s.achternaam,s.roepnaam";
   //  echo $query;
   //  exit(0);
