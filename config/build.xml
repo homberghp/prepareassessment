@@ -22,8 +22,8 @@ Fontys Hogeschool voor Techniek en Logistiek, Venlo
        These are the targets to be executed.
   -->
     <target name="info">
-      <echo message="properties read"/>
-      <echoproperties/>
+      <!-- <echo message="properties read"/> -->
+      <!-- <echoproperties/> -->
     </target>
 
   <target name="preparetarget"
