@@ -84,7 +84,7 @@ function score_by_category($event,$category,$tweight){
 } // end function
 
 // sum weight
-$sql ="select sum(max_points) as tweight,category from assessment_questions where event='{$event}' group by category";
+$sql ="select sum(max_points) as tweight,category from assessment_questions where event='{$event}' group by category order by category";
 $resultSet = $dbConn->Execute( $sql );
 //echo $sql;
 $divs='';

@@ -15,7 +15,7 @@ include_once '/usr/local/prepareassessment/resources/setdb.php';
 if (isSet($_POST['rulesubmit']) && isSet($_POST['question_remark']) && isSet($_POST['quest'])) {
     $q = $quest = $_POST['quest'];
     $stk = $_POST['stick_event_repo_id'];
-    $question_remark = pg_escape_string($_POST['question_remark']);
+    $question_remark = htmlentities($_POST['question_remark']);
     $sql = <<<'SQL'
 insert into question_remark (event,question,remark) values($1,$2,$3) 
 on conflict(event,question) do update set remark=EXCLUDED.remark 
