@@ -48,12 +48,10 @@ repositories. There is a script for that, called `syncrepos`, which boils down t
 .syncrepos
 [source,bash]
 ----
-#!/bin/bash
-cd /home/exam/Desktop
-for i in examproject-EXAM*; do svn up ${i}; svn add $(find ${i} -name "*.java"); svn ci -m'harvesting ' ${i}; done
+include::../bin/syncrepos[]
 ----
 
-It is the line starting with `for` that does the trick.
+TODO: Add `teambin` to exam `$PATH` on sticky. 
 
 . Make a tar (or zip, if that is what you prefer) archives of both the repos and the sandboxes.
 
