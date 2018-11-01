@@ -51,7 +51,7 @@ repositories. There is a script for that, called `syncrepos`, which boils down t
 include::../bin/syncrepos[]
 ----
 
-TODO: Add `teambin` to exam `$PATH` on sticky. 
+TODO: Add `teambin` and/or `/home/prepareassessment/bin` to exam `$PATH` on sticky. 
 
 . Make a tar (or zip, if that is what you prefer) archives of both the repos and the sandboxes.
 
