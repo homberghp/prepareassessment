@@ -18,7 +18,7 @@ wait
 sync
 for i in /dev/sd{d..x}2; do 
     ( umount $i && \
-	(checkHomeRW $i || echo -e "\033[31;1mfs problems with $(dev2Label $i)\033[m" ) ) &
+	(checkHomeRW $i || createHomeRW $i || echo -e "\033[31;1mfs problems with $(dev2Label $i)\033[m" ) ) &
 done
 wait
 sync

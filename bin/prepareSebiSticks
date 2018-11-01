@@ -1,0 +1,6 @@
+#!/bin/bash
+export STICK_CLASS=EXAM
+export IMAGE_DIR=/home/U14.04-sebi
+source prepareSticks
+
+

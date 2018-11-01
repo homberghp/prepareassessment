@@ -50,7 +50,7 @@ repositories. There is a script for that, called `syncrepos`, which boils down t
 ----
 #!/bin/bash
 cd /home/exam/Desktop
-for i in examproject-EXAM*; do svn up ${i}; svn ci -m'harvesting ' ${i}; done
+for i in examproject-EXAM*; do svn up ${i}; svn add $(find ${i} -name "*.java"); svn ci -m'harvesting ' ${i}; done
 ----
 
 It is the line starting with `for` that does the trick.

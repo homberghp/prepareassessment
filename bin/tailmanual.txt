@@ -3,7 +3,7 @@
 if [ -e ../default.properties ] ; then
     source ../default.properties
 else 
-    echo "cannot find settings '../default.properties', please got to proper dir."
+    echo "cannot find settings '../default.properties', please cd to proper directory."
     exit 1
 fi
 exam_date=$(d=$(pwd);d=${d: -8}; d1=${d:0:4}; d2=${d:4:2}; d3=${d:6:2}; echo ${d1}-${d2}-${d3})

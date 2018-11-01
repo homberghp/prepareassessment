@@ -12,6 +12,9 @@ debug=
 if [ -z $STICK_CLASS ] ; then
     export STICK_CLASS=EXAM
 fi
+if [ -z $IMAGE_DIR]; then
+    export IMAGE_DIR=/home/customizer
+fi
 source stick_helpers.sh
 scriptdir=$(dirname $(readlink -f $0))
 ininum=100
