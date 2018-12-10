@@ -27,6 +27,7 @@ my $extension= $properties->getProperty('extension','c');
 
 my $validRegex='.+?\<editor-fold\s+defaultstate=\"expanded\"\s+desc=\"(\w+);\s+MAX\s+(\d+)';
 my $isNetbeansProject = $properties->getProperty('is_netbeans_project',0);
+my $isMoocProject= $properties->getProperty('is_mooc_project',1);
 
 if (! -d './examproject' ) {
   die "Missing exam project directory './examproject' . cannot continue \n";
@@ -35,6 +36,10 @@ if (! -d './examsolution' ) {
   die "Missing exam solution directory './examsolution' . cannot continue \n";
 }
 
+if ($isMoocProject != 0) {
+    print STDERR qq(\033[1;33mMooc project, no further checks are done\033[m\n);
+    exit(0);
+}
 
 if ($extension eq 'java' || $extension eq 'sql' || $extension eq 'R' ) {
     $validRegex='.+?\<editor-fold\s+defaultstate=\"expanded\"\s+desc=\"(\w+);.+?WEIGHT\s+(\d+)';

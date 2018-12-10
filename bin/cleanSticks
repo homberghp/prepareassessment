@@ -1,28 +1,41 @@
-#!/bin/bash
-mountSticks2.pl
-scriptdir=$(dirname $(readlink -f $0))
+#!/usr/bin/perl -w
+my ($cmd,$p1,$p2,$rootmp,$homemp,$stick,@parts);
+$cmd = '/sbin/blkid';
 
-me=${SUDO_USER}
-debug=
-source stick_helpers.sh
-if [ "root"  != "$USER" ]; then
-    echo must be root or in sudo process, sorry.
-    exit 1
-fi
+sub doCmd($);
+open(PROC,qq($cmd | grep EXAM|)) or die qq(cannot use blkid\n);
+while(<PROC>){
+    chomp;
+    (@parts)= split/\s+/;
+    if ($parts[0] =~ /^\/dev\/(sd.+)?:/ ) {
+	$p1=$1;
+	$stick=$parts[1];
+	$stick =~ m/LABEL="(.+)?"/;
+	$stick=$1;
+	print qq(dev $p1 $stick\n);
+	$p2=$p1;
+	$p2 =~ s/1$/2/;
 
-for i in /media/usb/home-rw-${STYPE}*; do 
-    LABEL=$(basename $i)
-    ( cleanCasperRW $LABEL ) &
-done
-wait
-sync
-for i in /dev/sd{d..x}2; do 
-    ( umount $i && \
-	(checkHomeRW $i || createHomeRW $i || echo -e "\033[31;1mfs problems with $(dev2Label $i)\033[m" ) ) &
-done
-wait
-sync
-# unmount all
-umount-sticks
-paplay ${scriptdir}/tng-picard-engage.ogg
+	# make mount points based on label
+	$rootmp=qq(/media/usb/${stick});
+	$homemp=qq(/media/usb/home-rw-${stick});
+	@cmd=('mkdir', '--parents', $rootmp);
+	doCmd(\@cmd);
+	@cmd=('mount', "/dev/${p1}", $rootmp);
+	doCmd(\@cmd);
+	@cmd=('mkfs.ext2', '-q', '-F', "$rootmp/casper-rw");
+	doCmd(\@cmd);
+	@cmd=('mkfs.ext2','-q','-L','home-rw',"/dev/${p2}");
+	doCmd(\@cmd);
+	@cmd=('umount', "/dev/${p1}");
+	doCmd(\@cmd);
+    }
+    @cmd=('paplay','/home/prepareassessment/bin/tng-picard-engage.ogg' );
+}
 
+exit(0);
+sub doCmd($){
+    my $aref=$_[0];
+    print qq(@$aref\n);
+    system(@cmd) == 0 or die "system @cmd failed $?\n";
+}

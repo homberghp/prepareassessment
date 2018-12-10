@@ -1,0 +1,96 @@
+#!/bin/bash
+# intialize a usb stick with a new exam set.
+# this script cleans the 'exam' user area on the usb stick.
+# 
+# The logged in user, for who he sticks are auto mounted by udev.
+scriptdir=$(dirname $(readlink -f $0))
+me=${SUDO_USER}
+debug=
+STYPE=EXAM
+stype=$(echo $STYPE | tr [:upper:] [:lower:])
+if [ "root"  != "$USER" ]; then
+    echo must be root or in sudo process, sorry.
+    exit 1
+fi
+if [ ! -e skel.tgz ]; then
+    echo -e "missing skel dir template 'skel.tgz';\n\t please make sure it (or a sym link) exists in the current dir."
+    exit 2;
+fi
+# chown sandbox stuff to exam uid:gid
+#chown -R 1001:1001 /exam/exam
+countSticks
+#rebind-usb.pl 
+mountSticks2.pl
+# for desktop stamp
+dir=$(basename $(pwd))
+datum=${dir:0:4}-${dir:4:2}-${dir:6:2}
+basetext="Fontys SEBI Venlo EXAM ${datum}"
+distro=U18.04-sticky
+pointsize=64
+imagein=/home/${distro}/FileSystem/usr/share/xfce4/backdrops/xubuntu-bionic.png
+# casper-rw mounted ad /media/usb/casper-rw-${STYPE}xxx
+# note that file system lives at /media/usb/casper-rw-${STYPE}xxx/upper/
+for i in /media/usb/home-rw-${STYPE}*; do 
+    stick=$(basename $i)
+    stick=${stick:8:7}
+    stickresources=EXAM200
+    if [ -d /home/exam/${stickresources}-repo ] ; then 
+    mountpoint=$i
+    rootfsmountpoint=/media/usb/casper-rw-${stick}/
+    homedir=${mountpoint}/${stype}
+    ( # clean exam disk, new initial and sync sandbox  
+	${debug} rm -fr  ${homedir}
+	${debug} mkdir -p ${homedir}
+	${debug} tar -C ${homedir} -xzf skel.tgz 
+	${debug} mkdir -p ${homedir}/{Pictures,Desktop}
+	${debug} chown -R ${stype}:${stype} ${homedir} 
+	${debug} rsync -aq /home/${stype}/${stickresources}-repo/ ${homedir}/${stickresources}-repo/
+	# ${debug} rsync -aq /home/${stype}/JavaLibs/ ${homedir}/JavaLibs/
+	# ${debug} rsync -aq /home/${stype}/.netbeans/ ${homedir}/.netbeans/
+	#  sandbox should have .svn child
+	${debug} rsync -aq /home/${stype}/Desktop/examproject-${stickresources}/ ${homedir}/Desktop/examproject-${stickresources}/
+	if [ ! -e ${rootfsmountpoint}/format ] ; then # work/work is Okay
+	    mkdir -p ${rootfsmountpoint}/{upper,work/work}
+	    cat -- <<EOF > ${rootfsmountpoint}/format
+# This records the union filesystem format used for this cow medium; do not delete or alter.
+UNIONFS=overlay
+EOF
+	else
+	    rm -fr ${rootfsmountpoint}/upper/var/log/*
+	fi
+	if [ -e rootfs.tgz ]; then 
+	    echo found rootfs payload, copying
+	    ${debug} tar -C ${rootfsmountpoint}/upper/ -xzf rootfs.tgz 
+	fi
+	${debug} mkdir -p ${rootfsmountpoint}/upper/usr/share/xfce4/backdrops/
+	#	${debug} cp /home/${stype}/Pictures/xubuntu-trusty-${stick}.jpg ${rootfsmountpoint}/upper/usr/share/xfce4/backdrops/fontys-backdrop.jpg
+	text="${basetext}\n${stick}"
+	imgout=${rootfsmountpoint}/upper/usr/share/xfce4/backdrops/fontys-backdrop.jpg
+	convert -size 1250x250 -pointsize ${pointsize} xc:none -gravity north \
+		-stroke black -strokewidth 2 -annotate 0 "${text}" \
+		-background none -shadow 100x3+0+0 +repage \
+		-stroke none -fill white -pointsize ${pointsize} -annotate 0 "${text}" \
+		${imagein}  +swap -gravity north  -geometry +0+320 \
+		-composite ${imgout}
+	echo primed stick ${stick}
+    ) &
+    else
+	echo warning: no sandbox for stick ${stick}
+    fi
+done
+echo waiting for all processes to complete
+wait
+echo waiting for all file writes to complete
+sync
+# unmount all
+for i in /media/usb/*; do 
+    ${debug} umount ${i}
+    ${debug} rm -fr ${i}
+done
+sync
+for i in /media/${me}/*; do 
+  ${debug}  umount ${i}
+  echo unmounted  ${i}
+done
+
+paplay ${scriptdir}/programisready.ogg

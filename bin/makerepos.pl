@@ -153,6 +153,11 @@ while ($stickcount < $examcount) {
 		  sed -re "s\@<name>(.*)?</name>\@<name>\\1-$uname</name>\@"  \$\{i\} > $projdir\$\{i/examproject\}
                   done
               );
+      print "## maven project\n";
+      print qq(\t\tfor i in \$\(find examproject -name pom.xml\); do 
+		  sed -re "s\@<name>(.*)?</name>\@<name>\\1-$uname</name>\@"  \$\{i\} > $projdir\$\{i/examproject\}
+                  done
+              );
     }
     if ( -x './transform' ) {
       print qq(./transform $projdir __STUDENT_ID__ '($uname)'\n);

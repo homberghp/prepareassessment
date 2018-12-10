@@ -94,7 +94,7 @@ labelParts(){
 # Clean the work partitions.
 # After multiple exams the casper-rw file system (which is in a file) 
 # could have filled up or be corrupted. Casper-rw contains /var which in turn contains
-# the log files, many dyynamic settings and the data persistens stuff of the database (postgres)
+# the log files, many dynamic settings and the data persistens stuff of the database (postgres)
 # When the file system appears empty, the init sequence of linux should reinitialize it on first boot.
 # Pre
 # @param disk label like EXAM123
@@ -107,6 +107,18 @@ cleanCasperRW(){
     mkfs.ext2 -q -F ${MOUNTPOINT}/casper-rw
 }
 
+fastCleanCasperRW(){
+    local LABEL=$1
+    local MOUNTPOINT=/media/usb/${LABEL}
+    # echo creating casper-rw file space for stick ${LABEL}
+    # ${debug} dd if=/dev/zero of=${MOUNTPOINT}/casper-rw bs=1M count=1536
+    
+    echo initializing casper-rw file-system for stick ${LABEL}
+    umount /media/usb/casper-rw-${LABEL}
+    
+    mkfs.ext2 -q -F ${MOUNTPOINT}/casper-rw
+}
+
 checkHomeRW(){
     local d=$1
     echo checking fs on ${d}
@@ -115,8 +127,13 @@ checkHomeRW(){
 
 createHomeRW(){
     local d=$1
-    echo checking fs on ${d}
+    echo creating fs on ${d}
     ${debug} mkfs.ext2 -q -L home-rw /dev/${d}2
+}
+freshHomeRW(){
+    local d=$1
+    echo creating fs on ${d}
+    ${debug} mkfs.ext2 -q -L home-rw ${d}
 }
 # install a linux live exam environment 
 # @param $1 disk like sdc or sdd
@@ -143,12 +160,17 @@ installToStick() {
     ${debug} syslinux --stupid ${BOOTPART}
     echo installation for stick ${LABEL} done
     if [ -e skel.tgz ] ; then
-	rm -fr  ${HOMEMOUNTPOINT}/{exam,sebi}
-	mkdir -p  ${HOMEMOUNTPOINT}/{exam,sebi}
-	tar -C ${HOMEMOUNTPOINT}/sebi -xzf skel.tgz
-	chown -R 1002:1002 ${HOMEMOUNTPOINT}/sebi
-	tar -C ${HOMEMOUNTPOINT}/exam -xzf skel.tgz
-	chown -R exam:exam ${HOMEMOUNTPOINT}/exam
+	rm -fr  ${HOMEMOUNTPOINT}/*
+	if [[ ${LABEL:0:4} = 'EXAM' ]] ; then
+	    mkdir -p  ${HOMEMOUNTPOINT}/exam
+	    tar -C ${HOMEMOUNTPOINT}/exam -xzf skel.tgz
+	    chown -R exam:exam ${HOMEMOUNTPOINT}/exam
+	else
+	    mkdir -p  ${HOMEMOUNTPOINT}/sebi
+	    tar -C ${HOMEMOUNTPOINT}/sebi -xzf skel.tgz
+	    chown -R 1002:1002 ${HOMEMOUNTPOINT}/sebi
+	fi
     fi
     umount ${BOOTPART} ${HOMEPART}
+    echo installation for stick ${LABEL} done
 }
