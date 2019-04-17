@@ -10,7 +10,8 @@ Fontys Hogeschool voor Techniek en Logistiek, Venlo
 <project name="exaprojectbuild" default="donetbeans" basedir=".">
   <!-- most, if not all properties can be set in build.properties
        Must read them before any override. -->
-  <property environment="env"/>
+<property name="codestripper.classpath" location="/home/prepareassessment/config/codestripper.jar"/>  
+<property environment="env"/>
   <property file="${env.PWD}/../default.properties"/>
   <property file="${env.PWD}/build.properties"/>
   <property name="solutiondir" 
@@ -89,7 +90,7 @@ Fontys Hogeschool voor Techniek en Logistiek, Venlo
 	  description="code strip java source files">
     <taskdef name="codestripper"
              classname="org.fontysvenlo.codestripper.CodeStripper"
-             classpath="/usr/shared/ant/lib/codestripper.jar" />
+             classpath="${codestripper.classpath}" />
     <codestripper todir="${targetdir}"
 		  dir="${solutiondir}"
 		  deletelines="true"
@@ -102,7 +103,7 @@ Fontys Hogeschool voor Techniek en Logistiek, Venlo
 	  description="code strip java source files">
     <taskdef name="codestripper"
              classname="org.fontysvenlo.codestripper.CodeStripper"
-             classpath="/usr/shared/ant/lib/codestripper.jar" />
+             classpath="${codestripper.classpath}" />
     <codestripper todir="${targetdir}"
 		  dir="${solutiondir}"
 		  deletelines="true"
@@ -117,7 +118,7 @@ Fontys Hogeschool voor Techniek en Logistiek, Venlo
 	  description="code strip r source files">
     <taskdef name="codestripper"
              classname="org.fontysvenlo.codestripper.CodeStripper"
-             classpath="/usr/shared/ant/lib/codestripper.jar" />
+             classpath="${codestripper.classpath}" />
     <codestripper todir="${targetdir}"
 		  dir="${solutiondir}"
 		  starttag="#\s*?Start Solution.*?"
@@ -132,7 +133,7 @@ Fontys Hogeschool voor Techniek en Logistiek, Venlo
 	  description="code strip sql source files">
     <taskdef name="codestripper"
              classname="org.fontysvenlo.codestripper.CodeStripper"
-             classpath="/usr/shared/ant/lib/codestripper.jar" />
+             classpath="${codestripper.classpath}" />
     <codestripper todir="${targetdir}"
 		  dir="${solutiondir}"
 		  deletelines="true"

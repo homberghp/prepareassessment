@@ -25,9 +25,10 @@ mountSticks2.pl
 dir=$(basename $(pwd))
 datum=${dir:0:4}-${dir:4:2}-${dir:6:2}
 basetext="Fontys SEBI Venlo EXAM ${datum}"
-distro=U14.04
+distro=U18.04-sticky
 pointsize=64
-imagein=/home/${distro}/FileSystem/usr/share/xfce4/backdrops/xubuntu-trusty.png
+imagein=/home/${distro}/FileSystem/usr/share/xfce4/backdrops/xubuntu-bionic.png
+
 # casper-rw mounted ad /media/usb/casper-rw-${STYPE}xxx
 # note that file system lives at /media/usb/casper-rw-${STYPE}xxx/upper/
 for i in /media/usb/home-rw-${STYPE}*; do 
@@ -45,7 +46,7 @@ for i in /media/usb/home-rw-${STYPE}*; do
 	${debug} mkdir -p ${homedir}/{Pictures,Desktop}
 	${debug} chown -R ${stype}:${stype} ${homedir} 
 	${debug} rsync -aq /home/${stype}/${stick}-repo/ ${homedir}/${stick}-repo/
-	# ${debug} rsync -aq /home/${stype}/JavaLibs/ ${homedir}/JavaLibs/
+	# ${debug} rsync -aq /home/${stype}/Library/ ${homedir}/Library/
 	# ${debug} rsync -aq /home/${stype}/.netbeans/ ${homedir}/.netbeans/
 	#  sandbox should have .svn child
 	${debug} rsync -aq /home/${stype}/Desktop/examproject-${stick}/ ${homedir}/Desktop/examproject-${stick}/

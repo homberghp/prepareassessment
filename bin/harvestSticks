@@ -18,15 +18,17 @@ mountSticks2.pl
 for i in /media/usb/home-rw-EXAM*; do 
     stick=$(basename $i)
     stick=${stick:8:7}
-    if [ -d ${sandbox}/examproject-${stick} ] ; then 
+    # if [ -d ${sandbox}/examproject-${stick} ] ; then 
 	(
+		mkdir -p ${sandbox}/examproject-${stick}/
+		mkdir -p ${reposroot}/${stick}-repo/
 	    ${debug} rsync -aq   ${i}/exam/Desktop/examproject-${stick}/ ${sandbox}/examproject-${stick}/
 	    ${debug} rsync -aq   ${i}/exam/${stick}-repo/ ${reposroot}/${stick}-repo/
 	    echo harvest $stick done 
 	) &
-    else
-	echo "warning: no sandbox at ${sandbox} for stick ${stick}"
-    fi
+    # else
+    #	echo "warning: no sandbox at ${sandbox} for stick ${stick}"
+    # fi
 done
 wait # for all children to return home
 sync # flush to disk
