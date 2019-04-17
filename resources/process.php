@@ -15,7 +15,7 @@ if (isSet($_POST['submit']) && isSet($_POST['stick_event_repo_id']) && isSet($_P
     $score = $_POST['score'];
     $quest = $_POST['quest'];
     $stick_event_repo_id = $_POST['stick_event_repo_id'];
-    $remark = pg_escape_string($_POST['remark']);
+    $remark = htmlentities($_POST['remark']);
     $operator = $_SERVER['PHP_AUTH_USER'];
     $sql = <<<'SQL'
 update assessment_scores set score = $1,

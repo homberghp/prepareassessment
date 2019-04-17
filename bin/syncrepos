@@ -1,3 +1,8 @@
 #!/bin/bash
 cd /home/exam/Desktop
-for i in examproject-EXAM*; do svn up ${i}; svn ci -m'harvesting ' ${i}; done
+# for mooc, make sure all java files are added
+for i in examproject-EXAM*; do
+    svn up ${i};
+    svn add $(find ${i} -name "*.java");
+    svn ci -m'harvesting ' ${i};
+done
