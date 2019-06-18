@@ -180,7 +180,7 @@ set of repositories, you will have to remove those repositories first. Otherwise
  Typically the skeleton tar file is stored under _/home/prepareassessment/data_ and will have a name revealing its creation date. Typically, using the latest is just fine.
 
 [[example-skel-link]]
-.example skelleton link
+.example skeleton link
 [source,shell]
 ----
 ln -sf /home/prepareassessment/data/skel20161018.tgz skel.tgz

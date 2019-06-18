@@ -37,10 +37,19 @@ In fact you are duplicating the path or dir declaration with *test* added.
 
 
 === External Libraries.
+
+
+Updated for maven projects.
+
+Maven projects are the way to go. To make the maven based project work on the usb sticks,
+. Build the project using maven (command line), including building the javadoc as exam user on the exam prep workstation. +
+  This ensures that all maven stuff is downloaded the the local repository.
+. copy (rsync) the [greem]`/home/exam/.m2` directory into the skeleton file.
+
+For ant based netbeans projects, please read on.
+
+
 Add to `${HOME}/Library` and create NetBeans-IDE Library with a well known name.
-
-
-TODO: update for maven project.
 
 In some projects, external (non standard to the NetBeans installation) libraries are needed, examples are
 Mockito for testing or a modern PostgreSQL jdbc driver like version 42. It is best practice to declare well known names for these 'NetBeans' libraries and install them on the stick, such that the definition on the stick lets these well known names refer to the installed libs.
@@ -56,8 +65,11 @@ If for instance you need to add PostgreSQL42 as a Library,  add to following
 
 ````
 ----
-, then in netbeans, make the Library refer to those elements. Note that Netbeans requires absolute paths here, so if you are preparing, you may want to use */home/exam* as the parent of Library instead of your own home dir. +
+
+Then in netbeans, make the Library refer to those elements.
+Note that Netbeans requires absolute paths here, so if you are preparing, you may want to use */home/exam* as the parent of Library instead of your own home dir. +
 Avoid spaces in library names, they cause problems with portability.
 
 The updated Libary should then be merged into the skeleton file, so  that Library is available to the exam user. +
-Typically: unpack the skel, rsync the library stuff and the netbeans config directory and repack (with new name). In the exam build dierctory, sym-link to the proper skel.tgz file and version.
+Typically: unpack the skel, rsync the library stuff and the netbeans config directory and repack (with new name).
+In the exam build directory, sym-link to the proper skel.tgz file and version.

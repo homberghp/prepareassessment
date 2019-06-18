@@ -22,7 +22,7 @@ In most cases the some well know and unique text can be substituted with the req
   or a combination thereof.
 
 In a file like uxf of umlet, you simply could add the text a e.g. the top left corner.
-That would look this picture in umlet or in svg image:images/umletexample.svg[].
+That would look this picture in umlet or in svg image:umletexample.svg[].
 
 .example for DBS1:
 [source,sql]
