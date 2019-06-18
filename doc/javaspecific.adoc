@@ -39,6 +39,9 @@ In fact you are duplicating the path or dir declaration with *test* added.
 === External Libraries.
 Add to `${HOME}/Library` and create NetBeans-IDE Library with a well known name.
 
+
+TODO: update for maven project.
+
 In some projects, external (non standard to the NetBeans installation) libraries are needed, examples are
 Mockito for testing or a modern PostgreSQL jdbc driver like version 42. It is best practice to declare well known names for these 'NetBeans' libraries and install them on the stick, such that the definition on the stick lets these well known names refer to the installed libs.
 
