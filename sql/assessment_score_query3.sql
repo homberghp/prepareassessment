@@ -1,3 +1,4 @@
+-- Pieter van den Hombergh
 begin work;
 drop function if exists assessment_score_def(text,char(1));
 drop function if exists assessment_column_names(text,char(1));
