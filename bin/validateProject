@@ -16,8 +16,18 @@ my $defexam_date ="$1-$2-$3";
 
 open PROPS, "<../default.properties" or die "unable to open setup file";
 
-my $properties = new Config::Properties();
-$properties->load(*PROPS);
+
+my $defproperties = new Config::Properties();
+$defproperties->load(*PROPS);
+close(PROPS);
+my $properties = new Config::Properties(defaults=>$defproperties);
+
+if ( -f 'setup.properties') {
+  open PROPS, "<setup.properties" or die "unable to open setup.properties file\n";
+  $properties->load(*PROPS);
+  close(PROPS);
+}
+
 my $module_name =$properties->getProperty('module_name','SEN1');
 my $exam_date = $properties->getProperty('exam_date',$defexam_date);
 my $exam_year = substr($exam_date,0,4);
@@ -27,7 +37,7 @@ my $extension= $properties->getProperty('extension','C');
 
 my $validRegex='.+?\<editor-fold\s+defaultstate=\"expanded\"\s+desc=\"(\w+);\s+MAX\s+(\d+)';
 my $isNetbeansProject = $properties->getProperty('is_netbeans_project',0);
-my $isMoocProject= $properties->getProperty('is_mooc_project',1);
+my $isMoocProject= $properties->getProperty('is_mooc_project',0);
 
 if (! -d './examproject' ) {
   die "Missing exam project directory './examproject' . cannot continue \n";
@@ -40,11 +50,12 @@ if ($isMoocProject != 0) {
     print STDERR qq(\033[1;33mMooc project, no further checks are done\033[m\n);
     exit(0);
 }
-my $extensionRegex=qq((java));
+
+my $extensionRegex=qq(java);
 
 
 if ($extension eq 'java' || $extension eq 'sql' || $extension eq 'R' || $extension eq 'C'  ) {
-    $validRegex='.+?\<editor-fold\s+defaultstate=\"expanded\"\s+desc=\"(\w+);.+?WEIGHT\s+(\d+)';
+    $validRegex='.+?\<editor-fold\s+defaultstate=\"expanded\"\s+desc=\"(\w+)\s?;.+?WEIGHT\s+(\d+)';
 #    $validRegex='.+?\<editor-fold\s+defaultstate=\"expanded\"\s+desc=\"(\w+);\s+MAX\s+(\d+)';
 } elsif ( $extension eq 'odt'){
     # all is well for candidate generated odt files
@@ -54,9 +65,18 @@ if ($extension eq 'java' || $extension eq 'sql' || $extension eq 'R' || $extensi
 }
 
 if ( $extension eq 'C'  ) {
-    $extensionRegex=qq((c|cpp|h|check));
+  $extensionRegex=qq((c|cpp|h|check));
+} elsif ($extension eq 'java') {
+  $extensionRegex=qq(java);
+} elsif ($extension eq 'sql') {
+  $extensionRegex=qq(sql);
+} elsif ($extension eq 'R') {
+  $extensionRegex=qq(R);
 }
 
+print STDERR qq(validregex = ${validRegex}
+extensionRegex=${extensionRegex}
+);
 # my %questionHash;
 # my %doubleHash;
 my (@names,$file);
@@ -79,7 +99,7 @@ sub walk($){
       &walk($path);
       next;
     } 
-    if ( -f $path && $path =~ m/${extensionRegex}$/) { # is this a file named "*.extension"?
+    if ( -f $path && $path =~ m/\.${extensionRegex}$/) { # is this a file named "*.extension"?
 #      print STDERR "found one: $path\n";
       open(FILE,"<$path") or die "cannot open file $path\n";
       my $lineCounter=0;

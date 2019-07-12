@@ -49,6 +49,10 @@ for i in /media/usb/home-rw-${STYPE}*; do
 	# ${debug} rsync -aq /home/${stype}/Library/ ${homedir}/Library/
 	# ${debug} rsync -aq /home/${stype}/.netbeans/ ${homedir}/.netbeans/
 	#  sandbox should have .svn child
+	# any Desktop stuff, like exam specific docs
+	if [ -d ./Desktop ]; then
+	    rsync -aq ./Desktop/ ${homedir}/Desktop/
+	fi
 	${debug} rsync -aq /home/${stype}/Desktop/examproject-${stick}/ ${homedir}/Desktop/examproject-${stick}/
 	if [ ! -e ${rootfsmountpoint}/format ] ; then # work/work is Okay
 	    mkdir -p ${rootfsmountpoint}/{upper,work/work}
