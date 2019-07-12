@@ -1,0 +1,44 @@
+/** #header{ margin: 250px auto 0 auto ;}*/
+h1{ padding: 6.5em 1em;background-image: url(fontys614x345.jpg);    background-repeat: no-repeat; background-size: 100%;
+    no-repeat; width:100%; letter-spacing:.1em; color:#white; font-weight: bolder;}
+#footer{height:80px;background-image:url('fontys-wit.svg');background-repeat: no-repeat; background-position:bottom right; background-size: 100px;}
+#preamble{ position: relative;}
+#header {
+  /* position: absolute;
+  top:0px; left:2rem; */
+}
+#header h1:first-child{
+  position:relative;
+  margin-top:0em;
+  padding:0em 2em 2em 1em;
+  width:100%;
+  text-align:center;
+  color:white;
+  /* box-shadow: 3px 3px 3px 3px rgba(0, 0, 0, .2); */
+  text-shadow: 2px 4px 3px rgba(0,0,0,0.5);
+}
+#main-menu td {text-decoration: none; text-align:center; font-style:bolder; background-color:#EEE;}
+  /* -webkit-box-shadow: 2px 8px 6px -6px black;
+	   -moz-box-shadow: 2px 8px 6px -6px black;
+	        box-shadow: 2px 8px 6px -6px black;
+} */
+#main-menu table {border-width: 0px;poistion:aboslute; top:0;}
+#main-menu td :hover {background-color:white; text-align:center;}
+#main-menu th {background-color:white; }
+
+       /* -webkit-box-shadow: inset 3px 1px #aaa;
+          -moz-box-shadow: inset 3px 1px #aaa;
+               box-shadow: inset 3px 1px #aaa;
+} */
+#main-menu th > p {text-align: center;}
+#main-menu a {text-decoration: none;}
+.admonitionblock {
+  border: solid 1px;
+  border-radius: 5px;
+}
+
+.tip {background:#ddffdd; border-color: green;}
+.note {background: #bbddff; border-color: darkblue;}
+.caution{ background: #ffeeee;}
+/* .main-menu > :hover {text-decoration: none; font-style:bolder;} */
+/* #toc.toc2{background-image:url('fontys.svg');background-repeat: no-repeat; background-position:left bottom; background-size: 100%;} */

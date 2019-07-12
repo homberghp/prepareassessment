@@ -1,9 +1,10 @@
 = USING SEBI Venlo Assessment Environment
-Pieter van den Hombergh <p.vandenhombergh@fontys.nl>
-Version 0.2 2017-02-16
+Pieter van den Hombergh (p.vandenhombergh@fontys.nl)
+Version 0.4 2019-06-18
 :toclevels: 3
-:toc: left
+:toc: right
 :icons: font
+:source-highlighter: coderay
 :keywords: USB Performance assessment SEBI Venlo
 :numbered:
 

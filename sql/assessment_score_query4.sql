@@ -1,4 +1,3 @@
--- Pieter van den Hombergh
 begin work;
 drop function if exists assessment_score_def(text,char(1));
 drop function if exists assessment_column_names(text,char(1));
@@ -27,7 +26,7 @@ begin
 end;
 $assessment_score_def$ language 'plpgsql';
 
-create or replace function assessment_score_query3( myevent text, mycategory char(1)) returns text
+create or replace function assessment_score_query4( myevent text, mycategory char(1)) returns text
 as $assessment_score_query3$
 declare
   th1 text;
@@ -44,7 +43,6 @@ begin
   join assessment_scores assc using(event,stick_event_repo_id)
   join assessment_questions qst using(event,question)
   join candidate_stick cs using(stick_event_repo_id)
-  join student using(snummer)
   where car.event='''''||myevent||''''' and qst.category='''''||mycategory||''''' order by stick_nr,question'',
   ''select question from assessment_questions aqs where aqs.event='''''||myevent||''''' and aqs.category='''''||mycategory||''''' order by question''
   ) as ct('||th1||') ';
@@ -52,8 +50,8 @@ begin
 end; $assessment_score_query3$ 
 language 'plpgsql';
 \a
-select * from assessment_score_def('STA120160129','1') ;
-select * from assessment_score_query3('STA120160129','1') ;
+select * from assessment_score_def('STA120180115','1') ;
+select * from assessment_score_query4('STA120180115','1') ;
 
 commit;
 

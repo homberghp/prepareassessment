@@ -48,6 +48,7 @@ delete from candidate_stick cs
 insert into candidate_stick 
    with ser as (select stick_event_repo_id,stick_nr from stick_event_repo where event='$event') 
       select ser.stick_event_repo_id,snummer from ser join sticks_tmp using(stick_nr);
+delete from stick_event_repo where event='$event' and stick_nr not in (select stick_nr from sticks_tmp);
 select * from stick_event_repo join candidate_stick using(stick_event_repo_id) where event='$event';
 commit;\n
 

@@ -9,7 +9,7 @@ resources are placed under `45_asssessment` like in the case of STA1:
 
 
 [NOTE]
-All the command and scripts  below assume that you have an up to date `teambin` as well as `/home/prepareassessment/bin` in your PATH. This should be configured in your `.bashrc` file or the equivalent on your OS. On osirix, this done automagically in the `/etc/bash.bashrc.local` file which included on every bash startup. 
+All the command and scripts  below assume that you have an up to date `teambin` as well as `/home/prepareassessment/bin` in your PATH. This should be configured in your `.bashrc` file or the equivalent on your OS. On osirix, this done automagically in the `/etc/bash.bashrc.local` file which included on every bash startup.
 
 
 [[source-tree-example]]
@@ -127,7 +127,7 @@ Preparing for an assessment involves:
   be created.
 * Add the exam questions and solutions. The convention is to put this
   information in a script file called *doexports* to be executed as
-  normal user with `./doexports`. For JAVA assessment this typically
+  normal user with [red,bold]`./doexports`. For JAVA assessment this typically
   involves creating a somewhat complete script, specific to one assessment.
   For *DBS* and *STA*
   assessments, the question information is in a file called
@@ -135,7 +135,7 @@ Preparing for an assessment involves:
   does an svn checkout and does NOT use the local sandbox, to ensure
   that the exam questions as used in the exam are also versioned in
   the repository.
-* Execute the ./doexports`, which should result in the folders *examsolution* and
+* Execute the [red,bold]`./doexports`, which should result in the folders *examsolution* and
   an *examproject* , the later being the sub-directory containing all the
   information to be placed on the stick and imported into the
   student/stick specific repositories. The script not only checks out the exam exercises
@@ -146,19 +146,27 @@ Preparing for an assessment involves:
   tools that students use in the assessment (netbeans, r-studio or
   pgadmin, simple editor) to verify that.
 
+
 * Create the repositories. For that we have a script called
-  `makerepos.pl` which uses the information described previously. The
+  [red,bold]`makerepos.pl` which uses the information described previously. The
   script does not directly create the repositories, but rather outputs
   script text that will. This script is a bash source text, which is conventionally
   redirected to _doit.sh_. Rationale is that the shell text is
   potentially destructive, and must be executed with elevated (sudo)
   rights.
- . Do `makerepos.pl > doit.sh`
+
+[CAUTION,role="red"]
+====
+Note that if your repositories (numbers) overlap with an already existing
+set of repositories, you will have to remove those repositories first. Otherwise running doit.sh will have null effect.
+====
+
+ . Do [red,bold]`makerepos.pl > doit.sh`
  . The script does some last validation checks on the examproject,
   such as how many questions are involved and that the question id tags
   are unique. This information is output via stderr, so that you will see it
   even if you redirect the normal output to doit.sh as in the above example.
- . Then do `sudo bash doit.sh` and have a little patience, as doit.sh
+ . Then do [red,bold]`sudo bash doit.sh` and have a little patience, as doit.sh
  will create *a repository per stick*, imports the examproject in each of
  them and then will checkout said repository in a sandbox per
  candidate on the "Desktop" of each stick. This can take a few
@@ -172,7 +180,7 @@ Preparing for an assessment involves:
  Typically the skeleton tar file is stored under _/home/prepareassessment/data_ and will have a name revealing its creation date. Typically, using the latest is just fine.
 
 [[example-skel-link]]
-.example skelleton link
+.example skeleton link
 [source,shell]
 ----
 ln -sf /home/prepareassessment/data/skel20161018.tgz skel.tgz
@@ -190,7 +198,7 @@ the stick at the same time. Note that the examproject and the prompt in the term
 
 This step should be executed in the assessment builds sub-directory such as `…​/builds/20161103.`
 
-The script to execute is `primeSticks` , which takes no arguments and
+The script to execute is [red,bold]`primeSticks` , which takes no arguments and
 must be executed with elevated privileges, because it copies files and
 changes ownership to the exam user (on the stick as well as on the
 preparation workstation).

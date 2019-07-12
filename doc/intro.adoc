@@ -1,6 +1,6 @@
 == Intro
 
-image::images/SDCZ80.jpg[Table Card,200,role="related thumb left",title="default USB stick"]
+image::SDCZ80.jpg[Required USB Stick,200,role="related thumb left",title="default USB stick"]
 
 This document describes how to use the script collection to prepare
 and correct a SEBI Venlo performance assessment using USB sticks with
