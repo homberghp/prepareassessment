@@ -25,7 +25,7 @@ while(<PROC>){
 	doCmd(\@cmd);
 	@cmd=('mkfs.ext2', '-q', '-F', "$rootmp/casper-rw");
 	doCmd(\@cmd);
-	@cmd=('mkfs.ext2','-q','-L','home-rw',"/dev/${p2}");
+	@cmd=('mkfs.ext2','-q','-F','-L','home-rw',"/dev/${p2}");
 	doCmd(\@cmd);
 	@cmd=('umount', "/dev/${p1}");
 	doCmd(\@cmd);
