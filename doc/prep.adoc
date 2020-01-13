@@ -239,9 +239,7 @@ $
 
 There is also a youtube demo:
 
-video::3xv3IHg51xk[youtube,title="preparing sticks in batches", width=848, height=480]
-
-// image:images/youtube.png[alt="youtube", title="prime sticks demo" ,link="https://www.youtube.com/watch?v=3xv3IHg51xk"]
+video::3xv3IHg51xk[youtube,title="Preparing sticks in batches", width=848, height=480]
 
 It proved to be practical to use a random sample stick from the ones
 of the first batch to boot a test laptop, to see if indeed all that
@@ -249,11 +247,13 @@ is needed, and no more, is on the sample stick. If not, revisit the
 previous steps. If it is okay, continue for the remaining batches.
 
 [TIP]
+====
 To be on the safe side, and because of the warning before, make a
 (tar) backup of both the repositories under /home/exam named
 EXAMxyz-repo and all sandboxes under
 /home/exam/Desktop/examproject-EXAMxyz. Convention: name the tar files
 after the exam, e.g. JAVA120161103-repo.tgz and
 JAVA120161103-sandboxes.tgz
+====
 
 Once you have primed all sticks, you are ready to rock/exam.
