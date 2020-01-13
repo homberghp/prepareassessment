@@ -27,7 +27,7 @@ my $extension= $properties->getProperty('extension','c');
 
 my $validRegex='.+?\<editor-fold\s+defaultstate=\"expanded\"\s+desc=\"(\w+);\s+MAX\s+(\d+)';
 my $isNetbeansProject = $properties->getProperty('is_netbeans_project',0);
-my $isMoocProject= $properties->getProperty('is_mooc_project',1);
+my $isMoocProject= $properties->getProperty('is_mooc_project',0);
 
 if (! -d './examproject' ) {
   die "Missing exam project directory './examproject' . cannot continue \n";

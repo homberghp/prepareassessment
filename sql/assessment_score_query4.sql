@@ -1,7 +1,7 @@
 begin work;
 drop function if exists assessment_score_def(text,char(1));
 drop function if exists assessment_column_names(text,char(1));
-drop function if exists assessment_score_query3(text,char(1));
+drop function if exists assessment_score_query4(text,char(1));
 
 create or replace function assessment_score_def (myevent text, mycategory char(1)) returns text
 as $assessment_score_def$
@@ -27,7 +27,7 @@ end;
 $assessment_score_def$ language 'plpgsql';
 
 create or replace function assessment_score_query4( myevent text, mycategory char(1)) returns text
-as $assessment_score_query3$
+as $assessment_score_query4$
 declare
   th1 text;
   th2 text;
@@ -47,7 +47,7 @@ begin
   ''select question from assessment_questions aqs where aqs.event='''''||myevent||''''' and aqs.category='''''||mycategory||''''' order by question''
   ) as ct('||th1||') ';
   return th2;
-end; $assessment_score_query3$ 
+end; $assessment_score_query4$ 
 language 'plpgsql';
 \a
 select * from assessment_score_def('STA120180115','1') ;
