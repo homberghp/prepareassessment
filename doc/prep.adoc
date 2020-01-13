@@ -237,7 +237,11 @@ sandbox prepared.
 $
 ----
 
-There is also a youtube demo: image:images/youtube.png[alt="youtube", title="prime sticks demo" ,link="https://www.youtube.com/watch?v=3xv3IHg51xk"]
+There is also a youtube demo:
+
+video::3xv3IHg51xk[youtube,title="preparing sticks in batches", width=848, height=480]
+
+// image:images/youtube.png[alt="youtube", title="prime sticks demo" ,link="https://www.youtube.com/watch?v=3xv3IHg51xk"]
 
 It proved to be practical to use a random sample stick from the ones
 of the first batch to boot a test laptop, to see if indeed all that
