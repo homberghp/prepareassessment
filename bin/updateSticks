@@ -1,0 +1,69 @@
+#!/bin/bash
+# steps: 
+# 1. enumerated inserted sticks using /sys/block/sd{c..p} and regex
+# 2. unmount them all
+# 3. write partition table
+# 4. create vfat and ext3 file system
+# 4. label vfat to name stick, e.g. EXAM100 and ext3 part to casper-rw
+# 5. syslinux --install  /dev/sd?1
+# 6. mount vfat part to /media/hom/STICK-ID
+# 7. cp -r /home/U14.04/ISO/. /media/hom/STICK-ID
+script=$(basename $0)
+scriptdir=$(dirname $(readlink -f $0))
+export etcdir=$(readlink -f ${scriptdir}/../etc/)
+conf=${etcdir}/${script}.conf
+debug=
+if [ -e ${conf} ]; then
+    source ${conf}
+    echo found ${conf}
+else
+    export IMAGE_DIR=/home/U18.04-sticky-up
+fi
+
+echo "using image in IMAGE_DIR ${IMAGE_DIR}"
+
+if [ ! -d ${IMAGE_DIR} ]; then
+    echo -e "\033[1;41m image dir ${IMAGE_DIR} does not exist, aborting\033[m\n"
+    exit 1
+fi
+
+#export STICK_CLASS=SEBI
+if [ -z $STICK_CLASS ] ; then
+    export STICK_CLASS=EXAM
+fi
+
+source nstick_helpers.sh
+ininum=100
+if [ $# -ge 1 ]; then ininum=$1; shift; fi 
+disks=$(enumerateSticks)
+echo sticks found: $disks
+IFS=','
+
+# unmount if stll mounted
+num=${ininum}
+for d in $disks; do
+    echo try umount partitions on ${d}
+    for disk in /sys/block/${d}/${d}? ; do
+	umount /dev/$(basename ${disk})
+    done
+done
+sync
+
+num=${ininum}
+for d in $disks; do 
+    printf -v LABEL "${STICK_CLASS}%3.3d" ${num}
+     ( updateStick ${d} ${LABEL} )& 
+    num=$((num+1))
+done
+
+echo waiting for all running tasks
+wait
+echo sync file systems, be patient
+sync
+for d in $disks; do 
+    echo done with stick ${d}
+    ${debug} umount -d /dev/${d}1
+done
+echo next num=${num}
+rm -fr /media/usb
+paplay ${scriptdir}/programisready.ogg
