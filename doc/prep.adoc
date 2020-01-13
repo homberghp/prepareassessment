@@ -8,6 +8,46 @@ the directory `questions`. In our practice the assessment related
 resources are placed under `45_asssessment` like in the case of STA1:
 
 
+=== Prerequisites (Quick setup)
+
+To make `./doexport` work, your system needs the following setup:
+
+1 . A teambin folder in /home/user:
+----
+cd ~
+svn co https://fontysvenlo.org/svnp/879417/sebiteambin/trunk/teambin teambin
+----
+
+2 . A prepareassessment folder in /home:
+
+----
+cd /home
+git clone git@github.com:homberghp/prepareassessment.git
+----
+
+3 . Downloaded codestripper:
+----
+cd /home/build
+git clone git@github.com:sebivenlo/codestripper.git
+cd codestripper
+mvn install
+cp target/codestripper.jar /home/prepareassessment/config/
+----
+
+4 . Libproperties installed:
+
+`sudo apt-get install libconfig-properties-perl`
+ 
+5 . Added teambin and prepareassessment to $PATH:
+-----
+nano ~/.bashrc
+#add the following lines to the bashrc file:
+export PATH=${HOME}/bin:${HOME}/teambin:$PATH
+export PATH=/home/prepareassessment/bin:$PATH
+#refresh bash (or re-open terminal)
+exec bash
+-----
+
 [NOTE]
 All the command and scripts  below assume that you have an up to date `teambin` as well as `/home/prepareassessment/bin` in your PATH. This should be configured in your `.bashrc` file or the equivalent on your OS. On osirix, this done automagically in the `/etc/bash.bashrc.local` file which included on every bash startup.
 

@@ -2,7 +2,7 @@
 
 [NOTE]
 ====
-The examples below assume the preparassessment stuff is installed under /home/prepareassessment.
+The examples below assume the prepareassessment stuff is installed under /home/prepareassessment.
 ====
 
 Our exams are complete with solutions. With java as an example: The starting point
