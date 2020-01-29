@@ -71,6 +71,7 @@ $allowed_from =~ s/"//g;
 my $noaccess_url = $properties->getProperty('noaccess_url','http://osirix.fontysvenlo.org/noaccess.html');
 my $isNetbeansProject = $properties->getProperty('is_netbeans_project',0);
 my $resources_dir='/home/prepareassessment/resources';
+my $validate_project=$properties->getProperty('validate_project',1);
 my $repolist;
 my ($sticknr,$projdir);
 # if ( $isNetbeansProject != 0 &&  ! -f './project.xml_template' ) {
@@ -98,7 +99,9 @@ if ($extension eq 'java') {
   die "do not yet understand extension $extension\n";
 }
 
-system ('validateProject') == 0 or die "\033[01;41;37mproject not suited for show time, aborting\033[K\033[0m \n\n";
+($validate_project) or
+    system ('validateProject') == 0 
+    or die "\033[01;41;37mproject not suited for show time, aborting\033[K\033[0m \n\n";
 
 my $event=$exam_id;
 $event =~ s/-//g;
