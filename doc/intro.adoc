@@ -6,11 +6,16 @@ This document describes how to use the script collection to prepare
 and correct a SEBI Venlo performance assessment using USB sticks with
 a live Linux image. This document and the scripts described are
 maintained at github in the project
-link:https://github.com/homberghp/prepare-assessment[homberghp/prepare-assessment]
+link:https://github.com/homberghp/prepareassessment[homberghp/prepareassessment]
 and is covered by the *Artistic License 2.0*.
 
 
 
+
+
+
+
+// empty lines for formatting
 
 
 The current way of working (as of February 2016) involves a number of steps:
