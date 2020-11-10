@@ -10,14 +10,15 @@
 # 7. cp -r /home/U14.04/ISO/. /media/hom/STICK-ID
 debug=
 #export IMAGE_DIR=/home/U18.04-ebook
-export IMAGE_DIR=/home/U18.04-sticky
+#export IMAGE_DIR=/home/U18.04-sticky
+export IMAGE_DIR=/bigd/customizer/U18.04.2
 #export STICK_CLASS=SEBI
 if [ -z $STICK_CLASS ] ; then
     export STICK_CLASS=EXAM
 fi
 
 if [ -z $IMAGE_DIR ]; then
-    export IMAGE_DIR=/home/U18.04-sticky
+    export IMAGE_DIR=/bigd/customizer/U18.04.2
 fi
 source stick_helpers.sh
 scriptdir=$(dirname $(readlink -f $0))
