@@ -1,3 +1,4 @@
+-- Pieter van den Hombergh
 begin work;
 drop function if exists assessment_score_def(text,char(1));
 drop function if exists assessment_column_names(text,char(1));
@@ -8,7 +9,7 @@ as $assessment_score_def$
 declare 
 th text;
 begin
-  select array_agg('q'||question||' numeric') into strict th 
+  select array_agg(question||' numeric') into strict th 
   from (select question from assessment_questions where event=myevent and category=mycategory order by question) qq;
   return 'snummer integer,stick_nr integer,stick_event_repo_id integer,'||regexp_replace(th,'[}"{]','','g');
 end;
@@ -20,7 +21,7 @@ declare
 -- note thate snummer collumn is dropped, it would be duplicated in output.
 th text;
 begin
-  select array_agg('ct.q'||question) into strict th 
+  select array_agg('ct.'||question) into strict th 
   from (select question from assessment_questions where event=myevent and category=mycategory order by question) qq;
   return 'ct.stick_nr,ct.stick_event_repo_id,'||regexp_replace(th,'[}"{]','','g');
 end;
@@ -51,8 +52,8 @@ begin
 end; $assessment_score_query3$ 
 language 'plpgsql';
 \a
-select * from assessment_score_def('STA120160129','1') ;
-select * from assessment_score_query3('STA120160129','1') ;
+select * from assessment_score_def('PRC220190612','1') ;
+select * from assessment_score_query3('PRC220190612','1') ;
 
 commit;
 

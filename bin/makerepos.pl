@@ -14,7 +14,7 @@ setlocale(LC_ALL,'en_US.UTF-8');
 my $workdir= getcwd;
 my $STYPE='EXAM';
 my $stype=lc $STYPE;
-if ($workdir !~ m/.*(\d{4})(\d{2})(\d{2})$/) {
+if ($workdir !~ m/.*(\d{4})(\d{2})(\d{2}).?$/) {
   die qq(The current directory name does not conform the convention (ISO 8601 8 digit date format).\nPlease correct\n);
 }
 my  $defexam_date ="$1-$2-$3";
@@ -92,6 +92,8 @@ if ($extension eq 'java') {
   symlink ($scriptdir.'/transform_r', 'transform');
 } elsif ($extension eq 'odt') {
   symlink ($scriptdir.'/transform_sql', 'transform');
+} elsif ($extension eq 'C') {
+  symlink ($scriptdir.'/transform_java', 'transform');
 } else {
   die "do not yet understand extension $extension\n";
 }
@@ -122,8 +124,9 @@ umask 002
 # Execute this script with root rights as in sudo bash <scriptname>
 #
 # remove stuff from previous run
-rm -fr /home/${stype}/${STYPE}*-repo
-rm -fr /home/${stype}/Desktop/examproject-${STYPE}*
+## NOTE: cleanup yourselves, so we can build more exams in parallel
+# rm -fr /home/${stype}/${STYPE}*-repo
+# rm -fr /home/${stype}/Desktop/examproject-${STYPE}*
 # start with repos
 #svnadmin create $repos_parent
 #cp ${resources_dir}/repos-templates/hooks/post-commit ${repos_parent}/hooks

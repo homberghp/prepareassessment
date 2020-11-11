@@ -1,0 +1,28 @@
+#!/bin/bash
+
+echo \# this script assumes that the host runs
+echo \# the same kernel as the target iso/image
+
+script=$(basename $0)
+scriptdir=$(dirname $(readlink -f $0))
+export etcdir=$(readlink -f ${scriptdir}/../etc/)
+conf=${etcdir}/${script}.conf
+debug=
+if [ -e ${conf} ]; then
+    source ${conf}
+    echo found ${conf}
+else
+    export WORK_DIR=/home/U18.04-sebi-k5.3.11/
+fi
+
+kernel=$(uname -r)
+mkdir -p ${WORK_DIR}/FileSystem-denied/lib/modules/${kernel}/kernel/drivers/
+ mv ${WORK_DIR}/FileSystem/lib/modules/${kernel}/kernel/drivers/{ata,bluetooth,firewire,net} \
+    ${WORK_DIR}/FileSystem-denied/lib/modules/${kernel}/kernel/drivers/
+echo \#now start customizer, do 
+echo depmod -a  
+echo \# and and then 
+echo update-initramfs -c -k $(uname -r)
+echo \# after that, you can rebuild your iso file using the customizer GUI.
+
+

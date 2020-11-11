@@ -1,0 +1,6 @@
+unit: sectors
+
+/dev/sdd1 : start=        2048, size=    19531776, type=7, bootable
+/dev/sdd2 : start=    19533824, size=   227667968, type=93
+/dev/sdd3 : start=        0, size=        0, Id= 0
+/dev/sdd4 : start=        0, size=        0, Id= 0

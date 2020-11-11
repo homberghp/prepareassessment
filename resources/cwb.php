@@ -89,7 +89,7 @@ if ( !isSet($stick_event_repo_id) ) {
             }
 
         </script>
-        <title>Fontys Venlo Corrector&#8217;s work bench</title>
+        <title><?=$event?>&nbsp;CWB Fontys Venlo Corrector&#8217;s work bench</title>
         <meta http-equiv='Window-target' content='top'/>
     </head>
     <body style='padding:0;margin:0' onload='setFocus()' >

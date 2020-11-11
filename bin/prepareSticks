@@ -8,10 +8,24 @@
 # 5. syslinux --install  /dev/sd?1
 # 6. mount vfat part to /media/hom/STICK-ID
 # 7. cp -r /home/U14.04/ISO/. /media/hom/STICK-ID
+script=$(basename $0)
+scriptdir=$(dirname $(readlink -f $0))
+export etcdir=$(readlink -f ${scriptdir}/../etc/)
+conf=${etcdir}/${script}.conf
 debug=
-#export IMAGE_DIR=/home/U18.04-ebook
-#export IMAGE_DIR=/home/U18.04-sticky
-export IMAGE_DIR=/bigd/customizer/U18.04.2
+if [ -e ${conf} ]; then
+    source ${conf}
+    echo found ${conf}
+else
+    export IMAGE_DIR=/home/U18.04-sticky-up
+fi
+
+echo "using image in IMAGE_DIR ${IMAGE_DIR}"
+
+if [ ! -d ${IMAGE_DIR} ]; then
+    echo -e "\033[1;41m image dir ${IMAGE_DIR} does not exist, aborting\033[m\n"
+    exit 1
+fi
 #export STICK_CLASS=SEBI
 if [ -z $STICK_CLASS ] ; then
     export STICK_CLASS=EXAM
@@ -21,7 +35,6 @@ if [ -z $IMAGE_DIR ]; then
     export IMAGE_DIR=/bigd/customizer/U18.04.2
 fi
 source stick_helpers.sh
-scriptdir=$(dirname $(readlink -f $0))
 ininum=100
 if [ $# -ge 1 ]; then ininum=$1; shift; fi 
 disks=$(enumerateSticks)
@@ -55,7 +68,9 @@ for d in $disks; do
     num=$((num+1))
 done
 
+echo waiting for all running tasks
 wait
+echo sync file systems, be patient
 sync
 for d in $disks; do 
     echo done with stick ${d}

@@ -1,0 +1,19 @@
+== Codestripper
+
+[NOTE]
+====
+The examples below assume the prepareassessment stuff is installed under /home/prepareassessment.
+====
+
+Our exams are complete with solutions. With java as an example: The starting point
+of a question is a complete and solved exercise. From the exercise we remove or strip those
+parts that are part of the answer of the questions or solution of the tasks. For that we use a tiny
+ant plugin called codestripper. Codestripper started live as a ant plugin, meaning that the
+code stripping part is still using a tiny ant script for just this.
+The https://javabits.fontysvenlo.org/codestripper/api/index.html[codestripper javadoc] documentation is installed at https://javabits.fontysvenlo.org/[fontys venlo javabits].
+
+Codestripper sources are hosted at github, at https://github.com/sebivenlo/codestripper[codestripper].
+
+Codestrip itself is a maven project, implying that `mvn install` will  create the jar file as `target/codestripper.jar`.
+
+Copy the codestripper.jar to the config directory, e.g. `/home/prepareassessment/config/`.

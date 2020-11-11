@@ -48,6 +48,7 @@ partitionStickalt(){
     disk=$1
     local size=$(cat /sys/block/$disk/size)
     local sizeid=$((512*${size}/(1000*1000*1000)))
+    echo "disk ${disk} size ${sizeid}"
     local bootblokfile=${scriptdir}/bootblk-${sizeid}GB.bin-new
     ${debug} dd conv=fsync if=${bootblokfile} bs=1M of=/dev/${disk}
     sleep 1
@@ -154,8 +155,9 @@ installToStick() {
     echo  start copy of ISO files to stick ${LABEL} using image from ${IMAGE_DIR}
     ${debug} cp -r ${IMAGE_DIR}/ISO/{boot,casper,.disk,dists,EFI,install,md5sum.txt,pics,pool,preseed,README.diskdefines} ${MOUNTPOINT}
     ${debug} cp -r ${IMAGE_DIR}/ISO/isolinux ${MOUNTPOINT}/syslinux
-    echo  rename syslinux.cfg for stick ${LABEL}
-    ${debug} mv ${MOUNTPOINT}/syslinux/{iso,sys}linux.cfg
+    echo  "copy syslinux.cfg for stick ${LABEL}"
+    ${debug} cp -r ${IMAGE_DIR}/ISO/isolinux/isolinux.cfg ${MOUNTPOINT}/syslinux/syslinux.cfg
+#    ${debug} mv ${MOUNTPOINT}/syslinux/{iso,sys}linux.cfg
 #    ${debug} syslinux --install /dev/${d}1
     ${debug} syslinux --stupid ${BOOTPART}
     echo installation for stick ${LABEL} done

@@ -11,23 +11,33 @@ use Cwd;
 use vars qw(%questionHash %doubleHash @fileNames $validRegex);
 my $workdir= getcwd;
 
-$workdir =~ m/.*(\d{4})(\d{2})(\d{2})$/;
+$workdir =~ m/.*(\d{4})(\d{2})(\d{2}).?$/;
 my $defexam_date ="$1-$2-$3";
 
 open PROPS, "<../default.properties" or die "unable to open setup file";
 
-my $properties = new Config::Properties();
-$properties->load(*PROPS);
+
+my $defproperties = new Config::Properties();
+$defproperties->load(*PROPS);
+close(PROPS);
+my $properties = new Config::Properties(defaults=>$defproperties);
+
+if ( -f 'setup.properties') {
+  open PROPS, "<setup.properties" or die "unable to open setup.properties file\n";
+  $properties->load(*PROPS);
+  close(PROPS);
+}
+
 my $module_name =$properties->getProperty('module_name','SEN1');
 my $exam_date = $properties->getProperty('exam_date',$defexam_date);
 my $exam_year = substr($exam_date,0,4);
 my $exam_id = $module_name.'-'.$exam_date;
 my $exam_web_dir="/home/examdoc/public_html/${exam_year}/${exam_id}";
-my $extension= $properties->getProperty('extension','c');
+my $extension= $properties->getProperty('extension','C');
 
 my $validRegex='.+?\<editor-fold\s+defaultstate=\"expanded\"\s+desc=\"(\w+);\s+MAX\s+(\d+)';
 my $isNetbeansProject = $properties->getProperty('is_netbeans_project',0);
-my $isMoocProject= $properties->getProperty('is_mooc_project',1);
+my $isMoocProject= $properties->getProperty('is_mooc_project',0);
 
 if (! -d './examproject' ) {
   die "Missing exam project directory './examproject' . cannot continue \n";
@@ -41,8 +51,11 @@ if ($isMoocProject != 0) {
     exit(0);
 }
 
-if ($extension eq 'java' || $extension eq 'sql' || $extension eq 'R' ) {
-    $validRegex='.+?\<editor-fold\s+defaultstate=\"expanded\"\s+desc=\"(\w+);.+?WEIGHT\s+(\d+)';
+my $extensionRegex=qq(java);
+
+
+if ($extension eq 'java' || $extension eq 'sql' || $extension eq 'R' || $extension eq 'C'  ) {
+    $validRegex='.+?\<editor-fold\s+defaultstate=\"expanded\"\s+desc=\"(\w+)\s?;.+?WEIGHT\s+(\d+)';
 #    $validRegex='.+?\<editor-fold\s+defaultstate=\"expanded\"\s+desc=\"(\w+);\s+MAX\s+(\d+)';
 } elsif ( $extension eq 'odt'){
     # all is well for candidate generated odt files
@@ -50,10 +63,20 @@ if ($extension eq 'java' || $extension eq 'sql' || $extension eq 'R' ) {
 }else {
     die "do not yet understand extension $extension\n";
 }
-# if ( $isNetbeansProject != 0  && !-f 'project.xml_template' ) {
-#   die "Need project.xml_template with examproject dir to populate project in repos\n";
-# }
 
+if ( $extension eq 'C'  ) {
+  $extensionRegex=qq((c|cpp|h|check));
+} elsif ($extension eq 'java') {
+  $extensionRegex=qq(java);
+} elsif ($extension eq 'sql') {
+  $extensionRegex=qq(sql);
+} elsif ($extension eq 'R') {
+  $extensionRegex=qq(R);
+}
+
+print STDERR qq(validregex = ${validRegex}
+extensionRegex=${extensionRegex}
+);
 # my %questionHash;
 # my %doubleHash;
 my (@names,$file);
@@ -76,7 +99,7 @@ sub walk($){
       &walk($path);
       next;
     } 
-    if ( -f $path && $path =~ m/${extension}$/) { # is this a file named "*.extension"?
+    if ( -f $path && $path =~ m/\.${extensionRegex}$/) { # is this a file named "*.extension"?
 #      print STDERR "found one: $path\n";
       open(FILE,"<$path") or die "cannot open file $path\n";
       my $lineCounter=0;
