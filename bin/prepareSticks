@@ -26,14 +26,13 @@ if [ ! -d ${IMAGE_DIR} ]; then
     echo -e "\033[1;41m image dir ${IMAGE_DIR} does not exist, aborting\033[m\n"
     exit 1
 fi
-
 #export STICK_CLASS=SEBI
 if [ -z $STICK_CLASS ] ; then
     export STICK_CLASS=EXAM
 fi
 
 if [ -z $IMAGE_DIR ]; then
-    export IMAGE_DIR=/home/U18.04-sticky
+    export IMAGE_DIR=/bigd/customizer/U18.04.2
 fi
 source stick_helpers.sh
 ininum=100

@@ -1,0 +1,131 @@
+#!/bin/bash
+
+# validates that the device visible as diskBaseName is indeed
+# a 'SanDisk Extreme' make and model.
+# @param diskBaseName like sdc
+function validateStick(){
+    local diskBaseName=$1; shift
+    
+    if [ ! -e /sys/block/${diskBaseName} ] ; then
+	echo "${diskBaseName} is not a suitable device or not a block device at all, bye..."
+	exit 1
+    fi
+    ## test for SanDisk Extreme
+    ## read vendor and model
+    v=$(cat /sys/block/${diskBaseName}/device/vendor); v=${v// /} # trim spaces
+    m=$(cat /sys/block/${diskBaseName}/device/model); m=${m// /} # trim spaces
+    vm="$v $m"
+    if [[  ! $vm =~ ^'SanDisk Extreme' ]]; then
+	echo "device ${diskBaseName} should be a 'SanDisk Extreme' but was a '${vm}'"
+	exit 1
+    fi
+    #echo "found device '$vm' at /dev/${diskBaseName}"
+}
+
+
+# unmount partitions of basedrive device
+# @param basedrive device whose partitions, if mounted, need umounting
+function unmountPartitions(){
+    local p=$1; shift
+    validateStick $p
+    local basedrive="/dev/${p}"
+    local oldIFS="$IFS"
+    local toUmount=''
+    IFS='
+'
+    for l in $(mount | grep ${basedrive}); do
+	OIFS="${IFS}"
+	IFS=' '
+	read -ra lineparts <<< "${l}"
+	local drive="${lineparts[0]}"
+	toUmount="${toUmount} ${drive}"
+	IFS="${OIFS}"
+    done
+    IFS="${oldIFS}"
+    if [ "x" != "x${toUmount}" ]; then
+	echo umount ${toUmount}
+    else
+	echo "nothing to unmount"
+    fi
+    
+
+}
+
+##
+## write an iso image to a stick
+## @param image to write
+## @param ... sticks to write to
+function writeImage(){
+    local image=$1; shift
+    echo "image to write is ${image}"
+    while [ $# -ge 1 ]; do
+	local disk=$1; shift
+	## run as detached sub process
+	(
+	    validateStick ${disk}
+	    unmountPartitions ${disk}
+	    echo dd if=${image} of=/dev/${disk} bs=4M conv=fsync status=progress
+	) &
+    done
+}
+
+
+##
+## make partition 3 on stick
+## @param disk to use
+function makePartition(){
+    local disk=$1; shift
+    validateStick $disk
+    ## make sfdisk use defaults for start and end, a.k.a. all remaining space
+    echo "," | sfdisk  --quiet --append /dev/${disk} -N3
+}
+
+##
+## prime a partition sdX3 with label and initial hom dirs
+## @param disk partition to prime
+## @param label to use
+## @param user  user on stick to use
+## @param skel skeleton tar file to use to create home dir
+function primeWritablePartition(){
+    local disk=$1; shift
+    local label=$1; shift
+    local user=$1; shift
+    local uid=$1; shift
+    local skel=$1; shift
+    ## make the partition in device 3
+    makePartition ${disk}
+    ## make a file system in the partition
+    mkfs.ext2 -q -F -L writable /dev/${disk}3
+    ## mount the file system
+    rootmp=/media/usb/${label}-writable
+    mkdir -p ${rootmp}
+    mount /dev/${disk}3 ${rootmp}
+    ## create a default directory structure
+    mkdir -p ${rootmp}/{upper/etc,work/work}
+    ## put the label file in sebi-label and hostname
+    echo ${label} | tr 'A-Z' 'a-z' > ${rootmp}/upper/etc/hostname
+    echo ${label} > ${rootmp}/upper/sebi-label
+    ## expand skel for home/<user>
+    if [ -e skel.tgz ]; then
+	userhome=${rootmp}/upper/home/${user}
+	mkdir -p ${userhome}
+	tar -C ${userhome} -xf skel.tgz
+	chown -R ${uid}:${uid} ${userhome}
+    fi
+    sync
+    umount ${rootmp}
+    ${debug} "created home dir for ${user} on device ${disk}3"
+}
+
+## mount the use stick as /media/usb/<label>-writable
+## as in /media/usb/EXAM350-writable
+## @param old mount point 
+## @param label
+function remount(){
+    local omp=$1; shift
+    local label=$1; shift
+    local nmp=/media/usb/${label}-writable
+    mkdir -p ${nmp}
+    mount --bind ${omp} ${nmp}
+    umount ${omp}
+}
