@@ -99,9 +99,11 @@ if ($extension eq 'java') {
   die "do not yet understand extension $extension\n";
 }
 
-($validate_project) or
+# validate if requested. validateProject is an external script.
+if ($validate_project) { 
     system ('validateProject') == 0 
-    or die "\033[01;41;37mproject not suited for show time, aborting\033[K\033[0m \n\n";
+	or die "\033[01;41;37mproject not suited for show time, aborting\033[K\033[0m \n\n";
+}
 
 my $event=$exam_id;
 $event =~ s/-//g;
