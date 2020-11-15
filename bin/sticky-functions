@@ -1,5 +1,7 @@
 #!/bin/bash
 
+## test if given disk reports as 'SanDisk Extreme'
+## @param diskBaseName like sdc
 function isSanDiskUSB(){
     local diskBaseName=$1; shift
     v=$(cat /sys/block/${diskBaseName}/device/vendor); v=${v// /} # trim spaces
@@ -7,6 +9,28 @@ function isSanDiskUSB(){
     vm="$v $m"
     [[ $vm =~ ^'SanDisk Extreme' ]]
 }
+
+## Return a list of device names that appear to be SanDisk Extreme devices
+## 
+function enumerateSticks(){
+    local result=''
+    for d in /sys/block/sd*; do
+	diskBaseName=$(basename $d)
+	if isSanDiskUSB ${diskBaseName}; then
+	    result="${result} ${diskBaseName}"
+	fi
+    done
+    echo -n ${result};
+}
+
+# ##
+# ## unmount all SanDisk Extreme USB sticks
+# function unMountAllUSB(){
+#     for d in $(enumerateSticks); do
+	
+#     done
+
+# }
 
 # validates that the device visible as diskBaseName is indeed
 # a 'SanDisk Extreme' make and model.
@@ -50,12 +74,10 @@ function unmountPartitions(){
     done
     IFS="${oldIFS}"
     if [ "x" != "x${toUmount}" ]; then
-	echo umount ${toUmount}
+	umount ${toUmount}
     else
 	echo "nothing to unmount"
     fi
-    
-
 }
 
 ##
@@ -84,8 +106,8 @@ function initPartition3(){
     local disk=$1; shift
     validateStick $disk
     ## make sfdisk use defaults for start and end, a.k.a. all remaining space
-    echo "," | sfdisk  --quiet --append /dev/${disk} -N3
-    sync
+    echo "," | flock /dev/${disk} sfdisk  --quiet --append /dev/${disk} -N3
+    sync /dev/${disk}
     ## make a file system in the partition
     mkfs.ext2 -q -F -L writable /dev/${disk}3
 }
@@ -125,7 +147,7 @@ function primePartition3(){
 	chown -R 1002:1002 ${userhome}
 	echo "created home dir for 'sebi' on device ${disk}3"
     fi
-    sync
+    sync /dev/${disk}3
     umount ${rootmp}
 }
 
@@ -160,23 +182,15 @@ function prepareSticks(){
 	## run as detached sub process
 	(
 	    unmountPartitions ${disk}
-	    dd if=${image} of=/dev/${disk} bs=4M conv=fsync status=progress
+	    dd if=${image} of=/dev/${disk} bs=4M conv=fsync
+	    echo "writing base iso to ${disk} completed"
 	    primePartition3 ${disk} ${label}
 	) &
 	diskNr=$((${diskNr+1}))
     done
+    echo "wait for completion"
+    wait
+    echo "all child processes returned"
 }
 
-## Return a list of device names that appear to be SanDisk Extreme devices
-## 
-function enumerateSticks(){
-    local result=''
-    for d in /sys/block/sd*; do
-	diskBaseName=$(basename $d)
-	if isSanDiskUSB ${diskBaseName}; then
-	    result="${result} ${diskBaseName}"
-	fi
-    done
-    echo -n ${result};
-}
 
