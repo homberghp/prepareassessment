@@ -1,0 +1,30 @@
+#!/bin/sh
+
+PREREQ=""
+DESCRIPTION="Sandbox exam stick..."
+
+prereqs()
+{
+       echo "$PREREQ"
+}
+
+case $1 in
+# get pre-requisites
+prereqs)
+       prereqs
+       exit 0
+       ;;
+esac
+
+. /scripts/casper-functions
+
+log_begin_msg "$DESCRIPTION"
+# make sure to use the orig files
+for SYSFILE in /etc/passwd /etc/shadow /etc/group /etc/bash.bashrc ; do 
+    cp /root/rofs$SYSFILE /root$SYSFILE
+done
+# remove automount points
+rmdir /root/media /root/mnt
+# disable automount of visible block devices or file systems.
+echo "# nothing here" > /root/etc/udev/rules.d/60-persistent-storage.rules
+log_end_msg

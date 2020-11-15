@@ -1,0 +1,3 @@
+corrector:x:1000:1000:Assessment Corrector,,,:/home/corrector:/bin/bash
+exam:x:1001:1001:Assessment user,,,:/home/exam:/bin/bash
+sebi:x:1002:1002:SeBi Studentr,,,:/home/sebi:/bin/bash

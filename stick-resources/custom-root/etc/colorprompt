@@ -1,0 +1,7 @@
+# set colorfull line wide prompt.
+if [ $UID -eq 0 ]; then
+    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;37;41m\]\u@\h:\w\[\033[K\033[00m\]\n\$ '
+else 
+    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;37;44m\]\u@\h:\w\[\033[K\033[00m\]\n\$ '
+fi
+export PS1

@@ -1,8 +1,17 @@
 #!/bin/bash
 
+function isSanDiskUSB(){
+    local diskBaseName=$1; shift
+    v=$(cat /sys/block/${diskBaseName}/device/vendor); v=${v// /} # trim spaces
+    m=$(cat /sys/block/${diskBaseName}/device/model); m=${m// /} # trim spaces
+    vm="$v $m"
+    [[ $vm =~ ^'SanDisk Extreme' ]]
+}
+
 # validates that the device visible as diskBaseName is indeed
 # a 'SanDisk Extreme' make and model.
 # @param diskBaseName like sdc
+# Notice: when running this function in a shell, and the stick is not valid, it closes the shell
 function validateStick(){
     local diskBaseName=$1; shift
     
@@ -12,15 +21,13 @@ function validateStick(){
     fi
     ## test for SanDisk Extreme
     ## read vendor and model
-    v=$(cat /sys/block/${diskBaseName}/device/vendor); v=${v// /} # trim spaces
-    m=$(cat /sys/block/${diskBaseName}/device/model); m=${m// /} # trim spaces
-    vm="$v $m"
-    if [[  ! $vm =~ ^'SanDisk Extreme' ]]; then
-	echo "device ${diskBaseName} should be a 'SanDisk Extreme' but was a '${vm}'"
+    if  ! isSanDiskUSB ${diskBaseName} ; then
+	echo "device /dev/${diskBaseName} should be a 'SanDisk Extreme' but was a '${vm}'"
 	exit 1
     fi
     #echo "found device '$vm' at /dev/${diskBaseName}"
 }
+
 
 
 # unmount partitions of basedrive device
@@ -64,7 +71,7 @@ function writeImage(){
 	(
 	    validateStick ${disk}
 	    unmountPartitions ${disk}
-	    echo dd if=${image} of=/dev/${disk} bs=4M conv=fsync status=progress
+	    dd if=${image} of=/dev/${disk} bs=4M conv=fsync status=progress
 	) &
     done
 }
@@ -72,12 +79,15 @@ function writeImage(){
 
 ##
 ## make partition 3 on stick
-## @param disk to use
-function makePartition(){
+## @param stick/ disk to use
+function initPartition3(){
     local disk=$1; shift
     validateStick $disk
     ## make sfdisk use defaults for start and end, a.k.a. all remaining space
     echo "," | sfdisk  --quiet --append /dev/${disk} -N3
+    sync
+    ## make a file system in the partition
+    mkfs.ext2 -q -F -L writable /dev/${disk}3
 }
 
 ##
@@ -86,16 +96,11 @@ function makePartition(){
 ## @param label to use
 ## @param user  user on stick to use
 ## @param skel skeleton tar file to use to create home dir
-function primeWritablePartition(){
+function primePartition3(){
     local disk=$1; shift
     local label=$1; shift
-    local user=$1; shift
-    local uid=$1; shift
-    local skel=$1; shift
-    ## make the partition in device 3
-    makePartition ${disk}
-    ## make a file system in the partition
-    mkfs.ext2 -q -F -L writable /dev/${disk}3
+    ## make the partition  and create file system in partition3
+    initPartition3 ${disk}
     ## mount the file system
     rootmp=/media/usb/${label}-writable
     mkdir -p ${rootmp}
@@ -104,17 +109,24 @@ function primeWritablePartition(){
     mkdir -p ${rootmp}/{upper/etc,work/work}
     ## put the label file in sebi-label and hostname
     echo ${label} | tr 'A-Z' 'a-z' > ${rootmp}/upper/etc/hostname
-    echo ${label} > ${rootmp}/upper/sebi-label
+    echo -n ${label} > ${rootmp}/upper/sebi-label
     ## expand skel for home/<user>
-    if [ -e skel.tgz ]; then
-	userhome=${rootmp}/upper/home/${user}
+    if [ -e examskel.tgz ]; then
+	userhome=${rootmp}/upper/home/exam
 	mkdir -p ${userhome}
-	tar -C ${userhome} -xf skel.tgz
-	chown -R ${uid}:${uid} ${userhome}
+	tar -C ${userhome} -xf examskel.tgz
+	chown -R 1001:1001 ${userhome}
+	echo "created home dir for 'exam' on device ${disk}3"
+    fi
+    if [ -e sebiskel.tgz ]; then
+	userhome=${rootmp}/upper/home/sebi
+	mkdir -p ${userhome}
+	tar -C ${userhome} -xf sebiskel.tgz
+	chown -R 1002:1002 ${userhome}
+	echo "created home dir for 'sebi' on device ${disk}3"
     fi
     sync
     umount ${rootmp}
-    ${debug} "created home dir for ${user} on device ${disk}3"
 }
 
 ## mount the use stick as /media/usb/<label>-writable
@@ -129,3 +141,42 @@ function remount(){
     mount --bind ${omp} ${nmp}
     umount ${omp}
 }
+
+##
+## Prepare a set of stick with stick class, image and initial label number.
+## example prepareSticks EXAM image.iso 350 sdc sdd sde sdf
+## @param stick_class EXAM oe SEBI
+## @param image the iso file to use
+## @param diskNr the initial disk number
+## @param disk1 [disk2 [...]]
+function prepareSticks(){
+    local stick_class=$1; shift
+    local image=$1; shift
+    local diskNr=$1; shift
+    while [ $# -ge 1 ]; do
+	local disk=$1; shift
+	local label=${stick_class}${diskNr}
+	validateStick ${disk}
+	## run as detached sub process
+	(
+	    unmountPartitions ${disk}
+	    dd if=${image} of=/dev/${disk} bs=4M conv=fsync status=progress
+	    primePartition3 ${disk} ${label}
+	) &
+	diskNr=$((${diskNr+1}))
+    done
+}
+
+## Return a list of device names that appear to be SanDisk Extreme devices
+## 
+function enumerateSticks(){
+    local result=''
+    for d in /sys/block/sd*; do
+	diskBaseName=$(basename $d)
+	if isSanDiskUSB ${diskBaseName}; then
+	    result="${result} ${diskBaseName}"
+	fi
+    done
+    echo -n ${result};
+}
+

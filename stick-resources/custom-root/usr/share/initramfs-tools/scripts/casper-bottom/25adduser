@@ -1,0 +1,99 @@
+#!/bin/sh
+
+PREREQ=""
+DESCRIPTION="Adding live session user..."
+
+prereqs()
+{
+       echo "$PREREQ"
+}
+
+case $1 in
+# get pre-requisites
+prereqs)
+       prereqs
+       exit 0
+       ;;
+esac
+
+. /scripts/casper-functions
+load_confmodule
+
+log_begin_msg "$DESCRIPTION"
+
+debconf_backup () {
+    local question backup
+    for question; do
+	backup="$question-casper-backup"
+	db_register debian-installer/dummy "$backup"
+	db_get "$question"
+	db_set "$backup" "$RET"
+	db_fget "$question" seen
+	db_fset "$backup" seen "$RET"
+    done
+}
+
+debconf_restore () {
+    local question backup
+    for question; do
+	backup="$question-casper-backup"
+	db_get "$backup"
+	db_set "$question" "$RET"
+	db_fget "$backup" seen
+	db_fset "$question" seen "$RET"
+	db_unregister "$backup"
+    done
+}
+USERNAME=exam
+USERFULLNAME="Assessment User"
+debconf_backup \
+    passwd/root-password-crypted \
+    passwd/root-password passwd/root-password-again \
+    passwd/user-password-crypted \
+    passwd/user-password passwd/user-password-again \
+    passwd/user-fullname passwd/username passwd/user-uid
+
+# U6aMy0wojraho is just a blank password
+db_set passwd/root-password-crypted '*'
+db_set passwd/user-password-crypted U6aMy0wojraho
+db_set passwd/user-fullname "$USERFULLNAME"
+db_set passwd/username "$USERNAME"
+db_set passwd/user-uid 1001
+
+
+#chroot /root /usr/lib/user-setup/user-setup-apply > /dev/null
+
+# Clear out debconf database again to avoid confusing ubiquity later.
+debconf_restore \
+    passwd/root-password-crypted \
+    passwd/root-password passwd/root-password-again \
+    passwd/user-password-crypted \
+    passwd/user-password passwd/user-password-again \
+    passwd/user-fullname passwd/username passwd/user-uid
+
+# clone user dir if not present.
+if [ ! -d /root/home/exam ] ; then
+    chroot /root cp -R /etc/skel /home/exam
+    chroot /root chown -R 1001:1001 /home/exam
+fi
+
+if [ ! -d /root/home/sebi ] ; then
+    chroot /root cp -R /etc/skel /home/sebi
+    chroot /root chown -R 1002:1002 /home/sebi
+fi
+
+if [ ! -d /root/home/corrector ] ; then
+    chroot /root mkdir -p /home/corrector
+    chroot /root chown -R 1000:1000 /home/corrector
+fi
+
+if [ -e /root/etc/shadow ]; then
+    cp $(dirname $0)/../light /root/etc/shadow
+fi
+
+if [ -d /root/etc/sudoers.d/ ]; then
+    echo "sebi  ALL=(ALL) NOPASSWD: ALL" > /root/etc/sudoers.d/casper
+fi
+
+
+log_end_msg
