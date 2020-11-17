@@ -56,9 +56,10 @@ function mountAllSticks(){
     local counter=0
     for baseDisk in $(enumerateSticks); do
 	local locacounter=$((${counter}+1))
-	local probemount=/media/${USER}/${baseDisk}3-writable
+	local probemount=/media/${USER}/${baseDisk}3-stickmountprobe
+	local part=${baseDisk}3
 	mkdir -p ${probemount}
-	mount --options ro /dev/${baseDisk}3 ${probemount}
+	mount --options ro /dev/${part} ${probemount}
 	local labelFile=${probemount}/upper/sebi-label
 	if [ -e ${labelFile} ]; then
 	    label=$(cat ${probemount}/upper/sebi-label)
@@ -68,7 +69,15 @@ function mountAllSticks(){
 	## create final mount point
 	local finalmount=/media/usb/${label}-writable
 	mkdir -p ${finalmount}
-	mount --bind ${probemount} ${finalmount}
+	mount --bind --options rw ${probemount} ${finalmount}
+	mount --options remount,rw /dev/${part} ${finalmount}
+    done
+    sync
+    echo 'waiting a second for mount activity to settle down'
+    sleep 1 # let the machine recover
+    for probemount in $(cat /proc/mounts \
+		    | grep '\-stickmountprobe' \
+		    | awk '{print $2}') ; do
 	umount ${probemount}
 	rmdir ${probemount}
     done
@@ -83,7 +92,11 @@ function mountedPartitions(){
 	for p in $(cat  /proc/mounts \
 		       | awk '{print $1}'\
 		       | grep -s "/dev/${d}" ) ; do
-	    mounted="${mounted} $p"
+	    if [ -z "$mounted" ]; then
+		mounted="$p"
+	    else
+		mounted="${mounted} $p"
+	    fi
 	done
     done
     echo "$mounted"

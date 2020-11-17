@@ -1,0 +1,16 @@
+#!/bin/bash
+
+scriptdir=$(dirname $0)
+source ${scriptdir}/sticky-functions
+
+cat - <<EOF
+# Status of usb sticks recognized as 'SanDisk Extreme'
+EOF
+echo "## devices are [$(enumerateSticks)]"
+echo "## currently mounted writable partitions are"
+for d in $(enumerateSticks); do
+    echo "# $(grep /dev/${d} /proc/mounts)"
+done
+echo -e "# to mount the \e[32mwritable\e[m partitions use \nmount-sticks\n"
+echo -e "# to unmount \e[33;1mall\e[m partitions use \numount-sticks\n"
+
