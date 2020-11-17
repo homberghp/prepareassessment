@@ -1,48 +1,6 @@
 #!/bin/bash
-me=hom
-debug=
-scriptdir=$(dirname $(readlink -f $0))
-# chown sandbox stuff to exam uid:gid
-if [ "root"  != "$USER" ]; then
-    echo must be root or sudo
-    exit 1
-fi
-for i in /media/usb/casper-rw* /media/usb/home-rw*; do
-    if [ -d ${i} ]; then 
-	if grep -q ${i} /proc/mounts ; then 
-	    ${debug} umount ${i}
-	    echo unmounted  ${i}
-	fi
-	rm -fr ${i}
-    fi
-done
-    
-for i in /media/hom/*; do 
-    if [ -d ${i} ]; then 
-	stick=$(basename $i)
-	mountpoint=${i}
-	if grep -q ${i} /proc/mounts ; then 
-	    ${debug} umount ${mountpoint}
-	    echo unmounted  ${mountpoint}
-	fi
-	rm -fr ${mountpoint}
-    fi
-done
-sync
-for i in /media/hom/{EXAM,SEBI}*; do 
-    if  grep -q ${i} /proc/mounts ; then 
-	${debug} umount ${i}
-	echo unmounted  ${i}
-    fi
-done
-# last resort
-for i in  /dev/sd{d..x}1; do
-    if [[ -b  $i ]]; then
-	umount $i
-    fi
-done
-rm -fr /media/usb/*
 
+scriptdir=$(dirname $0)
+source ${scriptdir}/sticky-functions
 
-sync
-paplay ${scriptdir}/tng-picard-engage.ogg
+umountAllSticks

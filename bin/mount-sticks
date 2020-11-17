@@ -1,1 +1,9 @@
-mountSticks
+#!/bin/bash
+
+scriptdir=$(dirname $0)
+source ${scriptdir}/sticky-functions
+
+mountAllSticks
+for d in $(enumerateSticks); do
+    grep /dev/${d} /proc/mounts
+done

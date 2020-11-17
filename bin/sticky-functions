@@ -52,33 +52,51 @@ function validateStick(){
     #echo "found device '$vm' at /dev/${diskBaseName}"
 }
 
-
-
-# unmount partitions of basedrive device
-# @param basedrive device whose partitions, if mounted, need umounting
-function unmountPartitions(){
-    local p=$1; shift
-    validateStick $p
-    local basedrive="/dev/${p}"
-    local oldIFS="$IFS"
-    local toUmount=''
-    IFS='
-'
-    for l in $(mount | grep ${basedrive}); do
-	OIFS="${IFS}"
-	IFS=' '
-	read -ra lineparts <<< "${l}"
-	local drive="${lineparts[0]}"
-	toUmount="${toUmount} ${drive}"
-	IFS="${OIFS}"
+function mountAllSticks(){
+    local counter=0
+    for baseDisk in $(enumerateSticks); do
+	local locacounter=$((${counter}+1))
+	local probemount=/media/${USER}/${baseDisk}3-writable
+	mkdir -p ${probemount}
+	mount --options ro /dev/${baseDisk}3 ${probemount}
+	local labelFile=${probemount}/upper/sebi-label
+	if [ -e ${labelFile} ]; then
+	    label=$(cat ${probemount}/upper/sebi-label)
+	else
+	    label=UNKNOWN${counter}
+	fi
+	## create final mount point
+	local finalmount=/media/usb/${label}-writable
+	mkdir -p ${finalmount}
+	mount --bind ${probemount} ${finalmount}
+	umount ${probemount}
+	rmdir ${probemount}
     done
-    IFS="${oldIFS}"
-    if [ "x" != "x${toUmount}" ]; then
-	umount ${toUmount}
-    else
-	echo "nothing to unmount"
-    fi
 }
+
+
+# enumerate  mounted stick partitions
+# @return the space separated list of mounted partitions
+function mountedPartitions(){
+    local mounted=""
+    for d in $(enumerateSticks); do
+	for p in $(cat  /proc/mounts \
+		       | awk '{print $1}'\
+		       | grep -s "/dev/${d}" ) ; do
+	    mounted="${mounted} $p"
+	done
+    done
+    echo "$mounted"
+}
+
+
+## unmount all stick partitions
+function umountAllSticks(){
+    for p in $(mountedPartitions) ; do
+	umount $p
+    done
+}
+
 
 ##
 ## write an iso image to a stick
