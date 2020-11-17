@@ -1,0 +1,6 @@
+#!/bin/bash
+
+while [ $# -gt 0 ] ; do
+    next=$1; shift
+    echo "'${next}'"
+done    

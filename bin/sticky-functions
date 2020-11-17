@@ -120,7 +120,7 @@ function initPartition3(){
     echo "," | sfdisk  --quiet --append /dev/${stick} -N3
     partprobe /dev/${stick}
     ## make a file system in the partition
-    mkfs.ext2 -q -F -L writable /dev/${disk}3
+    mkfs.ext2 -q -F -L writable /dev/${stick}3
 }
 
 ##

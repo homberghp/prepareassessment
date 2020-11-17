@@ -1,0 +1,49 @@
+#!/bin/bash
+scriptdir=$(dirname $0)
+source ${scriptdir}/sticky-functions
+# defaults to 
+stick_class=EXAM
+image=image.iso
+startNr=350
+
+if [ $# -gt 0 ] ; then
+    stick_class=$1; shift
+fi
+if [ $# -gt 0 ] ; then
+    image=$1; shift
+fi
+if [ $# -gt 0 ] ; then
+    startNr=$1; shift
+fi
+
+question=$(echo -e "The parameters you gave are:\n"\
+    "\tstick_class=\Zb${stick_class}\Zn\n"\
+    "\timage=\Zb${image}\Zn\n"\
+    "\tfirst stickNr=\Zb${startNr}\Zn\n\n"\
+    "Are you sure these are the correct settings?\n"\
+    "If not, answer no and start this script with proper parameters\n"\
+    "as in\n\Zb$(basename $0) EXAM image.iso 350\Zn")
+
+echo "$question"
+dialog --title 'About to erase sticks and write image'  --colors --shadow --no-collapse --backtitle "Warning, dialog" --cr-wrap --yesno "${question}" 15 70
+
+
+# Get exit status
+# 0 means user hit [yes] button.
+# 1 means user hit [no] button.
+# 255 means user hit [Esc] key.
+response=$?
+case $response in
+    0) echo "Okay to proceed."
+        # do some sanity checks
+        if [ ! -e $image ]; then 
+            echo "cannot file the image file '${image}' aborting"
+            exit 1
+        fi
+        echo "about to preparesticks for $(enumerateSticks)"
+        prepareSticks  ${stick_class} ${image} ${startNr} $(enumerateSticks)
+       ;;
+   1) echo "Okay, see you.";;
+   255) echo "[ESC] key pressed.";;
+esac
+
