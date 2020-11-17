@@ -19,33 +19,24 @@ function isSanDiskUSB(){
 function enumerateSticks(){
     local result=''
     for d in /sys/block/sd*; do
-	diskBaseName=$(basename $d)
-	if isSanDiskUSB ${diskBaseName}; then
-	    result="${result} ${diskBaseName}"
-	fi
+        diskBaseName=$(basename $d)
+        if isSanDiskUSB ${diskBaseName}; then
+            result="${result} ${diskBaseName}"
+        fi
     done
     echo -n ${result};
 }
 
-##
-## unmount all SanDisk Extreme USB sticks
-# function unMountAllUSB(){
-#     for d in $(enumerateSticks); do
-	
-#     done
-
-# }
-
-## validates that the device visible as diskBaseName is indeed
+## Validates that the device visible as diskBaseName is indeed
 ## a 'SanDisk Extreme' make and model.
 # @param diskBaseName like sdc
 # @deprecated:  when running this function in a shell, and the stick is not valid, it closes the shell.
 function validateStick(){
     local diskBaseName=$1; shift
-    
+    echo "checking ${diskBaseName}"
     if [ ! -e /sys/block/${diskBaseName} ] ; then
-	echo "${diskBaseName} is not a suitable device or not a block device at all, bye..."
-	exit 1
+        echo "${diskBaseName} is not a suitable device or not a block device at all, bye..."
+        exit 1
     fi
     ## test for SanDisk Extreme
     ## read vendor and model
@@ -187,28 +178,29 @@ function remount(){
 ## example prepareSticks EXAM image.iso 350 sdc sdd sde sdf
 ## @param stick_class EXAM oe SEBI
 ## @param image the iso file to use
-## @param diskNr the initial disk number
+## @param startDiskNr the initial disk number
 ## @param disk1 [disk2 [...]]
 function prepareSticks(){
+    echo "received $# params: [$@]"
     local stick_class=$1; shift
     local image=$1; shift
-    local diskNr=$1; shift
-    while [ $# -ge 1 ]; do
+    local startDiskNr=$1; shift
+    umountAllSticks
+    while [ $# -ge 0 ]; do
         local disk=$1; shift
-        local label=${stick_class}${diskNr}
+        if [ -z "${disk}" ]; then break; fi
+        local label=${stick_class}${startDiskNr}
+        echo "preparing stick ${disk} as ${label}"
         validateStick ${disk}
         ## run as detached sub process
         (
-            unmountPartitions ${disk}
-            dd if=${image} of=/dev/${disk} bs=4M conv=fsync
-            echo "writing base iso to ${disk} completed"
-            primePartition3 ${disk} ${label}
+           dd if=${image} of=/dev/${disk} bs=4M conv=fsync
+           echo "#writing base iso to ${disk} completed"
+           primePartition3 ${disk} ${label}
         ) &
-        diskNr=$((${diskNr+1}))
+        startDiskNr=$((${startDiskNr}+1))
     done
-    echo "wait for completion od sub processes"
+    echo "wait for completion of sub processes"
     wait
     echo "all child processes returned"
 }
-
-
