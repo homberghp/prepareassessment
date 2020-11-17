@@ -1,5 +1,9 @@
 #!/bin/bash
 
+## Set of functions to manipulate sticks for exam image preparation.
+##
+## @author pieter.van.den.hombergh@gmail.com
+## 
 ## test if given disk reports as 'SanDisk Extreme'
 ## @param diskBaseName like sdc
 function isSanDiskUSB(){
@@ -23,8 +27,8 @@ function enumerateSticks(){
     echo -n ${result};
 }
 
-# ##
-# ## unmount all SanDisk Extreme USB sticks
+##
+## unmount all SanDisk Extreme USB sticks
 # function unMountAllUSB(){
 #     for d in $(enumerateSticks); do
 	
@@ -32,10 +36,10 @@ function enumerateSticks(){
 
 # }
 
-# validates that the device visible as diskBaseName is indeed
-# a 'SanDisk Extreme' make and model.
+## validates that the device visible as diskBaseName is indeed
+## a 'SanDisk Extreme' make and model.
 # @param diskBaseName like sdc
-# Notice: when running this function in a shell, and the stick is not valid, it closes the shell
+# @deprecated:  when running this function in a shell, and the stick is not valid, it closes the shell.
 function validateStick(){
     local diskBaseName=$1; shift
     
@@ -51,6 +55,9 @@ function validateStick(){
     fi
     #echo "found device '$vm' at /dev/${diskBaseName}"
 }
+
+## Mount all sticks that report as of th proper type
+## @post-condition: all sticks have their writable partition 3 mounted
 
 function mountAllSticks(){
     local counter=0
@@ -84,7 +91,7 @@ function mountAllSticks(){
 }
 
 
-# enumerate  mounted stick partitions
+# Enumerate  mounted stick partitions
 # @return the space separated list of mounted partitions
 function mountedPartitions(){
     local mounted=""
@@ -104,28 +111,10 @@ function mountedPartitions(){
 
 
 ## unmount all stick partitions
+## @post all sticks are umounted
 function umountAllSticks(){
     for p in $(mountedPartitions) ; do
-	umount $p
-    done
-}
-
-
-##
-## write an iso image to a stick
-## @param image to write
-## @param ... sticks to write to
-function writeImage(){
-    local image=$1; shift
-    echo "image to write is ${image}"
-    while [ $# -ge 1 ]; do
-	local disk=$1; shift
-	## run as detached sub process
-	(
-	    validateStick ${disk}
-	    unmountPartitions ${disk}
-	    dd if=${image} of=/dev/${disk} bs=4M conv=fsync status=progress
-	) &
+        umount $p
     done
 }
 
@@ -134,28 +123,26 @@ function writeImage(){
 ## make partition 3 on stick
 ## @param stick/ disk to use
 function initPartition3(){
-    local disk=$1; shift
-    validateStick $disk
+    local stick=$1; shift
+    validateStick ${stick}
     ## make sfdisk use defaults for start and end, a.k.a. all remaining space
-    echo "," | flock /dev/${disk} sfdisk  --quiet --append /dev/${disk} -N3
-    sync /dev/${disk}
+    echo "," | sfdisk  --quiet --append /dev/${stick} -N3
+    partprobe /dev/${stick}
     ## make a file system in the partition
     mkfs.ext2 -q -F -L writable /dev/${disk}3
 }
 
 ##
-## prime a partition sdX3 with label and initial hom dirs
+## Prime a partition sdX3 with label and initial home directories.
 ## @param disk partition to prime
-## @param label to use
-## @param user  user on stick to use
-## @param skel skeleton tar file to use to create home dir
+## @param label to use. 
 function primePartition3(){
     local disk=$1; shift
     local label=$1; shift
     ## make the partition  and create file system in partition3
     initPartition3 ${disk}
     ## mount the file system
-    rootmp=/media/usb/${label}-writable
+    local rootmp=/media/usb/${label}-writable
     mkdir -p ${rootmp}
     mount /dev/${disk}3 ${rootmp}
     ## create a default directory structure
@@ -165,24 +152,24 @@ function primePartition3(){
     echo -n ${label} > ${rootmp}/upper/sebi-label
     ## expand skel for home/<user>
     if [ -e examskel.tgz ]; then
-	userhome=${rootmp}/upper/home/exam
-	mkdir -p ${userhome}
-	tar -C ${userhome} -xf examskel.tgz
-	chown -R 1001:1001 ${userhome}
-	echo "created home dir for 'exam' on device ${disk}3"
+        userhome=${rootmp}/upper/home/exam
+        mkdir -p ${userhome}
+        tar -C ${userhome} -xf examskel.tgz
+        chown -R 1001:1001 ${userhome}
+        echo "created home dir for 'exam' on device ${disk}3"
     fi
     if [ -e sebiskel.tgz ]; then
-	userhome=${rootmp}/upper/home/sebi
-	mkdir -p ${userhome}
-	tar -C ${userhome} -xf sebiskel.tgz
-	chown -R 1002:1002 ${userhome}
-	echo "created home dir for 'sebi' on device ${disk}3"
+        userhome=${rootmp}/upper/home/sebi
+        mkdir -p ${userhome}
+        tar -C ${userhome} -xf sebiskel.tgz
+        chown -R 1002:1002 ${userhome}
+        echo "created home dir for 'sebi' on device ${disk}3"
     fi
     sync /dev/${disk}3
     umount ${rootmp}
 }
 
-## mount the use stick as /media/usb/<label>-writable
+## Mount the usb stick as /media/usb/<label>-writable
 ## as in /media/usb/EXAM350-writable
 ## @param old mount point 
 ## @param label
@@ -207,19 +194,19 @@ function prepareSticks(){
     local image=$1; shift
     local diskNr=$1; shift
     while [ $# -ge 1 ]; do
-	local disk=$1; shift
-	local label=${stick_class}${diskNr}
-	validateStick ${disk}
-	## run as detached sub process
-	(
-	    unmountPartitions ${disk}
-	    dd if=${image} of=/dev/${disk} bs=4M conv=fsync
-	    echo "writing base iso to ${disk} completed"
-	    primePartition3 ${disk} ${label}
-	) &
-	diskNr=$((${diskNr+1}))
+        local disk=$1; shift
+        local label=${stick_class}${diskNr}
+        validateStick ${disk}
+        ## run as detached sub process
+        (
+            unmountPartitions ${disk}
+            dd if=${image} of=/dev/${disk} bs=4M conv=fsync
+            echo "writing base iso to ${disk} completed"
+            primePartition3 ${disk} ${label}
+        ) &
+        diskNr=$((${diskNr+1}))
     done
-    echo "wait for completion"
+    echo "wait for completion od sub processes"
     wait
     echo "all child processes returned"
 }
