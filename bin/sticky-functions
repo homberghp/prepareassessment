@@ -1,16 +1,30 @@
 #!/bin/bash
 
+
 ## Set of functions to manipulate sticks for exam image preparation.
 ##
 ## @author pieter.van.den.hombergh@gmail.com
+
+
+## Get device name by reading vendor and model from /sys/bloc pseudo file system.
+## @param diskBaseName name of device like sdd or sde
+function blockDeviceName(){
+    local diskBaseName=$1; shift
+    if [ -z "$diskBaseName" ]; then 
+        echo "paramater not set"
+        false
+    fi
+    v=$(cat /sys/block/${diskBaseName}/device/vendor); v=${v// /} # trim spaces
+    m=$(cat /sys/block/${diskBaseName}/device/model); m=${m// /} # trim spaces
+    echo "$v $m"
+}
+
 ## 
 ## test if given disk reports as 'SanDisk Extreme'
 ## @param diskBaseName like sdc
 function isSanDiskUSB(){
     local diskBaseName=$1; shift
-    v=$(cat /sys/block/${diskBaseName}/device/vendor); v=${v// /} # trim spaces
-    m=$(cat /sys/block/${diskBaseName}/device/model); m=${m// /} # trim spaces
-    vm="$v $m"
+    local vm=$(blockDeviceName ${diskBaseName})
     [[ $vm =~ ^'SanDisk Extreme' ]]
 }
 
@@ -18,8 +32,9 @@ function isSanDiskUSB(){
 ## 
 function enumerateSticks(){
     local result=''
-    for d in /sys/block/sd*; do
-        diskBaseName=$(basename $d)
+    local stick
+    for stick in /sys/block/sd*; do
+        local diskBaseName=$(basename $stick)
         if isSanDiskUSB ${diskBaseName}; then
             result="${result} ${diskBaseName}"
         fi
@@ -101,11 +116,17 @@ function mountedPartitions(){
 }
 
 
-## unmount all stick partitions
+## unmount all stick partitions. Remove all directories under /media/usb/*
 ## @post all sticks are umounted
 function umountAllSticks(){
-    for p in $(mountedPartitions) ; do
-        umount $p
+    local part
+    local dev
+    for part in $(mountedPartitions) ; do
+        umount ${part}
+    done
+    # cleanup up any mount points left
+    for dev in $(find /media/usb/ -mindepth 1 -maxdepth 1 -type d); do
+        rm -fr ${dev}
     done
 }
 
@@ -131,33 +152,35 @@ function primePartition3(){
     local disk=$1; shift
     local label=$1; shift
     ## make the partition  and create file system in partition3
-    initPartition3 ${disk}
-    ## mount the file system
-    local rootmp=/media/usb/${label}-writable
-    mkdir -p ${rootmp}
-    mount /dev/${disk}3 ${rootmp}
-    ## create a default directory structure
-    mkdir -p ${rootmp}/{upper/etc,work/work}
-    ## put the label file in sebi-label and hostname
-    echo ${label} | tr 'A-Z' 'a-z' > ${rootmp}/upper/etc/hostname
-    echo -n ${label} > ${rootmp}/upper/sebi-label
-    ## expand skel for home/<user>
-    if [ -e examskel.tgz ]; then
-        userhome=${rootmp}/upper/home/exam
-        mkdir -p ${userhome}
-        tar -C ${userhome} -xf examskel.tgz
-        chown -R 1001:1001 ${userhome}
-        echo "created home dir for 'exam' on device ${disk}3"
+    if isSanDiskUSB ${disk} ; then
+        initPartition3 ${disk}
+        ## mount the file system
+        local rootmp=/media/usb/${label}-writable
+        mkdir -p ${rootmp}
+        mount /dev/${disk}3 ${rootmp}
+        ## create a default directory structure
+        mkdir -p ${rootmp}/{upper/etc,work/work}
+        ## put the label file in sebi-label and hostname
+        echo ${label} | tr 'A-Z' 'a-z' > ${rootmp}/upper/etc/hostname
+        echo -n ${label} > ${rootmp}/upper/sebi-label
+        ## expand skel for home/<user>
+        if [ -e examskel.tgz ]; then
+            userhome=${rootmp}/upper/home/exam
+            mkdir -p ${userhome}
+            tar -C ${userhome} -xf examskel.tgz
+            chown -R 1001:1001 ${userhome}
+            echo "created home dir for 'exam' on device ${disk}3"
+        fi
+        if [ -e sebiskel.tgz ]; then
+            userhome=${rootmp}/upper/home/sebi
+            mkdir -p ${userhome}
+            tar -C ${userhome} -xf sebiskel.tgz
+            chown -R 1002:1002 ${userhome}
+            echo "created home dir for 'sebi' on device ${disk}3"
+        fi
+        sync /dev/${disk}3
+        umount ${rootmp}
     fi
-    if [ -e sebiskel.tgz ]; then
-        userhome=${rootmp}/upper/home/sebi
-        mkdir -p ${userhome}
-        tar -C ${userhome} -xf sebiskel.tgz
-        chown -R 1002:1002 ${userhome}
-        echo "created home dir for 'sebi' on device ${disk}3"
-    fi
-    sync /dev/${disk}3
-    umount ${rootmp}
 }
 
 ## Mount the usb stick as /media/usb/<label>-writable
@@ -185,20 +208,23 @@ function prepareSticks(){
     local stick_class=$1; shift
     local image=$1; shift
     local startDiskNr=$1; shift
+    # ensure no disk is mounted
     umountAllSticks
-    while [ $# -ge 0 ]; do
+    while [ $# -gt 0 ]; do
         local disk=$1; shift
-        if [ -z "${disk}" ]; then break; fi
-        local label=${stick_class}${startDiskNr}
-        echo "preparing stick ${disk} as ${label}"
-        validateStick ${disk}
-        ## run as detached sub process
-        (
-           dd if=${image} of=/dev/${disk} bs=4M conv=fsync
-           echo "#writing base iso to ${disk} completed"
-           primePartition3 ${disk} ${label}
-        ) &
-        startDiskNr=$((${startDiskNr}+1))
+        if isSanDiskUSB ${disk}; then 
+            local label=${stick_class}${startDiskNr}
+            echo "preparing stick ${disk} as ${label}"
+            ## run as detached sub process
+            # (
+            #     # last chance to bail out before writing
+            #     validateStick ${disk}
+            #     dd if=${image} of=/dev/${disk} bs=4M conv=fsync
+            #     echo "#writing base iso to ${disk} completed"
+            #     primePartition3 ${disk} ${label}
+            # ) &
+            startDiskNr=$((${startDiskNr}+1))
+        fi
     done
     echo "wait for completion of sub processes"
     wait
