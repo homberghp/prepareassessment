@@ -138,10 +138,13 @@ function initPartition3(){
     local stick=$1; shift
     validateStick ${stick}
     ## make sfdisk use defaults for start and end, a.k.a. all remaining space
-    echo "," | sfdisk  --quiet --append /dev/${stick} -N3
+    echo "," | sfdisk  --quiet --append /dev/${stick} -N3 &> /dev/null
+    ## make sure the kernel sees the new partition
     partprobe /dev/${stick}
     ## make a file system in the partition
     mkfs.ext2 -q -F -L writable /dev/${stick}3
+    ## make sure the file system actions are flush to the device
+    sync /dev/${stick}3
 }
 
 ##
@@ -216,13 +219,13 @@ function prepareSticks(){
             local label=${stick_class}${startDiskNr}
             echo "preparing stick ${disk} as ${label}"
             ## run as detached sub process
-            # (
-            #     # last chance to bail out before writing
-            #     validateStick ${disk}
-            #     dd if=${image} of=/dev/${disk} bs=4M conv=fsync
-            #     echo "#writing base iso to ${disk} completed"
-            #     primePartition3 ${disk} ${label}
-            # ) &
+            (
+                # last chance to bail out before writing
+                validateStick ${disk}
+                dd if=${image} of=/dev/${disk} bs=4M conv=fsync
+                echo "#writing base iso to ${disk} completed"
+                primePartition3 ${disk} ${label}
+            ) &
             startDiskNr=$((${startDiskNr}+1))
         fi
     done
