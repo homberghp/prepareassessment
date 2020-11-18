@@ -12,7 +12,6 @@ function blockDeviceName(){
     local diskBaseName=$1; shift
     if [ -z "$diskBaseName" ]; then 
         echo "paramater not set"
-        false
     fi
     v=$(cat /sys/block/${diskBaseName}/device/vendor); v=${v// /} # trim spaces
     m=$(cat /sys/block/${diskBaseName}/device/model); m=${m// /} # trim spaces
@@ -20,16 +19,12 @@ function blockDeviceName(){
 }
 
 ## 
-## test if given disk reports as 'SanDisk Extreme'
+## test if given stick reports as 'SanDisk Extreme'
 ## @param diskBaseName like sdc
 function isSanDiskUSB(){
     local diskBaseName=$1; shift
-    if [ -z "${diskBaseName}" ]; then 
-        false 
-    else
-        local vm=$(blockDeviceName ${diskBaseName})
-        [[ $vm =~ ^'SanDisk Extreme' ]]
-    fi
+    local vm=$(blockDeviceName "${diskBaseName}")
+    [[ $vm =~ ^'SanDisk Extreme' ]]
 }
 
 ## Return a list of device names that appear to be SanDisk Extreme devices
@@ -39,8 +34,12 @@ function enumerateSticks(){
     local stick
     for stick in /sys/block/sd*; do
         local diskBaseName=$(basename $stick)
-        if isSanDiskUSB ${diskBaseName}; then
-            result="${result} ${diskBaseName}"
+        if isSanDiskUSB "${diskBaseName}"; then
+            if [ -z "$result" ] ; then
+                result="${result}"
+            else 
+                result="${result} ${diskBaseName}"
+            fi
         fi
     done
     echo -n ${result};
@@ -52,21 +51,22 @@ function enumerateSticks(){
 # @deprecated:  when running this function in a shell, and the stick is not valid, it closes the shell.
 function validateStick(){
     local diskBaseName=$1; shift
-    echo "checking ${diskBaseName}"
-    if [ ! -e /sys/block/${diskBaseName} ] ; then
+    echo "checking '${diskBaseName}' to be proper stick"
+    if [ ! -d /sys/block/${diskBaseName} ] ; then 
         echo "${diskBaseName} is not a suitable device or not a block device at all, bye..."
         exit 1
     fi
     ## test for SanDisk Extreme
     ## read vendor and model
+    dname=$(blockDeviceName ${diskBaseName})
     if  ! isSanDiskUSB ${diskBaseName} ; then
-	echo "device /dev/${diskBaseName} should be a 'SanDisk Extreme' but was a '${vm}'"
-	exit 1
+        echo "device /dev/${diskBaseName} should be a 'SanDisk Extreme' but was a '${dname}'"
+        exit 1
     fi
     #echo "found device '$vm' at /dev/${diskBaseName}"
 }
 
-## Mount all sticks that report as of th proper type
+## Mount all sticks that report the proper vendor and model
 ## @post-condition: all sticks have their writable partition 3 mounted
 
 function mountAllSticks(){
@@ -79,26 +79,27 @@ function mountAllSticks(){
         mkdir -p ${probemount}
         if mount --options ro /dev/${part} ${probemount}; then
             local labelFile=${probemount}/upper/sebi-label
-            if [ -e ${labelFile} ]; then
-                label=$(cat ${probemount}/upper/sebi-label)
+            if [ -s ${labelFile} ]; then
+                label=$(cat ${labelFile})
             else
                 label=UNKNOWN${counter}
             fi
             ## create final mount point
             local finalmount=/media/usb/${label}-writable
             mkdir -p ${finalmount}
-            mount --bind --options rw ${probemount} ${finalmount}
-            mount --options remount,rw /dev/${part} ${finalmount}
-            done
-            sync
-            echo 'waiting a second for mount activity to settle down'
-            sleep 1 # let the machine recover
-            for probemount in $(cat /proc/mounts \
-                    | grep '\-stickmountprobe' \
-                    | awk '{print $2}') ; do
-            umount ${probemount}
+            # mount --bind --options rw ${probemount} ${finalmount}
+            # mount --options remountrw /dev/${part} ${finalmount}
+            mount --options remount,bind,rw ${probemount} ${finalmount}
+            # sync
+            # echo 'waiting a second for mount activity to settle down'
+            # sleep 1 # let the machine recover
         fi
-        rmdir ${probemount}
+    done
+    for pm in $(cat /proc/mounts \
+            | grep '\-stickmountprobe' \
+            | awk '{print $2}') ; do
+        umount ${pm}
+        rmdir ${pm}
     done
 }
 
@@ -108,15 +109,15 @@ function mountAllSticks(){
 function mountedPartitions(){
     local mounted=""
     for d in $(enumerateSticks); do
-	for p in $(cat  /proc/mounts \
-		       | awk '{print $1}'\
-		       | grep -s "/dev/${d}" ) ; do
-	    if [ -z "$mounted" ]; then
-		mounted="$p"
-	    else
-		mounted="${mounted} $p"
-	    fi
-	done
+        for p in $(cat  /proc/mounts \
+                | awk '{print $1}'\
+                | grep -s "/dev/${d}" ) ; do
+            if [ -z "$mounted" ]; then
+                mounted="$p"
+            else
+                mounted="${mounted} $p"
+            fi
+        done
     done
     echo "$mounted"
 }
@@ -130,7 +131,7 @@ function umountAllSticks(){
     for part in $(mountedPartitions) ; do
         umount ${part}
     done
-    # cleanup up any mount points left
+    # cleanup up any mount points left, all dirs are under media, so supposed to be safe.
     for dev in $(find /media/usb/ -mindepth 1 -maxdepth 1 -type d); do
         umount ${dev}
         rm -fr ${dev}
@@ -144,59 +145,67 @@ function umountAllSticks(){
 
 ##
 ## make partition 3 on stick
-## @param stick/ disk to use
+## @param stick/ stick to use
+## resturns status, 0 on succes , 1 on fail
 function initPartition3(){
     local stick=$1; shift
     validateStick ${stick}
-    ## make sfdisk use defaults for start and end, a.k.a. all remaining space
-    echo "," | sfdisk  --quiet --append /dev/${stick} -N3 &> /dev/null
-    ## make sure the kernel sees the new partition
-    partprobe /dev/${stick}
-    ## make a file system in the partition
-    mkfs.ext2 -q -F -L writable /dev/${stick}3
-    ## make sure the file system actions are flush to the device
-    sync /dev/${stick}3
+    if isSanDiskUSB "${stick}" ; then
+        ## make sfdisk use defaults for start and end, a.k.a. all remaining space
+        echo "," | sfdisk  --quiet --append /dev/${stick} -N3 &> /dev/null
+        ## make sure the kernel sees the new partition
+        partprobe /dev/${stick}
+        ## make a file system in the partition
+        mkfs.ext2 -q -F -L writable /dev/${stick}3
+        ## make sure the file system actions are flush to the device
+        sync /dev/${stick}
+        sleep 3 # leave some time to flush
+    else
+        return 1
+    fi
 }
 
 ##
 ## Prime a partition sdX3 with label and initial home directories.
-## @param disk partition to prime
+## @param stick partition to prime
 ## @param label to use. 
 function primePartition3(){
-    local disk=$1; shift
+    local stick=$1; shift
     local label=$1; shift
     ## make the partition  and create file system in partition3
-    if isSanDiskUSB ${disk} ; then
-        initPartition3 ${disk}
+    if isSanDiskUSB ${stick}  && initPartition3 ${stick}; then
         ## mount the file system 
-        partprobe /dev/${disk}
+        partprobe /dev/${stick}
         local rootmp=/media/usb/${label}-writable
         mkdir -p ${rootmp}
-        if mount /dev/${disk}3 ${rootmp}; then
+        if mount /dev/${stick}3 ${rootmp}; then
             ## create a default directory structure
             mkdir -p ${rootmp}/{upper/etc,work/work}
             ## put the label file in sebi-label and hostname
             echo ${label} | tr 'A-Z' 'a-z' > ${rootmp}/upper/etc/hostname
             echo -n ${label} > ${rootmp}/upper/sebi-label
-            ## expand skel for home/<user>
+            ## expand skel for home/exam
             if [ -e examskel.tgz ]; then
                 userhome=${rootmp}/upper/home/exam
                 mkdir -p ${userhome}
                 tar -C ${userhome} -xf examskel.tgz
                 chown -R 1001:1001 ${userhome}
-                echo "created home dir for 'exam' on device ${disk}3"
+                echo "created home dir for 'exam' on device ${stick}3"
             fi
+            ## expand skel for home/sebi
             if [ -e sebiskel.tgz ]; then
                 userhome=${rootmp}/upper/home/sebi
                 mkdir -p ${userhome}
                 tar -C ${userhome} -xf sebiskel.tgz
                 chown -R 1002:1002 ${userhome}
-                echo "created home dir for 'sebi' on device ${disk}3"
+                echo "created home dir for 'sebi' on device ${stick}3"
             fi
-            sync /dev/${disk}3
+            sync /dev/${stick}3
+            sleep 1
             umount ${rootmp}
         else
-            echo -e "\e[41mCan't mount /dev/${disk}3 ${rootmp}\e[m"
+            echo -e "\e[41mCan't mount /dev/${stick}3 ${rootmp}\e[m"
+            return 1
         fi
     fi
 }
@@ -219,34 +228,31 @@ function remount(){
 ## example prepareSticks EXAM image.iso 350 sdc sdd sde sdf
 ## @param stick_class EXAM oe SEBI
 ## @param image the iso file to use
-## @param startDiskNr the initial disk number
+## @param startDiskNr the initial stick number
 ## @param disk1 [disk2 [...]]
 function prepareSticks(){
     echo "received $# params: [$@]"
     local stick_class=$1; shift
     local image=$1; shift
     local startDiskNr=$1; shift
-    # ensure no disk is mounted
+    # ensure no stick is mounted
     umountAllSticks
     while [ $# -gt 0 ]; do
-        local disk=$1; shift
-        if isSanDiskUSB "${disk}"; then 
+        local stick=$1; shift
+        if isSanDiskUSB "${stick}"; then 
             local label=${stick_class}${startDiskNr}
-            echo "preparing stick ${disk} as ${label}"
+            echo "preparing stick ${stick} as ${label}"
             ## run as detached sub process
             (
-                # last chance to bail out before writing
-                validateStick ${disk}
                 # for those cases where there is an GPT table
-                #sgdisk --zap-all /dev/${disk}
-                ## inform system
-                partprobe /dev/${disk}
-                dd if=${image} of=/dev/${disk} bs=4M conv=fsync
-                echo "#writing base iso to ${disk} completed"
+                #sgdisk --zap-all /dev/${stick}
+                dd if=${image} of=/dev/${stick} bs=4M conv=fsync
+                echo "#writing base iso to ${stick} completed"
                 ## dd rewrote partition table, inform system
+                sync /dev/${stick}
                 sleep 1
-                partprobe /dev/${disk}
-                primePartition3 ${disk} ${label}
+                partprobe /dev/${stick}
+                primePartition3 ${stick} ${label}
             ) &
             startDiskNr=$((${startDiskNr}+1))
         fi
