@@ -72,31 +72,33 @@ function validateStick(){
 function mountAllSticks(){
     local counter=0
     for baseDisk in $(enumerateSticks); do
-	local locacounter=$((${counter}+1))
-	local probemount=/media/${USER}/${baseDisk}3-stickmountprobe
-	local part=${baseDisk}3
-	mkdir -p ${probemount}
-	mount --options ro /dev/${part} ${probemount}
-	local labelFile=${probemount}/upper/sebi-label
-	if [ -e ${labelFile} ]; then
-	    label=$(cat ${probemount}/upper/sebi-label)
-	else
-	    label=UNKNOWN${counter}
-	fi
-	## create final mount point
-	local finalmount=/media/usb/${label}-writable
-	mkdir -p ${finalmount}
-	mount --bind --options rw ${probemount} ${finalmount}
-	mount --options remount,rw /dev/${part} ${finalmount}
-    done
-    sync
-    echo 'waiting a second for mount activity to settle down'
-    sleep 1 # let the machine recover
-    for probemount in $(cat /proc/mounts \
-		    | grep '\-stickmountprobe' \
-		    | awk '{print $2}') ; do
-	umount ${probemount}
-	rmdir ${probemount}
+        if [ -z "${baseDisk}" ]; then continue; fi
+        counter=$((${counter}+1))
+        local probemount=/media/${USER}/${baseDisk}3-stickmountprobe
+        local part=${baseDisk}3
+        mkdir -p ${probemount}
+        if mount --options ro /dev/${part} ${probemount}; then
+            local labelFile=${probemount}/upper/sebi-label
+            if [ -e ${labelFile} ]; then
+                label=$(cat ${probemount}/upper/sebi-label)
+            else
+                label=UNKNOWN${counter}
+            fi
+            ## create final mount point
+            local finalmount=/media/usb/${label}-writable
+            mkdir -p ${finalmount}
+            mount --bind --options rw ${probemount} ${finalmount}
+            mount --options remount,rw /dev/${part} ${finalmount}
+            done
+            sync
+            echo 'waiting a second for mount activity to settle down'
+            sleep 1 # let the machine recover
+            for probemount in $(cat /proc/mounts \
+                    | grep '\-stickmountprobe' \
+                    | awk '{print $2}') ; do
+            umount ${probemount}
+        fi
+        rmdir ${probemount}
     done
 }
 
@@ -166,7 +168,8 @@ function primePartition3(){
     ## make the partition  and create file system in partition3
     if isSanDiskUSB ${disk} ; then
         initPartition3 ${disk}
-        ## mount the file system
+        ## mount the file system 
+        partprobe /dev/${disk}
         local rootmp=/media/usb/${label}-writable
         mkdir -p ${rootmp}
         if mount /dev/${disk}3 ${rootmp}; then
@@ -235,12 +238,13 @@ function prepareSticks(){
                 # last chance to bail out before writing
                 validateStick ${disk}
                 # for those cases where there is an GPT table
-                sgdisk --zap-all /dev/${disk}
+                #sgdisk --zap-all /dev/${disk}
                 ## inform system
                 partprobe /dev/${disk}
                 dd if=${image} of=/dev/${disk} bs=4M conv=fsync
                 echo "#writing base iso to ${disk} completed"
                 ## dd rewrote partition table, inform system
+                sleep 1
                 partprobe /dev/${disk}
                 primePartition3 ${disk} ${label}
             ) &
