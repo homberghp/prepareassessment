@@ -24,8 +24,12 @@ function blockDeviceName(){
 ## @param diskBaseName like sdc
 function isSanDiskUSB(){
     local diskBaseName=$1; shift
-    local vm=$(blockDeviceName ${diskBaseName})
-    [[ $vm =~ ^'SanDisk Extreme' ]]
+    if [ -z "${diskBaseName}" ]; then 
+        false 
+    else
+        local vm=$(blockDeviceName ${diskBaseName})
+        [[ $vm =~ ^'SanDisk Extreme' ]]
+    fi
 }
 
 ## Return a list of device names that appear to be SanDisk Extreme devices
@@ -126,6 +130,11 @@ function umountAllSticks(){
     done
     # cleanup up any mount points left
     for dev in $(find /media/usb/ -mindepth 1 -maxdepth 1 -type d); do
+        umount ${dev}
+        rm -fr ${dev}
+    done
+    for dev in $(find /media/${USER}/ -mindepth 1 -maxdepth 1 -type d); do
+        umount ${dev}
         rm -fr ${dev}
     done
 }
@@ -160,29 +169,32 @@ function primePartition3(){
         ## mount the file system
         local rootmp=/media/usb/${label}-writable
         mkdir -p ${rootmp}
-        mount /dev/${disk}3 ${rootmp}
-        ## create a default directory structure
-        mkdir -p ${rootmp}/{upper/etc,work/work}
-        ## put the label file in sebi-label and hostname
-        echo ${label} | tr 'A-Z' 'a-z' > ${rootmp}/upper/etc/hostname
-        echo -n ${label} > ${rootmp}/upper/sebi-label
-        ## expand skel for home/<user>
-        if [ -e examskel.tgz ]; then
-            userhome=${rootmp}/upper/home/exam
-            mkdir -p ${userhome}
-            tar -C ${userhome} -xf examskel.tgz
-            chown -R 1001:1001 ${userhome}
-            echo "created home dir for 'exam' on device ${disk}3"
+        if mount /dev/${disk}3 ${rootmp}; then
+            ## create a default directory structure
+            mkdir -p ${rootmp}/{upper/etc,work/work}
+            ## put the label file in sebi-label and hostname
+            echo ${label} | tr 'A-Z' 'a-z' > ${rootmp}/upper/etc/hostname
+            echo -n ${label} > ${rootmp}/upper/sebi-label
+            ## expand skel for home/<user>
+            if [ -e examskel.tgz ]; then
+                userhome=${rootmp}/upper/home/exam
+                mkdir -p ${userhome}
+                tar -C ${userhome} -xf examskel.tgz
+                chown -R 1001:1001 ${userhome}
+                echo "created home dir for 'exam' on device ${disk}3"
+            fi
+            if [ -e sebiskel.tgz ]; then
+                userhome=${rootmp}/upper/home/sebi
+                mkdir -p ${userhome}
+                tar -C ${userhome} -xf sebiskel.tgz
+                chown -R 1002:1002 ${userhome}
+                echo "created home dir for 'sebi' on device ${disk}3"
+            fi
+            sync /dev/${disk}3
+            umount ${rootmp}
+        else
+            echo -e "\e[41mCan't mount /dev/${disk}3 ${rootmp}\e[m"
         fi
-        if [ -e sebiskel.tgz ]; then
-            userhome=${rootmp}/upper/home/sebi
-            mkdir -p ${userhome}
-            tar -C ${userhome} -xf sebiskel.tgz
-            chown -R 1002:1002 ${userhome}
-            echo "created home dir for 'sebi' on device ${disk}3"
-        fi
-        sync /dev/${disk}3
-        umount ${rootmp}
     fi
 }
 
@@ -215,15 +227,21 @@ function prepareSticks(){
     umountAllSticks
     while [ $# -gt 0 ]; do
         local disk=$1; shift
-        if isSanDiskUSB ${disk}; then 
+        if isSanDiskUSB "${disk}"; then 
             local label=${stick_class}${startDiskNr}
             echo "preparing stick ${disk} as ${label}"
             ## run as detached sub process
             (
                 # last chance to bail out before writing
                 validateStick ${disk}
+                # for those cases where there is an GPT table
+                sgdisk --zap-all /dev/${disk}
+                ## inform system
+                partprobe /dev/${disk}
                 dd if=${image} of=/dev/${disk} bs=4M conv=fsync
                 echo "#writing base iso to ${disk} completed"
+                ## dd rewrote partition table, inform system
+                partprobe /dev/${disk}
                 primePartition3 ${disk} ${label}
             ) &
             startDiskNr=$((${startDiskNr}+1))
