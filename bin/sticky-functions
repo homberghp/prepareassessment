@@ -67,12 +67,14 @@ function validateStick(){
 
 function mountAllSticks(){
     local counter=0
+    local probes=""
     for baseDisk in $(enumerateSticks); do
         if [ -z "${baseDisk}" ]; then continue; fi
         counter=$((${counter}+1))
         local probemount=/media/${USER}/${baseDisk}3-stickmountprobe
         local part=${baseDisk}3
         mkdir -p ${probemount}
+        probes="${probes} ${probemount}"
         if mount --options ro /dev/${part} ${probemount}; then
             local labelFile=${probemount}/upper/sebi-label
             if [ -s ${labelFile} ]; then
@@ -87,8 +89,8 @@ function mountAllSticks(){
             mount --options remount,rw /dev/${part} ${finalmount}
             sync
             echo "mounted and rebound /dev/${part} ${finalmount}"
-            sleep 1
-            umount ${probemount} && rmdir ${probemount}
+            # sleep 1
+            # umount ${probemount} && rmdir ${probemount}
             # sync
             # echo 'waiting a second for mount activity to settle down'
             # sleep 1 # let the machine recover
@@ -96,6 +98,13 @@ function mountAllSticks(){
             echo -e "can't mount '/dev/${part}' to ${probemount}"
         fi
     done
+    sync
+    sleep 3
+    for smp in /media/root/*-stickmountprobe; do  
+        umount $smp
+        rmdir $smp
+    done
+
 }
 
 
@@ -135,17 +144,9 @@ function umountAllSticks(){
     local part
     local dev
     for part in $(mountedPartitions) ; do
+        local obsoleteMountPoints=$(mountPointsFor ${part})
         umount ${part}
-    done
-    # cleanup up any mount points left, all dirs are under media, so supposed to be safe.
-    for dev in $(find /media/usb/ -mindepth 1 -maxdepth 1 -type d); do
-        umount ${dev}
-        rmdir ${dev}
-    done
-    for dev in $(find /media/${USER}/ -mindepth 1 -maxdepth 1 -type d); do
-        if umount ${dev}; then
-            rmdir ${dev}
-        fi
+        # rmdir ${obsoleteMountPoints}
     done
 }
 
