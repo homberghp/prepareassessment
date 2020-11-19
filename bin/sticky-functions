@@ -145,6 +145,7 @@ function umountAllSticks(){
     local dev
     for part in $(mountedPartitions) ; do
         local obsoleteMountPoints=$(mountPointsFor ${part})
+        ## build for-loop until success 
         umount ${part}
         # rmdir ${obsoleteMountPoints}
     done
