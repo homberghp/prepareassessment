@@ -33,13 +33,9 @@ function enumerateSticks(){
     local result=''
     local stick
     for stick in /sys/block/sd*; do
-        local diskBaseName=$(basename $stick)
+        local diskBaseName=$(basename ${stick})
         if isSanDiskUSB "${diskBaseName}"; then
-            if [ -z "$result" ] ; then
-                result="${result}"
-            else 
-                result="${result} ${diskBaseName}"
-            fi
+            result="${result} ${diskBaseName}"
         fi
     done
     echo -n ${result};
@@ -87,19 +83,18 @@ function mountAllSticks(){
             ## create final mount point
             local finalmount=/media/usb/${label}-writable
             mkdir -p ${finalmount}
-            # mount --bind --options rw ${probemount} ${finalmount}
-            # mount --options remountrw /dev/${part} ${finalmount}
-            mount --options remount,bind,rw ${probemount} ${finalmount}
+            mount --bind ${probemount} ${finalmount}
+            mount --options remount,rw /dev/${part} ${finalmount}
+            sync
+            echo "mounted and rebound /dev/${part} ${finalmount}"
+            sleep 1
+            umount ${probemount} && rmdir ${probemount}
             # sync
             # echo 'waiting a second for mount activity to settle down'
             # sleep 1 # let the machine recover
+        else
+            echo -e "can't mount '/dev/${part}' to ${probemount}"
         fi
-    done
-    for pm in $(cat /proc/mounts \
-            | grep '\-stickmountprobe' \
-            | awk '{print $2}') ; do
-        umount ${pm}
-        rmdir ${pm}
     done
 }
 
@@ -119,9 +114,20 @@ function mountedPartitions(){
             fi
         done
     done
-    echo "$mounted"
+    echo -n "$mounted"
 }
 
+## Find all the mount points for the given device
+## @param dev device as in sdd3 or sdde3
+## return a space sperated mountpoints
+function mountPointsFor(){
+    local dev=$1; shift
+    local mountPoints=""
+    for p in $(cat  /proc/mounts | grep -s "^${d}" | awk '{print $2}' ) ; do
+        mountPoints="${mountPoints} $p"
+    done
+    echo -n "${mountPoints}"
+}
 
 ## unmount all stick partitions. Remove all directories under /media/usb/*
 ## @post all sticks are umounted
@@ -134,11 +140,12 @@ function umountAllSticks(){
     # cleanup up any mount points left, all dirs are under media, so supposed to be safe.
     for dev in $(find /media/usb/ -mindepth 1 -maxdepth 1 -type d); do
         umount ${dev}
-        rm -fr ${dev}
+        rmdir ${dev}
     done
     for dev in $(find /media/${USER}/ -mindepth 1 -maxdepth 1 -type d); do
-        umount ${dev}
-        rm -fr ${dev}
+        if umount ${dev}; then
+            rmdir ${dev}
+        fi
     done
 }
 
