@@ -3,4 +3,18 @@
 while [ $# -gt 0 ] ; do
     next=$1; shift
     echo "'${next}'"
-done    
+done
+
+rootmp=/media/usb/EXAM312-writable
+count=10
+mount /dev/sdd3 ${rootmp}
+while [[ $count -gt 0 ]] ; do
+    if test -d ${rootmp}/lost+found; then 
+        echo "done"
+        break; 
+    fi
+    sleep 0.5
+    echo "${count}"
+    mount /dev/sdd3 ${rootmp}
+    count=$((${count}-1))
+done

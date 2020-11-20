@@ -143,12 +143,19 @@ function umountAllSticks(){
     for part in $(mountedPartitions) ; do
         for mp in $(mountPointsFor ${part} ); do
         ## build for-loop until success 
-        while ! umount -q ${mp} 2> /dev/null; do
-            echo "cannot umount ${mp}"
-            sleep 0.5
-        done
+            while ! umount -q ${mp} 2> /dev/null; do
+                echo "cannot umount ${mp}"
+                sleep 0.5
+            done
             rmdir ${mp}
         done
+    done
+    ## cleanup dangling mount points
+    for m in $(find /media/usb -mindepth 1 -maxdepth 1 -type d ); do
+        rmdir ${m}
+    done
+    for m in $(find /media/${USER} -mindepth 1 -maxdepth 1 -type d ); do
+        rmdir ${m}
     done
 }
 
@@ -192,11 +199,14 @@ function initPartition3(){
         sync /dev/${stick}
         ## validate and show partition info
         while ! partprobe /dev/${stick}; do sleep 0.5; done
-        ## wait until special device (/dev/sdX3) is visible for use by next step
-        while ! test -b /dev/${stick}3 ; do
-            echo "waiting for ${stick}'s partition 3 to become visible as /dev/${stick}3 "
+        ## wait until special device (/dev/sdX3) is visible for use by next step 
+        local countDown=10
+        while [[ ${countDown} -gt 0 ]]; do
+          if test -b /dev/${stick}3 ; then break; fi
+            echo "waiting for ${stick}'s partition 3 to become visible as /dev/${stick}3 countDown =${countDown}"
             sleep 0.5
             sync /dev/${stick}
+            countDown=$((${countDown}-1))
         done
         # sleep 1.5 # leave some time to flush
         echo -e "\e[1moverlap in next message for '/dev/${stick}' is harmless\e[m"
@@ -225,7 +235,21 @@ function primePartition3(){
         partprobe /dev/${stick}
         local rootmp=/media/usb/${label}-writable
         mkdir -p ${rootmp}
-        if mount /dev/${stick}3 ${rootmp}; then
+        local tryCount=10
+        # try to find the pristine lost+found dir in the new partition,
+        # but give up after so many tries
+        mount /dev/${stick}3 ${rootmp}
+        
+        while [[ ${tryCount} -gt 0 ]] ; do
+            if test -d ${rootmp}/lost+found ; then 
+                break; 
+            fi
+            echo "${tryCount}"
+            mount /dev/${stick}3 ${rootmp}
+            count=$((${tryCount}-1))
+            sleep 0.5
+        done
+        if test -d ${rootmp}/lost+found ; then
             ## create a default directory structure
             mkdir -p ${rootmp}/{upper/etc,work/work}
             ## put the label file in sebi-label and hostname
@@ -251,7 +275,7 @@ function primePartition3(){
             sleep 1
             umount ${rootmp}
         else
-            echo -e "\e[41mCan't mount /dev/${stick}3 ${rootmp}\e[m"
+            echo -e "\e[41mCan't mount /dev/${stick}3 ${rootmp}\e[m, failed after ${tryCount} tries"
             return 1
         fi
     fi
