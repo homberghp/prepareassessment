@@ -153,6 +153,32 @@ function umountAllSticks(){
 }
 
 
+## Make a lock file for sfdisk and one for mkfs.ext2
+function makeLockFiles(){
+    if ! echo "$$" > /var/lock/sticky-lock-sfdisk; then 
+        echo "cannot create lock file '/var/lock/sticky-lock'"
+        exit 1
+    fi
+    if ! echo "$$" > /var/lock/sticky-lock-mkfs; then 
+        echo "cannot create lock file '/var/lock/sticky-lock'"
+        exit 1
+    fi
+}
+
+## remove lock files 
+function removeLockFiles(){
+    rm -f /var/lock/sticky-lock*
+}
+## append partition 3 to current partition on stick
+## @param stick. 
+## Not that this command is actuall invoked via external file 'append-partition-3', otherwise flock can't find it
+
+function appendPartition3(){
+    local stick=$1; shift
+    echo "creating 3rd partition in /dev/${stick}"
+    echo "," | sfdisk  --quiet --append /dev/${stick} -N3 2> /dev/null
+}
+
 ##
 ## Make partition 3 on stick and leaves it unmounted
 ## @param stick/ stick to use
@@ -160,16 +186,27 @@ function umountAllSticks(){
 function initPartition3(){
     local stick=$1; shift
     if isSanDiskUSB "${stick}" ; then
-        ## make sfdisk use defaults for start and end, a.k.a. all remaining space
-        echo "," | sfdisk  --quiet --append /dev/${stick} -N3 2> /dev/null
+        ## I do not trust sfdisk to be 'thread-safe' so have only one process use it
+        flock --no-fork --exclusive /var/lock/sticky-lock-sfdisk append-partition-3 ${stick}
         ## make sure the kernel sees the new partition
         sync /dev/${stick}
-        sleep 1.5 # leave some time to flush
+        ## validate and show partition info
         while ! partprobe /dev/${stick}; do sleep 0.5; done
+        ## wait until special device (/dev/sdX3) is visible for use by next step
+        while ! test -b /dev/${stick}3 ; do
+            echo "waiting for ${stick}'s partition 3 to become visible as /dev/${stick}3 "
+            sleep 0.5
+            sync /dev/${stick}
+        done
+        # sleep 1.5 # leave some time to flush
+        echo -e "\e[1moverlap in next message for '/dev/${stick}' is harmless\e[m"
+        sfdisk -V /dev/${stick}
         ## make a file system in the partition
-        mkfs.ext2 -q -F -L writable /dev/${stick}3 > /dev/null
+        ## not sure if mkfs.ext2 is thread safe, so serialize that too.
+        flock --no-fork --exclusive /var/lock/sticky-lock-mkfs mkfs.ext2 -q -F -L writable /dev/${stick}3 > /dev/null
         ## make sure the file system actions are flush to the device
-        sync /dev/${stick}3
+        sync /dev/${stick}3 /dev/${stick}
+        echo "created file system in partition /dev/${stick}3"
     else
         return 1
     fi
@@ -247,6 +284,8 @@ function prepareSticks(){
     local startDiskNr=$1; shift
     # ensure no stick is mounted
     umountAllSticks
+    ## we need lock files. Function will exit on failure.
+    makeLockFiles
     while [ $# -gt 0 ]; do
         local stick=$1; shift
         if isSanDiskUSB "${stick}"; then 
@@ -272,5 +311,6 @@ function prepareSticks(){
     done
     echo "wait for completion of sub processes"
     wait
+    removeLockFiles
     echo "all child processes returned"
 }

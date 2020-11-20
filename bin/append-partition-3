@@ -1,0 +1,14 @@
+#!/bin/bash
+
+if [ $# -lt 1 ]; then
+    echo "need paramter like 'sdd' or 'sde'"
+    exit 1
+fi
+
+scriptdir=$(dirname $0)
+source ${scriptdir}/sticky-functions
+
+stick=$1; shift
+appendPartition3 ${stick}
+
+
