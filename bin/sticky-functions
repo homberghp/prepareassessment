@@ -100,7 +100,7 @@ function mountAllSticks(){
             echo -e "can't mount '/dev/${part}' to ${probemount}"
         fi
     done
-    echo "wait for child processes to complete"
+    # echo "wait for child processes to complete"
     wait 
 }
 
@@ -159,17 +159,17 @@ function umountAllSticks(){
 ## returns status, 0 on succes , 1 on fail
 function initPartition3(){
     local stick=$1; shift
-    validateStick ${stick}
     if isSanDiskUSB "${stick}" ; then
         ## make sfdisk use defaults for start and end, a.k.a. all remaining space
         echo "," | sfdisk  --quiet --append /dev/${stick} -N3 2> /dev/null
         ## make sure the kernel sees the new partition
-        partprobe /dev/${stick}
+        sync /dev/${stick}
+        sleep 1.5 # leave some time to flush
+        while ! partprobe /dev/${stick}; do sleep 0.5; done
         ## make a file system in the partition
         mkfs.ext2 -q -F -L writable /dev/${stick}3 > /dev/null
         ## make sure the file system actions are flush to the device
-        sync /dev/${stick}
-        sleep 3 # leave some time to flush
+        sync /dev/${stick}3
     else
         return 1
     fi
