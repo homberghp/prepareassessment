@@ -37,7 +37,7 @@ case $response in
     0) echo "Okay to proceed."
         # do some sanity checks
         if [ ! -e $image ]; then 
-            echo "cannot file the image file '${image}' aborting"
+            echo -e "cannot find the image file \e[41m '${image}' \e[m, you are probably in the wrong directory, aborting..."
             exit 1
         fi
         echo "about to preparesticks for $(enumerateSticks)"
