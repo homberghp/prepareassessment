@@ -176,14 +176,29 @@ function makeLockFiles(){
 function removeLockFiles(){
     rm -f /var/lock/sticky-lock*
 }
+
 ## append partition 3 to current partition on stick
 ## @param stick. 
 ## Not that this command is actuall invoked via external file 'append-partition-3', otherwise flock can't find it
-
 function appendPartition3(){
     local stick=$1; shift
     echo "creating 3rd partition in /dev/${stick}"
     echo "," | sfdisk  --quiet --append /dev/${stick} -N3 2> /dev/null
+}
+
+## wait for block device to be visible
+## @param block device like /dev/sdd3
+function waitForBlockDevice(){
+    local dev=$1; shift
+    local countDown=20
+    while [[ ${countDown} -gt 0 ]]; do
+        if test -b ${dev} ; then break; fi
+        echo "waiting for block device ${dev} to  become visible, countDown =${countDown}"
+        sleep 0.5
+        countDown=$((${countDown}-1))
+    done
+    # last check returns result, 0 on success, other on fail
+    test -b ${dev}
 }
 
 ##
@@ -200,14 +215,7 @@ function initPartition3(){
         ## validate and show partition info
         while ! partprobe /dev/${stick}; do sleep 0.5; done
         ## wait until special device (/dev/sdX3) is visible for use by next step 
-        local countDown=10
-        while [[ ${countDown} -gt 0 ]]; do
-          if test -b /dev/${stick}3 ; then break; fi
-            echo "waiting for ${stick}'s partition 3 to become visible as /dev/${stick}3 countDown =${countDown}"
-            sleep 0.5
-            sync /dev/${stick}
-            countDown=$((${countDown}-1))
-        done
+        waitForBlockDevice /dev/${stick}3
         # sleep 1.5 # leave some time to flush
         echo -e "\e[1moverlap in next message for '/dev/${stick}' is harmless\e[m"
         sfdisk -V /dev/${stick}
@@ -229,6 +237,7 @@ function initPartition3(){
 function primePartition3(){
     local stick=$1; shift
     local label=$1; shift
+    local part="/dev/${stick}3"
     ## make the partition  and create file system in partition3
     if isSanDiskUSB ${stick}  && initPartition3 ${stick}; then
         ## make sure the partition info is up to date
@@ -236,16 +245,17 @@ function primePartition3(){
         local rootmp=/media/usb/${label}-writable
         mkdir -p ${rootmp}
         local tryCount=10
+        waitForBlockDevice ${part}
         # try to find the pristine lost+found dir in the new partition,
         # but give up after so many tries
-        mount /dev/${stick}3 ${rootmp}
+        mount ${part} ${rootmp}
         
         while [[ ${tryCount} -gt 0 ]] ; do
             if test -d ${rootmp}/lost+found ; then 
                 break; 
             fi
-            echo "${tryCount}"
-            mount /dev/${stick}3 ${rootmp}
+            echo "count down mount try count ${tryCount}"
+            mount ${part} ${rootmp}
             count=$((${tryCount}-1))
             sleep 0.5
         done
@@ -271,7 +281,7 @@ function primePartition3(){
                 chown -R 1002:1002 ${userhome}
                 echo "created home dir for 'sebi' on device ${stick}3"
             fi
-            sync /dev/${stick}3
+            sync ${part}
             sleep 1
             umount ${rootmp}
         else

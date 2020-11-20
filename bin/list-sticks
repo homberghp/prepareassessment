@@ -6,9 +6,16 @@ source ${scriptdir}/sticky-functions
 cat - <<EOF
 # Status of usb sticks recognized as 'SanDisk Extreme'
 EOF
-echo "## devices are [$(enumerateSticks)]"
-echo "## currently mounted writable partitions are"
-for d in $(enumerateSticks); do
+count=0
+eSticks=$(enumerateSticks)
+
+for s in $eSticks; do
+    count=$(($count+1))
+done
+
+echo "## devices (count=${count}) are [$(enumerateSticks)]"
+echo "## currently mounted writable partitions are:"
+for d in ${eSticks}; do
     echo "# $(grep /dev/${d} /proc/mounts)"
 done
 echo -e "# to mount the \e[32mwritable\e[m partitions use \nmount-sticks\n"

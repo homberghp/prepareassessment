@@ -16,7 +16,7 @@ if [ $# -gt 0 ] ; then
     startNr=$1; shift
 fi
 
-question=$(echo -e "The parameters you gave are:\n"\
+question=$(echo -e "You are about to prepare the sticks \n[$(enumerateSticks)]\n\nThe parameters you gave are:\n"\
     "\tstick_class=\Zb${stick_class}\Zn\n"\
     "\timage=\Zb${image}\Zn\n"\
     "\tfirst stickNr=\Zb${startNr}\Zn\n\n"\
