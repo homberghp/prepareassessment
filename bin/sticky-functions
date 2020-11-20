@@ -129,7 +129,7 @@ function mountedPartitions(){
 function mountPointsFor(){
     local dev=$1; shift
     local mountPoints=""
-    for p in $(cat  /proc/mounts | grep -s "^${d}" | awk '{print $2}' ) ; do
+    for p in $(cat  /proc/mounts | grep -s "^${dev}" | awk '{print $2}' ) ; do
         mountPoints="${mountPoints} $p"
     done
     echo -n "${mountPoints}"
@@ -144,6 +144,7 @@ function umountAllSticks(){
         for mp in $(mountPointsFor ${part} ); do
         ## build for-loop until success 
         while ! umount -q ${mp} 2> /dev/null; do
+            echo "cannot umount ${mp}"
             sleep 0.5
         done
             rmdir ${mp}
@@ -153,19 +154,19 @@ function umountAllSticks(){
 
 
 ##
-## make partition 3 on stick
+## Make partition 3 on stick and leaves it unmounted
 ## @param stick/ stick to use
-## resturns status, 0 on succes , 1 on fail
+## returns status, 0 on succes , 1 on fail
 function initPartition3(){
     local stick=$1; shift
     validateStick ${stick}
     if isSanDiskUSB "${stick}" ; then
         ## make sfdisk use defaults for start and end, a.k.a. all remaining space
-        echo "," | sfdisk  --quiet --append /dev/${stick} -N3 &> /dev/null
+        echo "," | sfdisk  --quiet --append /dev/${stick} -N3 2> /dev/null
         ## make sure the kernel sees the new partition
         partprobe /dev/${stick}
         ## make a file system in the partition
-        mkfs.ext2 -q -F -L writable /dev/${stick}3
+        mkfs.ext2 -q -F -L writable /dev/${stick}3 > /dev/null
         ## make sure the file system actions are flush to the device
         sync /dev/${stick}
         sleep 3 # leave some time to flush
@@ -183,7 +184,7 @@ function primePartition3(){
     local label=$1; shift
     ## make the partition  and create file system in partition3
     if isSanDiskUSB ${stick}  && initPartition3 ${stick}; then
-        ## mount the file system 
+        ## make sure the partition info is up to date
         partprobe /dev/${stick}
         local rootmp=/media/usb/${label}-writable
         mkdir -p ${rootmp}
@@ -260,8 +261,11 @@ function prepareSticks(){
                 ## dd rewrote partition table, inform system
                 sync /dev/${stick}
                 sleep 1
-                partprobe /dev/${stick}
-                primePartition3 ${stick} ${label}
+                if partprobe /dev/${stick} ; then
+                    primePartition3 ${stick} ${label}
+                else
+                    echo "partprobe cannot load partition info for '/dev/${stick}' label '${label}'"
+                fi
             ) &
             startDiskNr=$((${startDiskNr}+1))
         fi
