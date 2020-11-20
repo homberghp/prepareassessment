@@ -84,27 +84,24 @@ function mountAllSticks(){
             fi
             ## create final mount point
             local finalmount=/media/usb/${label}-writable
-            mkdir -p ${finalmount}
-            mount --bind ${probemount} ${finalmount}
-            mount --options remount,rw /dev/${part} ${finalmount}
-            sync
-            echo "mounted and rebound /dev/${part} ${finalmount}"
-            # sleep 1
-            # umount ${probemount} && rmdir ${probemount}
-            # sync
-            # echo 'waiting a second for mount activity to settle down'
-            # sleep 1 # let the machine recover
+            ( # run detached
+                mkdir -p ${finalmount}
+                mount --bind ${probemount} ${finalmount}
+                mount --options remount,rw /dev/${part} ${finalmount}
+                sync
+                # wait for succesful umount 
+                while ! umount ${probemount} 2> /dev/null ; do 
+                    sleep 0.5; 
+                done
+                rmdir ${probemount}
+                echo "mounted and rebound /dev/${part} ${finalmount}"
+            ) &
         else
             echo -e "can't mount '/dev/${part}' to ${probemount}"
         fi
     done
-    sync
-    sleep 3
-    for smp in /media/root/*-stickmountprobe; do  
-        umount $smp
-        rmdir $smp
-    done
-
+    echo "wait for child processes to complete"
+    wait 
 }
 
 
@@ -142,12 +139,15 @@ function mountPointsFor(){
 ## @post all sticks are umounted
 function umountAllSticks(){
     local part
-    local dev
+    local mp
     for part in $(mountedPartitions) ; do
-        local obsoleteMountPoints=$(mountPointsFor ${part})
+        for mp in $(mountPointsFor ${part} ); do
         ## build for-loop until success 
-        umount ${part}
-        # rmdir ${obsoleteMountPoints}
+        while ! umount -q ${mp} 2> /dev/null; do
+            sleep 0.5
+        done
+            rmdir ${mp}
+        done
     done
 }
 

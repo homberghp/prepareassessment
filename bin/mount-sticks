@@ -2,7 +2,5 @@
 
 scriptdir=$(dirname $0)
 source ${scriptdir}/sticky-functions
-
 mountAllSticks
-list-sticks
 
