@@ -40,10 +40,10 @@ case $response in
             echo -e "cannot find the image file \e[41m '${image}' \e[m, you are probably in the wrong directory, aborting..."
             exit 1
         fi
-        echo "about to preparesticks for $(enumerateSticks)"
+        echo -e "\nPreparing $(enumerateSticks)"
         prepareSticks  ${stick_class} ${image} ${startNr} $(enumerateSticks)
        ;;
-   1) echo "Okay, see you.";;
+   1) echo "No for now, okay, see you.";;
    255) echo "[ESC] key pressed.";;
 esac
 
