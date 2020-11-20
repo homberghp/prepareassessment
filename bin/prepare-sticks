@@ -15,8 +15,21 @@ fi
 if [ $# -gt 0 ] ; then
     startNr=$1; shift
 fi
+count=$startNr
+scount=0
+labels=''
+for s in $(enumerateSticks); do
+    nlabel="${stick_class}${count}"
+    if [ -z "${labels}" ]; then 
+        labels="${nlabel}"; 
+    else
+        labels="$labels ${nlabel}"
+    fi
+    count=$((${count}+1))
+    scount=$((${scount}+1))
+done
 
-question=$(echo -e "You are about to prepare the sticks \n[$(enumerateSticks)]\n\nThe parameters you gave are:\n"\
+question=$(echo -e "You are about to prepare \Zb${scount}\Zn sticks, devices \n[\Zb$(enumerateSticks)\Zn]\nwith labels\n[\Zb${labels}\Zn]\nThe parameters you gave are:\n"\
     "\tstick_class=\Zb${stick_class}\Zn\n"\
     "\timage=\Zb${image}\Zn\n"\
     "\tfirst stickNr=\Zb${startNr}\Zn\n\n"\
@@ -25,7 +38,7 @@ question=$(echo -e "You are about to prepare the sticks \n[$(enumerateSticks)]\n
     "as in\n\Zb$(basename $0) EXAM image.iso 350\Zn")
 
 echo "$question"
-dialog --title 'About to erase sticks and write image'  --colors --shadow --no-collapse --backtitle "Warning, dialog" --cr-wrap --yesno "${question}" 15 70
+dialog --title 'About to erase sticks and write image'  --colors --shadow --no-collapse --backtitle "Warning, dialog" --cr-wrap --yesno "${question}" 17 80
 
 
 # Get exit status
@@ -41,7 +54,7 @@ case $response in
             exit 1
         fi
         echo -e "\nPreparing $(enumerateSticks)"
-        prepareSticks  ${stick_class} ${image} ${startNr} $(enumerateSticks)
+        echo prepareSticks  ${stick_class} ${image} ${startNr} $(enumerateSticks)
        ;;
    1) echo "No for now, okay, see you.";;
    255) echo "[ESC] key pressed.";;
