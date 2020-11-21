@@ -162,7 +162,8 @@ function umountAllSticks(){
 
 ## Make a lock file for sfdisk and one for mkfs.ext2
 function makeLockFiles(){
-    mkdir -p /var/lock/sticky-locks/sd{d..z}
+    mkdir -p /var/lock/sticky-locks/
+    touch /var/lock/sticky-locks/sd{d..z}
 }
 
 ## remove lock files, disable, rewriting causes more disk wear
@@ -206,6 +207,7 @@ function waitForBlockDevice(){
 ## returns status, 0 on succes , 1 on fail
 function initPartition3(){
     local stick=$1; shift
+    local label=$1; shift
     if isSanDiskUSB "${stick}" ; then
         ## I do not trust sfdisk to be 'thread-safe' so have only one process use it
         appendPartition3 ${stick}
@@ -216,7 +218,7 @@ function initPartition3(){
         ## make sure the file system actions are flushed to the device after short pause
         sleep 1
         sync /dev/${stick}3 /dev/${stick}
-        echo "created file system in partition /dev/${stick}3"
+        echo "created file system in partition /dev/${stick}3 for ${label}"
     else
         return 1
     fi
@@ -231,7 +233,7 @@ function primePartition3(){
     local label=$1; shift
     local part="/dev/${stick}3"
     ## make the partition  and create file system in partition3
-    if initPartition3 ${stick}; then
+    if initPartition3 ${stick} ${label}; then
         ## make sure the partition info is up to date
         partprobe /dev/${stick}
         local rootmp=/media/usb/${label}-writable
@@ -263,7 +265,7 @@ function primePartition3(){
                 mkdir -p ${userhome}
                 tar -C ${userhome} -xf examskel.tgz
                 chown -R 1001:1001 ${userhome}
-                echo "created home dir for 'exam' on device ${stick}3"
+                echo "created home dir for 'exam' on device ${stick}3 for ${label}"
             fi
             ## expand skel for home/sebi
             if [ -e sebiskel.tgz ]; then
@@ -271,7 +273,7 @@ function primePartition3(){
                 mkdir -p ${userhome}
                 tar -C ${userhome} -xf sebiskel.tgz
                 chown -R 1002:1002 ${userhome}
-                echo "created home dir for 'sebi' on device ${stick}3"
+                echo "created home dir for 'sebi' on device ${stick}3 for ${label}"
             fi
             sync ${part}
             sleep 1
@@ -326,7 +328,7 @@ function prepareSticks(){
                 # for those cases where there is an GPT table
                 #sgdisk --zap-all /dev/${stick}
                 flock -x /dev/${stick} dd conv=fsync if=${image} of=/dev/${stick} bs=4M
-                echo "#writing base iso to ${stick} completed"
+                echo "#writing base iso to ${stick} for ${label} completed."
                 ## dd rewrote partition table, inform system
                 sync
                 sleep 1
@@ -341,4 +343,5 @@ function prepareSticks(){
     wait
     removeLockFiles
     echo "all child processes returned"
+    paplay --volume 24000 /usr/share/sounds/sound-icons/piano-3.wav
 }
