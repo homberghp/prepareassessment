@@ -217,8 +217,8 @@ function initPartition3(){
         ## wait until special device (/dev/sdX3) is visible for use by next step 
         waitForBlockDevice /dev/${stick}3
         # sleep 1.5 # leave some time to flush
-        echo -e "\e[1moverlap in next message for '/dev/${stick}' is harmless\e[m"
-        sfdisk -V /dev/${stick}
+        # echo -e "\e[1moverlap in next message for '/dev/${stick}' is harmless\e[m"
+        sfdisk -V /dev/${stick} > /dev/null 2>&1
         ## make a file system in the partition
         ## not sure if mkfs.ext2 is thread safe, so serialize that too.
         flock --no-fork --exclusive /var/lock/sticky-lock-mkfs mkfs.ext2 -q -F -L writable /dev/${stick}3 > /dev/null
