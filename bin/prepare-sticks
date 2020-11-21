@@ -27,7 +27,7 @@ for s in $(enumerateSticks); do
     count=$((${count}+1))
 done
 
-question=$(echo -e "You are about to prepare \Zb${scount}\Zn sticks, devices\n[\Zb$(enumerateSticks)\Zn]\n"\
+question=$(echo -e "You are about to prepare \Zb${count}\Zn sticks, devices\n[\Zb$(enumerateSticks)\Zn]\n"\
     "with labels \Zb${stick_class}....\Zn\n[\Zb${labels}\Zn]\n"\
     "The parameters you gave are:\n"\
     "\tstick_class=\Zb${stick_class}\Zn\n"\
@@ -55,6 +55,7 @@ case $response in
         fi
         echo -e "\nPreparing $(enumerateSticks)"
         prepareSticks  ${stick_class} ${image} ${startNr} $(enumerateSticks)
+        # echo UI test run
        ;;
    1) echo "No for now, okay, see you.";;
    255) echo "[ESC] key pressed.";;
