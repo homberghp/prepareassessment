@@ -8,7 +8,7 @@
 
 ## Get device name by reading vendor and model from /sys/bloc pseudo file system.
 ## @param diskBaseName name of device like sdd or sde
-blockDeviceName(){
+function blockDeviceName(){
     local diskBaseName=$1; shift
     if [ -z "$diskBaseName" ]; then 
         echo "paramater not set"
@@ -21,7 +21,7 @@ blockDeviceName(){
 ## 
 ## test if given stick reports as 'SanDisk Extreme'
 ## @param diskBaseName like sdc
-isSanDiskUSB(){
+function isSanDiskUSB(){
     local diskBaseName=$1; shift
     local vm=$(blockDeviceName "${diskBaseName}")
     [[ $vm =~ ^'SanDisk Extreme' ]]
@@ -29,7 +29,7 @@ isSanDiskUSB(){
 
 ## Return a list of device names that appear to be SanDisk Extreme devices
 ## 
-enumerateSticks(){
+function enumerateSticks(){
     local result=''
     local stick
     for stick in /sys/block/sd*; do
@@ -45,7 +45,7 @@ enumerateSticks(){
 ## a 'SanDisk Extreme' make and model.
 # @param diskBaseName like sdc
 # @deprecated:  when running this in a shell, and the stick is not valid, it closes the shell.
-validateStick(){
+function validateStick(){
     local diskBaseName=$1; shift
     echo "checking '${diskBaseName}' to be proper stick"
     if [ ! -d /sys/block/${diskBaseName} ] ; then 
@@ -65,7 +65,7 @@ validateStick(){
 ## Mount all sticks that report the proper vendor and model
 ## @post-condition: all sticks have their writable partition 3 mounted
 
-mountAllSticks(){
+function mountAllSticks(){
     local counter=0
     local probes=""
     for baseDisk in $(enumerateSticks); do
@@ -107,7 +107,7 @@ mountAllSticks(){
 
 # Enumerate  mounted stick partitions
 # @return the space separated list of mounted partitions
-mountedPartitions(){
+function mountedPartitions(){
     local mounted=""
     for d in $(enumerateSticks); do
         for p in $(cat  /proc/mounts \
@@ -126,7 +126,7 @@ mountedPartitions(){
 ## Find all the mount points for the given device
 ## @param dev device as in sdd3 or sdde3
 ## return a space sperated mountpoints
-mountPointsFor(){
+function mountPointsFor(){
     local dev=$1; shift
     local mountPoints=""
     for p in $(cat  /proc/mounts | grep -s "^${dev}" | awk '{print $2}' ) ; do
@@ -137,7 +137,7 @@ mountPointsFor(){
 
 ## unmount all stick partitions. Remove all directories under /media/usb/*
 ## @post all sticks are umounted
-umountAllSticks(){
+function umountAllSticks(){
     local part
     local mp
     for part in $(mountedPartitions) ; do
@@ -161,68 +161,60 @@ umountAllSticks(){
 
 
 ## Make a lock file for sfdisk and one for mkfs.ext2
-makeLockFiles(){
-    if ! echo "$$" > /var/lock/sticky-lock-sfdisk; then 
-        echo "cannot create lock file '/var/lock/sticky-lock'"
-        exit 1
-    fi
-    if ! echo "$$" > /var/lock/sticky-lock-mkfs; then 
-        echo "cannot create lock file '/var/lock/sticky-lock'"
-        exit 1
-    fi
+function makeLockFiles(){
+    mkdir -p /var/lock/sticky-locks/sd{d..z}
 }
 
-## remove lock files 
-removeLockFiles(){
-    rm -f /var/lock/sticky-lock*
+## remove lock files, disable, rewriting causes more disk wear
+function removeLockFiles(){
+    echo "no need to rm -fr /var/lock/sticky-locks"
 }
 
 ## append partition 3 to current partition on stick
 ## @param stick. 
 ## Not that this command is actuall invoked via external file 'append-partition-3', otherwise flock can't find it
-appendPartition3(){
+function appendPartition3(){
     local stick=$1; shift
     echo "creating 3rd partition in /dev/${stick}"
-    echo "," | sfdisk  --quiet --append /dev/${stick} -N3 2> /dev/null
+     echo "," | flock --exclusive /var/lock/sticky-locks/${stick} sfdisk  --quiet --append /dev/${stick} -N3 2> /dev/null
+    ## make sure the kernel sees the new partition
+    sync /dev/${stick}
+    sleep 1
+    partprobe /dev/${dev} > /dev/null 2>&1
 }
 
 ## wait for block device to be visible
 ## @param block device like /dev/sdd3
-waitForBlockDevice(){
+function waitForBlockDevice(){
     local dev=$1; shift
-    local countDown=20
+    local countDown=200
+    partprobe ${dev} > /dev/null 2>&1
     while [[ ${countDown} -gt 0 ]]; do
-        if test -b ${dev} ; then break; fi
+        if test -b ${dev} ; then return 0; fi
         echo "waiting for block device ${dev} to  become visible, countDown =${countDown}"
         sleep 0.5
+        partprobe ${dev} > /dev/null 2>&1
         countDown=$((${countDown}-1))
     done
     # last check returns result, 0 on success, other on fail
-    test -b ${dev}
+    return 1
 }
 
 ##
 ## Make partition 3 on stick and leaves it unmounted
 ## @param stick/ stick to use
 ## returns status, 0 on succes , 1 on fail
-initPartition3(){
+function initPartition3(){
     local stick=$1; shift
     if isSanDiskUSB "${stick}" ; then
         ## I do not trust sfdisk to be 'thread-safe' so have only one process use it
-        flock --no-fork --exclusive /var/lock/sticky-lock-sfdisk append-partition-3 ${stick}
-        ## make sure the kernel sees the new partition
-        sync /dev/${stick}
-        ## validate and show partition info
-        while ! partprobe /dev/${stick}; do sleep 0.5; done
-        ## wait until special device (/dev/sdX3) is visible for use by next step 
+        appendPartition3 ${stick}
         waitForBlockDevice /dev/${stick}3
-        # sleep 1.5 # leave some time to flush
-        # echo -e "\e[1moverlap in next message for '/dev/${stick}' is harmless\e[m"
-        sfdisk -V /dev/${stick} > /dev/null 2>&1
         ## make a file system in the partition
         ## not sure if mkfs.ext2 is thread safe, so serialize that too.
-        flock --no-fork --exclusive /var/lock/sticky-lock-mkfs mkfs.ext2 -q -F -L writable /dev/${stick}3 > /dev/null
-        ## make sure the file system actions are flush to the device
+        flock --exclusive /var/lock/sticky-locks/${stick} mkfs.ext2 -q -F -L writable /dev/${stick}3 > /dev/null
+        ## make sure the file system actions are flushed to the device after short pause
+        sleep 1
         sync /dev/${stick}3 /dev/${stick}
         echo "created file system in partition /dev/${stick}3"
     else
@@ -234,12 +226,12 @@ initPartition3(){
 ## Prime a partition sdX3 with label and initial home directories.
 ## @param stick partition to prime
 ## @param label to use. 
-primePartition3(){
+function primePartition3(){
     local stick=$1; shift
     local label=$1; shift
     local part="/dev/${stick}3"
     ## make the partition  and create file system in partition3
-    if isSanDiskUSB ${stick}  && initPartition3 ${stick}; then
+    if initPartition3 ${stick}; then
         ## make sure the partition info is up to date
         partprobe /dev/${stick}
         local rootmp=/media/usb/${label}-writable
@@ -284,10 +276,14 @@ primePartition3(){
             sync ${part}
             sleep 1
             umount ${rootmp}
+            return 0
         else
             echo -e "\e[41mCan't mount /dev/${stick}3 ${rootmp}\e[m, failed after ${tryCount} tries"
             return 1
         fi
+    else
+        echo -e "\e[421mUnsuccesful at priming partition 3 on /dev/${stick}, ${label} because creating partition +fs failed\e[m"
+        return 2
     fi
 }
 
@@ -295,7 +291,7 @@ primePartition3(){
 ## as in /media/usb/EXAM350-writable
 ## @param old mount point 
 ## @param label
-remount(){
+function remount(){
     local omp=$1; shift
     local label=$1; shift
     local nmp=/media/usb/${label}-writable
@@ -311,7 +307,7 @@ remount(){
 ## @param image the iso file to use
 ## @param startDiskNr the initial stick number
 ## @param disk1 [disk2 [...]]
-prepareSticks(){
+function prepareSticks(){
     echo "received $# params: [$@]"
     local stick_class=$1; shift
     local image=$1; shift
@@ -329,16 +325,14 @@ prepareSticks(){
             (
                 # for those cases where there is an GPT table
                 #sgdisk --zap-all /dev/${stick}
-                dd if=${image} of=/dev/${stick} bs=4M conv=fsync
+                flock -x /dev/${stick} dd conv=fsync if=${image} of=/dev/${stick} bs=4M
                 echo "#writing base iso to ${stick} completed"
                 ## dd rewrote partition table, inform system
-                sync /dev/${stick}
+                sync
                 sleep 1
-                if partprobe /dev/${stick} ; then
-                    primePartition3 ${stick} ${label}
-                else
-                    echo "partprobe cannot load partition info for '/dev/${stick}' label '${label}'"
-                fi
+                partprobe /dev/${stick}
+                primePartition3 ${stick} ${label}
+                sleep 1
             ) &
             startDiskNr=$((${startDiskNr}+1))
         fi
