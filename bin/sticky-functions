@@ -8,7 +8,7 @@
 
 ## Get device name by reading vendor and model from /sys/bloc pseudo file system.
 ## @param diskBaseName name of device like sdd or sde
-function blockDeviceName(){
+blockDeviceName(){
     local diskBaseName=$1; shift
     if [ -z "$diskBaseName" ]; then 
         echo "paramater not set"
@@ -21,7 +21,7 @@ function blockDeviceName(){
 ## 
 ## test if given stick reports as 'SanDisk Extreme'
 ## @param diskBaseName like sdc
-function isSanDiskUSB(){
+isSanDiskUSB(){
     local diskBaseName=$1; shift
     local vm=$(blockDeviceName "${diskBaseName}")
     [[ $vm =~ ^'SanDisk Extreme' ]]
@@ -29,7 +29,7 @@ function isSanDiskUSB(){
 
 ## Return a list of device names that appear to be SanDisk Extreme devices
 ## 
-function enumerateSticks(){
+enumerateSticks(){
     local result=''
     local stick
     for stick in /sys/block/sd*; do
@@ -44,8 +44,8 @@ function enumerateSticks(){
 ## Validates that the device visible as diskBaseName is indeed
 ## a 'SanDisk Extreme' make and model.
 # @param diskBaseName like sdc
-# @deprecated:  when running this function in a shell, and the stick is not valid, it closes the shell.
-function validateStick(){
+# @deprecated:  when running this in a shell, and the stick is not valid, it closes the shell.
+validateStick(){
     local diskBaseName=$1; shift
     echo "checking '${diskBaseName}' to be proper stick"
     if [ ! -d /sys/block/${diskBaseName} ] ; then 
@@ -65,7 +65,7 @@ function validateStick(){
 ## Mount all sticks that report the proper vendor and model
 ## @post-condition: all sticks have their writable partition 3 mounted
 
-function mountAllSticks(){
+mountAllSticks(){
     local counter=0
     local probes=""
     for baseDisk in $(enumerateSticks); do
@@ -107,7 +107,7 @@ function mountAllSticks(){
 
 # Enumerate  mounted stick partitions
 # @return the space separated list of mounted partitions
-function mountedPartitions(){
+mountedPartitions(){
     local mounted=""
     for d in $(enumerateSticks); do
         for p in $(cat  /proc/mounts \
@@ -126,7 +126,7 @@ function mountedPartitions(){
 ## Find all the mount points for the given device
 ## @param dev device as in sdd3 or sdde3
 ## return a space sperated mountpoints
-function mountPointsFor(){
+mountPointsFor(){
     local dev=$1; shift
     local mountPoints=""
     for p in $(cat  /proc/mounts | grep -s "^${dev}" | awk '{print $2}' ) ; do
@@ -137,7 +137,7 @@ function mountPointsFor(){
 
 ## unmount all stick partitions. Remove all directories under /media/usb/*
 ## @post all sticks are umounted
-function umountAllSticks(){
+umountAllSticks(){
     local part
     local mp
     for part in $(mountedPartitions) ; do
@@ -161,7 +161,7 @@ function umountAllSticks(){
 
 
 ## Make a lock file for sfdisk and one for mkfs.ext2
-function makeLockFiles(){
+makeLockFiles(){
     if ! echo "$$" > /var/lock/sticky-lock-sfdisk; then 
         echo "cannot create lock file '/var/lock/sticky-lock'"
         exit 1
@@ -173,14 +173,14 @@ function makeLockFiles(){
 }
 
 ## remove lock files 
-function removeLockFiles(){
+removeLockFiles(){
     rm -f /var/lock/sticky-lock*
 }
 
 ## append partition 3 to current partition on stick
 ## @param stick. 
 ## Not that this command is actuall invoked via external file 'append-partition-3', otherwise flock can't find it
-function appendPartition3(){
+appendPartition3(){
     local stick=$1; shift
     echo "creating 3rd partition in /dev/${stick}"
     echo "," | sfdisk  --quiet --append /dev/${stick} -N3 2> /dev/null
@@ -188,7 +188,7 @@ function appendPartition3(){
 
 ## wait for block device to be visible
 ## @param block device like /dev/sdd3
-function waitForBlockDevice(){
+waitForBlockDevice(){
     local dev=$1; shift
     local countDown=20
     while [[ ${countDown} -gt 0 ]]; do
@@ -205,7 +205,7 @@ function waitForBlockDevice(){
 ## Make partition 3 on stick and leaves it unmounted
 ## @param stick/ stick to use
 ## returns status, 0 on succes , 1 on fail
-function initPartition3(){
+initPartition3(){
     local stick=$1; shift
     if isSanDiskUSB "${stick}" ; then
         ## I do not trust sfdisk to be 'thread-safe' so have only one process use it
@@ -234,7 +234,7 @@ function initPartition3(){
 ## Prime a partition sdX3 with label and initial home directories.
 ## @param stick partition to prime
 ## @param label to use. 
-function primePartition3(){
+primePartition3(){
     local stick=$1; shift
     local label=$1; shift
     local part="/dev/${stick}3"
@@ -295,7 +295,7 @@ function primePartition3(){
 ## as in /media/usb/EXAM350-writable
 ## @param old mount point 
 ## @param label
-function remount(){
+remount(){
     local omp=$1; shift
     local label=$1; shift
     local nmp=/media/usb/${label}-writable
@@ -311,14 +311,14 @@ function remount(){
 ## @param image the iso file to use
 ## @param startDiskNr the initial stick number
 ## @param disk1 [disk2 [...]]
-function prepareSticks(){
+prepareSticks(){
     echo "received $# params: [$@]"
     local stick_class=$1; shift
     local image=$1; shift
     local startDiskNr=$1; shift
     # ensure no stick is mounted
     umountAllSticks
-    ## we need lock files. Function will exit on failure.
+    ## we need lock files. will exit on failure.
     makeLockFiles
     while [ $# -gt 0 ]; do
         local stick=$1; shift
