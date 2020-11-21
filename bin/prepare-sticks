@@ -15,26 +15,26 @@ fi
 if [ $# -gt 0 ] ; then
     startNr=$1; shift
 fi
-count=$startNr
-scount=0
+count=0
 labels=''
 for s in $(enumerateSticks); do
-    nlabel="${stick_class}${count}"
+    nlabel=$((${startNr}+${count}))
     if [ -z "${labels}" ]; then 
         labels="${nlabel}"; 
     else
         labels="$labels ${nlabel}"
     fi
     count=$((${count}+1))
-    scount=$((${scount}+1))
 done
 
-question=$(echo -e "You are about to prepare \Zb${scount}\Zn sticks, devices \n[\Zb$(enumerateSticks)\Zn]\nwith labels\n[\Zb${labels}\Zn]\nThe parameters you gave are:\n"\
+question=$(echo -e "You are about to prepare \Zb${scount}\Zn sticks, devices\n[\Zb$(enumerateSticks)\Zn]\n"\
+    "with labels \Zb${stick_class}....\Zn\n[\Zb${labels}\Zn]\n"\
+    "The parameters you gave are:\n"\
     "\tstick_class=\Zb${stick_class}\Zn\n"\
     "\timage=\Zb${image}\Zn\n"\
     "\tfirst stickNr=\Zb${startNr}\Zn\n\n"\
     "Are you sure these are the correct settings?\n"\
-    "If not, answer no and start this script with proper parameters\n"\
+    "If not, answer \Zb\Z1N\Zno and start this script with proper parameters\n"\
     "as in\n\Zb$(basename $0) EXAM image.iso 350\Zn")
 
 echo "$question"
@@ -54,7 +54,7 @@ case $response in
             exit 1
         fi
         echo -e "\nPreparing $(enumerateSticks)"
-        echo prepareSticks  ${stick_class} ${image} ${startNr} $(enumerateSticks)
+        prepareSticks  ${stick_class} ${image} ${startNr} $(enumerateSticks)
        ;;
    1) echo "No for now, okay, see you.";;
    255) echo "[ESC] key pressed.";;
