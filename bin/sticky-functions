@@ -265,7 +265,7 @@ function primePartition3(){
                 mkdir -p ${userhome}
                 tar -C ${userhome} -xf examskel.tgz
                 chown -R 1001:1001 ${userhome}
-                echo "created home dir for 'exam' on device ${stick}3 for ${label}"
+                echo -e "created home dir for 'exam' on device ${stick}3 for \e[42m${label}\e[m"
             fi
             ## expand skel for home/sebi
             if [ -e sebiskel.tgz ]; then
@@ -273,7 +273,7 @@ function primePartition3(){
                 mkdir -p ${userhome}
                 tar -C ${userhome} -xf sebiskel.tgz
                 chown -R 1002:1002 ${userhome}
-                echo "created home dir for 'sebi' on device ${stick}3 for ${label}"
+                echo -e "created home dir for 'sebi' on device ${stick}3 for \e[42m${label}\e[m"
             fi
             sync ${part}
             sleep 1
