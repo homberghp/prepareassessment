@@ -256,7 +256,7 @@ function primePartition3(){
             fi
             echo "count down mount try count ${tryCount}"
             mount ${part} ${rootmp}
-            count=$((${tryCount}-1))
+            tryCount=$((${tryCount}-1))
             sleep 0.5
         done
         if test -d ${rootmp}/lost+found ; then
