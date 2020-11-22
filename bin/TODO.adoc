@@ -1,0 +1,25 @@
+= TODO 
+
+* *prime-sticks* with exam skel + exam project
+  massaging stick id to exam project id (EXAM123 -> examproject-EXAM123 
+  plus the sedding  of project, other places where __STUDENT_ID__  stands as  bare word)
+  proper home/exam/.gitconfig with
+
+.git config home/exam/.gitconfig
+[source,sh]
+----
+[user]
+	name = Sebi Exam Candidate (__STUDENT_ID__)
+	email = __STUDENT_ID__@student.fontys.nl
+[push]
+	default = simple
+----
+
+** initialize git repo and add a proper `.gitignore` for java/mvn
+* prep script and image 
+** casper scripts should disable sebi account when exam stick, by removing it from /etc/passwd
+** if exam stick, this should be detected from iso/stick name, not from writable partition to make it more fail safe.
+* relabel sticks command accepts all forms of `sde`, `/dev/sde` and `/dev/sde3`
+* make exam image so that net drivers and block drivers are disabled, 
+  mount points (/mnt, /media) are replaced with files so that mount will fail.
+* *harvest-sticks* command. Decide on destination. Maybe local dir relative to current.
