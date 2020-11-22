@@ -24,7 +24,7 @@ function blockDeviceName(){
 function isSanDiskUSB(){
     local diskBaseName=$1; shift
     local vm=$(blockDeviceName "${diskBaseName}")
-    [[ $vm =~ ^'SanDisk Extreme' ]]
+    [[ $vm =~ ^'SanDisk Extreme' || $vm =~ ^'USB SanDisk3.2Gen1' ]]
 }
 
 ## Return a list of device names that appear to be SanDisk Extreme devices
@@ -345,3 +345,4 @@ function prepareSticks(){
     echo "all child processes returned"
     paplay --volume 24000 /usr/share/sounds/sound-icons/piano-3.wav
 }
+

@@ -1,0 +1,18 @@
+#!/bin/bash
+
+scriptdir=$(dirname $0)
+source ${scriptdir}/sticky-functions
+stick=$1; shift
+label=$1; shift
+
+for mountPoint in $(cat /proc/mounts | grep -P "^/dev/${stick}3" | awk  '{print $2}'); do
+
+    echo ${mountPoint};
+    if [ -d ${mountPoint}/upper/ ]; then
+        echo  -n ${label} > ${mountPoint}/upper/sebi-label
+    fi
+    if [ -d ${mountPoint}/upper/etc ]; then
+        echo  -n ${label} | tr A-Z a-z > ${mountPoint}/upper/etc/hostname
+    fi
+    sync
+done

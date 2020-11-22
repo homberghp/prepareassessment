@@ -4,13 +4,14 @@ scriptdir=$(dirname $0)
 source ${scriptdir}/sticky-functions
 
 cat - <<EOF
-# Status of usb sticks recognized as 'SanDisk Extreme'
+# Status of usb sticks recognized as 'SanDisk Extreme' or 'USB SanDisk3.2Gen1'
 EOF
 count=0
 eSticks=$(enumerateSticks)
 
 for s in $eSticks; do
     count=$(($count+1))
+    echo -e "# ${s} is \e[1;44m$(blockDeviceName ${s})\e[m"
 done
 
 echo "## devices (count=${count}) are [$(enumerateSticks)]"
