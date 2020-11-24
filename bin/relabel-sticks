@@ -2,12 +2,14 @@
 
 scriptdir=$(dirname $0)
 source ${scriptdir}/sticky-functions
-stick=$1; shift
-label=$1; shift
 
-for mountPoint in $(cat /proc/mounts | grep -P "^/dev/${stick}3" | awk  '{print $2}'); do
-
-    echo ${mountPoint};
+for mountPoint in $(mountedFileSystems); do
+    if [ $# -gt 0 ]; then
+        label=$1; shift
+    else
+        label=${label:0:4}$((${label//[A-Z]/}+1))
+    fi
+    echo "${mountPoint} relabled to ${label}";
     if [ -d ${mountPoint}/upper/ ]; then
         echo  -n ${label} > ${mountPoint}/upper/sebi-label
     fi

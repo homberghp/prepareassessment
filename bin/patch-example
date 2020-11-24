@@ -1,0 +1,22 @@
+#!/bin/bash
+
+scriptdir=/home/prepareassessment/bin
+source ${scriptdir}/sticky-functions
+
+# mount-sticks
+for mp in $(mountedFileSystems) ; do
+    newfile=examskel/bin/retina
+    targetfile=${mp}/upper/home/exam/bin/$(basename ${newfile})
+    if [ -s ${newfile} ]; then 
+	cp ${newfile} ${targetfile}
+	chown 1001:1001 ${targetfile}
+    fi
+    targetfile=${mp}/upper/home/sebi/bin/$(basename ${newfile})
+    if [ -s ${newfile} ]; then 
+	cp ${newfile} ${targetfile}
+	chown 1002:1002 ${targetfile}
+    fi
+    echo "patched ${mp}"
+done
+sync
+umount-sticks

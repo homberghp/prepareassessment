@@ -346,3 +346,24 @@ function prepareSticks(){
     paplay --volume 24000 /usr/share/sounds/sound-icons/piano-3.wav
 }
 
+# Enumerate mounted stick file systems as mountPoints.
+# shows only partition 3 per stick. 
+# See patch-example for example
+# @return the space separated list of mounted partitions
+function mountedFileSystems(){
+    local mounted=""
+    for d in $(enumerateSticks); do
+        for p in $(cat  /proc/mounts \
+                | grep -s "^/dev/${d}3"\
+                | awk '{print $2}'
+                 ) ; do
+            if [ -z "$mounted" ]; then
+                mounted="$p"
+            else
+                mounted="${mounted} $p"
+            fi
+        done
+    done
+    echo -n "$mounted"
+}
+
