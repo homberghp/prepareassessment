@@ -1,0 +1,11 @@
+#!/bin/bash
+source setup.properties
+mkdir -p sw
+for x in  $(seq ${stick_id} $(($stick_id+$candidate_count-1))); do 
+    exam=EXAM${x}
+    echo $exam
+    rsync -av examproject/ sw/examproject-${exam}/
+    for p in $(grep -rl examproject sw/examproject-${exam}/ --include pom.xml); do
+        sed -i s/examproject/${exam}/ $p;
+    done
+done

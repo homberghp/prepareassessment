@@ -1,0 +1,81 @@
+#!/bin/bash
+# intialize a usb stick with a new exam set.
+# this script cleans the 'exam' user area on the usb stick.
+# 
+# The logged in user, for who he sticks are auto mounted by udev.
+scriptdir=$(dirname $(readlink -f $0))
+source ${scriptdir}/sticky-functions
+me=${SUDO_USER}
+debug=
+STYPE=EXAM
+stype=$(echo $STYPE | tr [:upper:] [:lower:])
+if [ "root"  != "$USER" ]; then
+    echo must be root or in sudo process, sorry.
+    exit 1
+fi
+dir=$(basename $(pwd))
+if [[ "${dir}" =~ ^202[0-9][0-1][0-9][0-3][0-9]$ ]]; then
+	echo "found exam dir '${dir}'"
+else
+	echo "expecting directory name to end in exam date like $(date +%Y%m%d), but does not: '${dir}'"
+	echo go to other dir and try again.
+	exit 1
+fi
+if [ ! -e skel.tgz ]; then
+    echo -e "missing skel dir template 'skel.tgz';\n\t please make sure it (or a sym link) exists in the current dir."
+    exit 2;
+fi
+
+# chown sandbox stuff to exam uid:gid
+#chown -R 1001:1001 /exam/exam
+enumerateSticks
+mountAllSticks
+# for desktop stamp
+dir=$(basename $(pwd))
+datum=${dir:0:4}-${dir:4:2}-${dir:6:2}
+basetext="Fontys SEBI Venlo EXAM ${datum}"
+pointsize=64
+distro=/home/cubic/sebistick/custom-root
+imagein=${distro}/usr/share/xfce4/backdrops/xubuntu-focal.png
+
+# casper-rw mounted ad /media/usb/casper-rw-${STYPE}xxx
+# note that file system lives at /media/usb/casper-rw-${STYPE}xxx/upper/
+for i in /media/usb/EXAM*-writable; do 
+    stick=$(basename $i)
+    stick=${stick:0:7}
+    mountpoint=$i
+	if [ -e rootfs.tgz ]; then 
+	    echo found rootfs payload, copying
+	    ${debug} tar -C ${mountpoint}/upper/ -xzf rootfs.tgz 
+	fi
+    homedir=${mountpoint}/upper/home/exam
+    ( # clean exam disk, new initial and sync sandbox  
+		${debug} rm -fr  ${homedir}
+		${debug} mkdir -p ${homedir}
+		${debug} tar -C ${homedir} -xzf skel.tgz 
+		${debug} mkdir -p ${homedir}/{Pictures,Desktop}
+		if [ -d ./Desktop ]; then
+			rsync -aq ./Desktop/ ${homedir}/Desktop/
+		fi
+		${debug} rsync -aq sw/examproject-${stick}/ ${homedir}/Desktop/examproject-${stick}/
+		${debug} chown -R 1001:1001 ${homedir} 
+		${debug} mkdir -p ${mountpoint}/upper/usr/share/xfce4/backdrops/
+		text="${basetext}\n${stick}"
+		out=${mountpoint}/upper/usr/share/xfce4/backdrops/fontys-backdrop.jpg
+		convert -size 1250x250 -pointsize ${pointsize} xc:none -gravity north \
+			-stroke black -strokewidth 2 -annotate 0 "${text}" \
+			-background none -shadow 100x3+0+0 +repage \
+			-stroke none -fill white -pointsize ${pointsize} -annotate 0 "${text}" \
+			${imagein}  +swap -gravity north  -geometry +0+320 \
+			-composite ${out}
+		echo primed stick ${stick}
+    ) &
+done
+echo waiting for all processes to complete
+wait
+echo waiting for all file writes to complete
+sync
+# unmount all
+umountAllSticks
+
+paplay ${scriptdir}/programisready.ogg
